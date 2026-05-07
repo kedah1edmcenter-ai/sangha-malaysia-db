@@ -371,7 +371,7 @@ onkeyup="searchMonk()">
 
 <table>
 
-<<thead>
+<thead>
     <tr>
         <th>ชื่อ</th>
         <th>ฉายา</th>
@@ -380,7 +380,8 @@ onkeyup="searchMonk()">
         <th>วัด</th>
         <th>รัฐ</th>
         <th>IC / Passport</th>
-        <th>หมายเหตุ</th> <th>จัดการ</th>
+        <th>ภูมิลำเนา/สังกัดเดิม</th> <th>วิทยฐานะ</th> <th>หมายเหตุ</th>
+        <th>จัดการ</th>
     </tr>
 </thead>
 
@@ -703,7 +704,8 @@ table.innerHTML += `
     <td>${data.name || ''}</td>
     <td>${data.state || ''}</td>
     <td>${monk.passport || ''}</td>
-    <td>${monk.note || ''}</td> <td style="text-align:center;">
+    <td>${monk.originalTemple || ''}</td> <td>${monk.education || ''}</td>      <td>${monk.note || ''}</td>
+    <td style="text-align:center;">
         <button
             onclick="deleteMonk('${docItem.id}', ${monkIndex})"
             class="btn red" 
