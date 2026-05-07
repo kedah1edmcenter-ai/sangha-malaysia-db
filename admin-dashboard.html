@@ -702,7 +702,7 @@ table.innerHTML += `
 <tr id="monk-row-${docItem.id}-${monkIndex}">
 
 <td>${monk.fullname || ''}</td>
-<td>${monk.nickname || ''}</td>
+<td>${monk.alias || ''}</td>
 <td>${data.name || ''}</td>
 <td>${data.state || ''}</td>
 <td>${monk.passport || ''}</td>
@@ -1803,7 +1803,7 @@ monks.forEach((monk, index)=>{
         : '',
 
         monk.fullname || '',
-        monk.nickname || '',
+        monk.alias || '',
         monk.age || '',
         monk.pansa || '',
         monk.education || '',
@@ -1962,7 +1962,7 @@ index === 0
 
 monk.fullname || '',
 
-monk.nickname || '',
+monk.alias || '',
 
 monk.age || '',
 
