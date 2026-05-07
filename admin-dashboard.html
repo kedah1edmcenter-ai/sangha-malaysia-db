@@ -694,23 +694,16 @@ if(data.monks){
 
 data.monks.forEach((monk, monkIndex)=>{
 
-/* แก้ไขในหน้า Dashboard ให้ตรงกับหน้าบันทึก */
+// ตัวอย่างส่วนการสร้างตารางในหน้า Dashboard
 table.innerHTML += `
 <tr>
     <td>${monk.fullname || ''}</td>
     <td>${monk.alias || ''}</td>
     <td>${monk.age || ''}</td>
     <td>${monk.pansa || ''}</td>
-    <td>${data.name || ''}</td>
-    <td>${data.state || ''}</td>
-    <td>${monk.passport || ''}</td>
-    <td>${monk.origin || ''}</td>    <td>${monk.education || ''}</td>
-    <td>${monk.note || ''}</td>      <td style="text-align:center;">
-        <button
-            onclick="deleteMonk('${docItem.id}', ${monkIndex})"
-            style="border:none; border-radius:12px; padding:8px 18px; background:#dc2626; color:white; font-weight:700; font-size:14px; cursor:pointer;">
-            🗑️ ลบ
-        </button>
+    <td>${data.name || ''}</td>       <td>${data.state || ''}</td>      <td>${monk.passport || ''}</td>
+    <td>${monk.origin || ''}</td>     <td>${monk.education || ''}</td>  <td>${monk.note || ''}</td>       <td>
+        <button onclick="deleteMonk('${docItem.id}', ${monkIndex})" class="delete-btn">🗑️ ลบ</button>
     </td>
 </tr>
 `;
