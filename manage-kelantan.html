@@ -530,7 +530,7 @@ async function saveAllData(){
         } else {
             await addDoc(collection(db, 'temples'), {
                 name: templeName, address: templeAddress,
-                state: 'เคดาห์', monks: monkData, createdAt: new Date()
+                state: 'กลันตันและตรังกานู', monks: monkData, createdAt: new Date()
             });
             alert('✅ บันทึกข้อมูลสำเร็จ');
         }
