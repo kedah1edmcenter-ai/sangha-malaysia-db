@@ -932,24 +932,29 @@ html
 
 }
 
-/* FILTER STATE */
+//* FILTER STATE - แก้ไขเพื่อให้ค้นหาได้แม้ชื่อไม่ตรงเป๊ะ */
 window.filterByState = async function(stateName){
     const snapshot = await getDocs(collection(db,'temples'));
     const table = document.getElementById('monkTable');
     table.innerHTML = '';
 
+    // ตัดคำว่า "รัฐ" ออกจากชื่อที่ส่งมาจากปุ่ม (เช่น "รัฐเคดาห์" -> "เคดาห์")
+    const cleanStateName = stateName.replace('รัฐ', '').trim();
+
     snapshot.forEach(docItem=>{
         const data = docItem.data();
-        
-        // ใช้ .trim() เพื่อให้เทียบข้อมูลได้แม่นยำขึ้น แม้จะมีเว้นวรรค
-        if((data.state || '').trim() !== stateName.trim()) return;
+        const dbState = (data.state || '').trim();
+
+        // ตรวจสอบว่าในฐานข้อมูลมีชื่อรัฐที่ตรงกัน (แบบไม่รวมคำว่ารัฐ) หรือไม่
+        if(!dbState.includes(cleanStateName)) return;
 
         if(data.monks){
             data.monks.forEach((monk, monkIndex)=>{
                 table.innerHTML += `
                 <tr>
                     <td>${monk.fullname || ''}</td>
-                    <td>${monk.alias || ''}</td> <td>${data.name || ''}</td>
+                    <td>${monk.alias || ''}</td>
+                    <td>${data.name || ''}</td>
                     <td>${data.state || ''}</td>
                     <td>${monk.passport || ''}</td>
                     <td style="text-align:center;">
