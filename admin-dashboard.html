@@ -371,19 +371,17 @@ onkeyup="searchMonk()">
 
 <table>
 
-<thead>
-
-<tr>
-
-<th>ชื่อ</th>
-<th>ฉายา</th>
-<th>วัด</th>
-<th>รัฐ</th>
-<th>IC / Passport</th>
-<th>จัดการ</th>
-
-</tr>
-
+<<thead>
+    <tr>
+        <th>ชื่อ</th>
+        <th>ฉายา</th>
+        <th>อายุ</th> 
+        <th>พรรษา</th> 
+        <th>วัด</th>
+        <th>รัฐ</th>
+        <th>IC / Passport</th>
+        <th>หมายเหตุ</th> <th>จัดการ</th>
+    </tr>
 </thead>
 
 <tbody id="monkTable">
@@ -695,37 +693,25 @@ if(data.monks){
 
 data.monks.forEach((monk, monkIndex)=>{
 
+/* แก้ไขในส่วน loop ที่สร้าง table.innerHTML */
 table.innerHTML += `
-
-<tr id="monk-row-${docItem.id}-${monkIndex}">
-
-<td>${monk.fullname || ''}</td>
-<td>${monk.alias || ''}</td>
-<td>${data.name || ''}</td>
-<td>${data.state || ''}</td>
-<td>${monk.passport || ''}</td>
-<td style="text-align:center;">
-  <button
-    onclick="deleteMonk('${docItem.id}', ${monkIndex})"
-    style="
-      border:none;
-      border-radius:12px;
-      padding:8px 18px;
-      background:#dc2626;
-      color:white;
-      font-weight:700;
-      font-size:14px;
-      cursor:pointer;
-      transition:.2s;
-    "
-    onmouseover="this.style.transform='translateY(-2px)'"
-    onmouseout="this.style.transform='translateY(0)'">
-    🗑️ ลบ
-  </button>
-</td>
-
+<tr>
+    <td>${monk.fullname || ''}</td>
+    <td>${monk.alias || ''}</td>
+    <td>${monk.age || ''}</td>
+    <td>${monk.pansa || ''}</td>
+    <td>${data.name || ''}</td>
+    <td>${data.state || ''}</td>
+    <td>${monk.passport || ''}</td>
+    <td>${monk.note || ''}</td> <td style="text-align:center;">
+        <button
+            onclick="deleteMonk('${docItem.id}', ${monkIndex})"
+            class="btn red" 
+            style="padding:8px 18px; font-size:14px;">
+            🗑️ ลบ
+        </button>
+    </td>
 </tr>
-
 `;
 
 });
