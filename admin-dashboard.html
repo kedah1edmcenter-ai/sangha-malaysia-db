@@ -113,8 +113,6 @@ td{
 
 <body>
 
-<!-- LOGIN -->
-
 <div
 id="loginPage"
 class="fixed inset-0 flex items-center justify-center bg-slate-900 z-50">
@@ -161,8 +159,6 @@ class="fixed inset-0 flex items-center justify-center bg-slate-900 z-50">
 
 </div>
 
-<!-- MAIN -->
-
 <div id="mainSystem" class="hidden">
 
 <header class="header-gradient text-white p-10 shadow-xl">
@@ -207,8 +203,6 @@ class="fixed inset-0 flex items-center justify-center bg-slate-900 z-50">
 </header>
 
 <main class="max-w-7xl mx-auto p-8 space-y-8">
-
-<!-- STAT -->
 
 <div class="grid md:grid-cols-4 gap-6">
 
@@ -268,8 +262,6 @@ class="fixed inset-0 flex items-center justify-center bg-slate-900 z-50">
 
 </div>
 
-<!-- REPORT -->
-
 <div class="card p-8">
 
 <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
@@ -304,7 +296,6 @@ class="fixed inset-0 flex items-center justify-center bg-slate-900 z-50">
 
         </button>
 
-        <!-- ✅ ปุ่มใหม่: นำออกข้อมูลพระไทย -->
         <button
         onclick="exportThaiMonksPopup()"
         class="btn gold">
@@ -338,8 +329,6 @@ class="fixed inset-0 flex items-center justify-center bg-slate-900 z-50">
 </table>
 
 </div>
-
-<!-- MONK LIST -->
 
 <div class="card p-8">
 
@@ -407,8 +396,6 @@ onkeyup="searchMonk()">
 
 </div>
 
-<!-- ADMIN -->
-
 <div class="card p-8">
 
 <div class="flex justify-between items-center mb-6">
@@ -417,13 +404,23 @@ onkeyup="searchMonk()">
 จัดการแอดมิน
 </h2>
 
-<button
-onclick="addAdmin()"
-class="btn blue">
+<div class="flex gap-3">
+    <button
+    onclick="deleteTemplePopup()"
+    class="btn red">
+    
+    🗑️ ลบรายชื่อวัด
+    
+    </button>
 
-➕ เพิ่มแอดมิน
+    <button
+    onclick="addAdmin()"
+    class="btn blue">
 
-</button>
+    ➕ เพิ่มแอดมิน
+
+    </button>
+</div>
 
 </div>
 
@@ -468,7 +465,8 @@ getDocs,
 addDoc,
 deleteDoc,
 doc,
-updateDoc
+updateDoc,
+getDoc
 }
 from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -750,9 +748,6 @@ if(!confirmDelete) return;
 
 try {
 
-// Import needed Firestore functions
-const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-
 const templeRef = doc(db, 'temples', templeDocId);
 const templeSnap = await getDoc(templeRef);
 
@@ -969,7 +964,7 @@ table.innerHTML += `
 <tr>
 
 <td>${monk.fullname || ''}</td>
-<td>${monk.nickname || ''}</td>
+<td>${monk.alias || ''}</td>
 <td>${data.name || ''}</td>
 <td>${data.state || ''}</td>
 <td>${monk.passport || ''}</td>
@@ -1156,7 +1151,7 @@ table.innerHTML += `
 <tr>
 
 <td>${monk.fullname || ''}</td>
-<td>${monk.nickname || ''}</td>
+<td>${monk.alias || ''}</td>
 <td>${data.name || ''}</td>
 <td>${data.state || ''}</td>
 <td>${monk.passport || ''}</td>
@@ -1456,7 +1451,6 @@ html
 /* ==========================================
    EXPORT THAI MONKS POPUP
    เงื่อนไข: สัญชาติไทย และ เชื้อชาติไทย
-   รูปแบบ: popup เลือก รัฐ / วัด
    ========================================== */
 
 window.exportThaiMonksPopup = function(){
@@ -1563,9 +1557,7 @@ overflow:auto;
 
 </div>
 
-<!-- เนื้อหาสำหรับเลือกรัฐ/วัด -->
 <div id="thaiExportContent">
-  <!-- เริ่มต้นโหมด all: ปุ่มดาวน์โหลดทันที -->
   <button
     onclick="doExportThaiAll()"
     style="
@@ -1605,15 +1597,12 @@ overflow:auto;
 `;
 
 document.body.insertAdjacentHTML('beforeend', html);
-
-// ฉีด states ไว้ใน window เพื่อใช้ใน setThaiExportMode
 window._thaiExportStates = states;
 
 }
 
 window.setThaiExportMode = async function(mode){
 
-// อัปเดต active button style
 ['all','state','temple'].forEach(m=>{
     const btn = document.getElementById('thaiMode' + m.charAt(0).toUpperCase() + m.slice(1));
     if(btn){
@@ -1626,241 +1615,67 @@ const content = document.getElementById('thaiExportContent');
 content.innerHTML = '';
 
 if(mode === 'all'){
-
-    content.innerHTML = `
-      <button
-        onclick="doExportThaiAll()"
-        style="
-          width:100%;
-          padding:22px;
-          border:none;
-          border-radius:18px;
-          background:#b45309;
-          color:white;
-          font-size:22px;
-          font-weight:800;
-          cursor:pointer;
-        ">
-        ⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)
-      </button>
-    `;
-
+    content.innerHTML = `<button onclick="doExportThaiAll()" style="width:100%;padding:22px;border:none;border-radius:18px;background:#b45309;color:white;font-size:22px;font-weight:800;cursor:pointer;">⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)</button>`;
 } else if(mode === 'state'){
-
     const states = window._thaiExportStates || [];
-    let html = '';
-
+    let h = '';
     states.forEach(state=>{
-        html += `
-          <button
-            onclick="doExportThaiByState('${state}')"
-            style="
-              width:100%;
-              padding:18px;
-              margin-bottom:12px;
-              border:none;
-              border-radius:16px;
-              background:#2563eb;
-              color:white;
-              font-size:19px;
-              font-weight:700;
-              cursor:pointer;
-            ">
-            ${state}
-          </button>
-        `;
+        h += `<button onclick="doExportThaiByState('${state}')" style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:16px;background:#2563eb;color:white;font-size:19px;font-weight:700;cursor:pointer;">${state}</button>`;
     });
-
-    content.innerHTML = html;
-
+    content.innerHTML = h;
 } else if(mode === 'temple'){
-
     const snapshot = await getDocs(collection(db,'temples'));
-    let html = '';
-
+    let h = '';
     snapshot.forEach(docItem=>{
         const data = docItem.data();
-        html += `
-          <button
-            onclick="doExportThaiByTemple('${docItem.id}')"
-            style="
-              width:100%;
-              padding:16px;
-              margin-bottom:10px;
-              border:none;
-              border-radius:16px;
-              background:#ea580c;
-              color:white;
-              font-size:18px;
-              font-weight:700;
-              text-align:left;
-              cursor:pointer;
-            ">
-            ${data.name || 'ไม่ระบุชื่อวัด'}
-          </button>
-        `;
+        h += `<button onclick="doExportThaiByTemple('${docItem.id}')" style="width:100%;padding:16px;margin-bottom:10px;border:none;border-radius:16px;background:#ea580c;color:white;font-size:18px;font-weight:700;text-align:left;cursor:pointer;">${data.name || 'ไม่ระบุชื่อวัด'}</button>`;
     });
-
-    content.innerHTML = html;
-
+    content.innerHTML = h;
 }
 
 }
 
-/* Export Thai All */
 window.doExportThaiAll = async function(){
-
 const snapshot = await getDocs(collection(db,'temples'));
 createThaiExcelReport(snapshot, 'รายชื่อพระไทย-ทั้งหมด', null, null);
 document.getElementById('thaiExportModal')?.remove();
-
 }
 
-/* Export Thai By State */
 window.doExportThaiByState = async function(stateName){
-
 const snapshot = await getDocs(collection(db,'temples'));
 createThaiExcelReport(snapshot, `รายชื่อพระไทย-${stateName}`, stateName, null);
 document.getElementById('thaiExportModal')?.remove();
-
 }
 
-/* Export Thai By Temple */
 window.doExportThaiByTemple = async function(templeId){
-
 const snapshot = await getDocs(collection(db,'temples'));
 createThaiExcelReport(snapshot, templeId, null, templeId);
 document.getElementById('thaiExportModal')?.remove();
-
 }
 
-/* ==========================================
-   CREATE THAI EXCEL REPORT
-   เงื่อนไข: nationality === 'ไทย' && race === 'ไทย'
-   ใช้รูปแบบแบบเดี้ยว (single sheet) เหมือน createExcelReport
-   ========================================== */
-
-function createThaiExcelReport(
-snapshot,
-fileName,
-stateFilter = null,
-templeIdFilter = null
-){
-
+function createThaiExcelReport(snapshot, fileName, stateFilter = null, templeIdFilter = null){
 const rows = [];
-
-rows.push([
-
-'ที่',
-'วัด',
-'ชื่อ/นามสกุล',
-'ฉายา',
-'อายุ',
-'พรรษา',
-'วิทยฐานะ',
-'ภูมิลำเนาเดิม',
-'สัญชาติ',
-'เชื้อชาติ',
-'IC/PASSPORT',
-'หมายเหตุ'
-
-]);
-
+rows.push(['ที่','วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ']);
 let no = 1;
-
 snapshot.forEach(docItem=>{
-
 const data = docItem.data();
-
-// กรองตามรัฐ
-if(stateFilter && data.state !== stateFilter){
-    return;
-}
-
-// กรองตามวัด (ใช้ doc id)
-if(templeIdFilter && docItem.id !== templeIdFilter){
-    return;
-}
-
+if(stateFilter && data.state !== stateFilter) return;
+if(templeIdFilter && docItem.id !== templeIdFilter) return;
 const monks = data.monks || [];
-
 monks.forEach((monk, index)=>{
-
-    // ✅ เงื่อนไข: สัญชาติไทย และ เชื้อชาติไทย
     const nat = (monk.nationality || '').trim();
     const race = (monk.race || '').trim();
-
-    if(nat !== 'ไทย' || race !== 'ไทย'){
-        return;
-    }
-
-    rows.push([
-
-        no,
-
-        index === 0
-        ? data.name || ''
-        : '',
-
-        monk.fullname || '',
-        monk.alias || '',
-        monk.age || '',
-        monk.pansa || '',
-        monk.education || '',
-        monk.origin || '',
-        monk.nationality || '',
-        monk.race || '',
-        monk.passport || '',
-        monk.note || ''
-
-    ]);
-
+    if(nat !== 'ไทย' || race !== 'ไทย') return;
+    rows.push([no, index === 0 ? data.name || '' : '', monk.fullname || '', monk.alias || '', monk.age || '', monk.pansa || '', monk.education || '', monk.origin || '', monk.nationality || '', monk.race || '', monk.passport || '', monk.note || '']);
     no++;
-
 });
-
 });
-
-// ถ้าไม่มีข้อมูล
-if(rows.length <= 1){
-    alert('⚠️ ไม่พบรายชื่อพระที่มีสัญชาติไทย และเชื้อชาติไทย ในเงื่อนไขที่เลือก');
-    return;
-}
-
-const ws =
-XLSX.utils.aoa_to_sheet(rows);
-
-ws['!cols'] = [
-
-{wch:8},
-{wch:30},
-{wch:30},
-{wch:20},
-{wch:10},
-{wch:10},
-{wch:30},
-{wch:35},
-{wch:15},
-{wch:15},
-{wch:25},
-{wch:30}
-
-];
-
-const wb =
-XLSX.utils.book_new();
-
-XLSX.utils.book_append_sheet(
-wb,
-ws,
-'รายชื่อพระไทย'
-);
-
-XLSX.writeFile(
-wb,
-`${fileName}.xlsx`
-);
-
+if(rows.length <= 1){ alert('⚠️ ไม่พบรายชื่อพระตามเงื่อนไขที่เลือก'); return; }
+const ws = XLSX.utils.aoa_to_sheet(rows);
+ws['!cols'] = [{wch:8},{wch:30},{wch:30},{wch:20},{wch:10},{wch:10},{wch:30},{wch:35},{wch:15},{wch:15},{wch:25},{wch:30}];
+const wb = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, 'รายชื่อพระไทย');
+XLSX.writeFile(wb, `${fileName}.xlsx`);
 }
 
 /* EXPORT STATE */
@@ -1899,7 +1714,7 @@ true
 
 }
 
-/* CREATE EXCEL (original, all monks) */
+/* CREATE EXCEL */
 
 function createExcelReport(
 snapshot,
@@ -2133,6 +1948,139 @@ doc(db,'admins',id)
 alert('✅ ลบแอดมินสำเร็จ');
 
 loadAdmins();
+
+}
+
+/* ✅ ฟังก์ชันลบวัดที่เพิ่มใหม่ (ตามจุดที่ 1 สีแดง) */
+
+window.deleteTemplePopup = async function(){
+
+const snapshot = await getDocs(collection(db,'temples'));
+
+let html = `
+
+<div
+id="deleteTempleModal"
+style="
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.6);
+z-index:99999;
+display:flex;
+justify-content:center;
+align-items:center;
+">
+
+<div
+style="
+width:650px;
+background:white;
+border-radius:30px;
+padding:35px;
+max-height:85vh;
+overflow:auto;
+">
+
+<h2 style="font-size:36px;font-weight:800;margin-bottom:10px;color:#dc2626;">
+  🗑️ ลบรายชื่อวัด
+</h2>
+<p style="color:#64748b;margin-bottom:25px;">
+  คำเตือน: การลบวัดจะทำให้ข้อมูลทั้งหมดของวัดและรายชื่อพระที่อยู่ในวัดนั้นหายไปถาวร
+</p>
+
+`;
+
+snapshot.forEach(docItem=>{
+
+const data = docItem.data();
+
+html += `
+
+<button
+
+onclick="confirmDeleteTemple('${docItem.id}', '${data.name}')"
+
+style="
+width:100%;
+padding:18px;
+margin-bottom:12px;
+border:none;
+border-radius:18px;
+background:#fee2e2;
+color:#dc2626;
+font-size:18px;
+font-weight:700;
+text-align:left;
+cursor:pointer;
+display:flex;
+justify-content:space-between;
+align-items:center;
+"
+
+>
+
+<span>${data.name || 'ไม่ระบุชื่อวัด'}</span>
+<span style="font-size:12px;background:#fca5a5;padding:4px 10px;border-radius:10px;">ลบข้อมูล</span>
+
+</button>
+
+`;
+
+});
+
+html += `
+
+<button
+
+onclick="
+document.getElementById('deleteTempleModal').remove();
+"
+
+style="
+width:100%;
+padding:18px;
+margin-top:10px;
+border:none;
+border-radius:18px;
+background:#e2e8f0;
+font-size:20px;
+font-weight:700;
+cursor:pointer;
+"
+
+>
+
+ปิดหน้าต่าง
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+document.body.insertAdjacentHTML('beforeend', html);
+
+}
+
+window.confirmDeleteTemple = async function(id, name){
+
+const check = confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบวัด "${name}" ? \n\n** ข้อมูลรายชื่อพระในวัดนี้ทั้งหมดจะหายไปด้วย **`);
+
+if(!check) return;
+
+try {
+    await deleteDoc(doc(db, 'temples', id));
+    alert('✅ ลบวัดสำเร็จ');
+    document.getElementById('deleteTempleModal').remove();
+    
+    // อัปเดตข้อมูลหน้าจอใหม่
+    await loadStatistics();
+    await loadMonks();
+} catch(e) {
+    alert('❌ เกิดข้อผิดพลาด: ' + e.message);
+}
 
 }
 
