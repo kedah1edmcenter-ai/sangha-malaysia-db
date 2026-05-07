@@ -918,14 +918,12 @@ window.filterByState = async function(stateName){
     const table = document.getElementById('monkTable');
     table.innerHTML = '';
 
-    // ตัดคำว่า "รัฐ" ออกจากชื่อที่ส่งมาจากปุ่ม (เช่น "รัฐเคดาห์" -> "เคดาห์")
     const cleanStateName = stateName.replace('รัฐ', '').trim();
 
     snapshot.forEach(docItem=>{
         const data = docItem.data();
         const dbState = (data.state || '').trim();
 
-        // ตรวจสอบว่าในฐานข้อมูลมีชื่อรัฐที่ตรงกัน (แบบไม่รวมคำว่ารัฐ) หรือไม่
         if(!dbState.includes(cleanStateName)) return;
 
         if(data.monks){
@@ -939,13 +937,8 @@ window.filterByState = async function(stateName){
                     <td>${data.name || ''}</td>
                     <td>${data.state || ''}</td>
                     <td>${monk.passport || ''}</td>
-                    <td>${monk.note || ''}</td>
-                    <td style="text-align:center;">
-                        <button
-                            onclick="deleteMonk('${docItem.id}', ${monkIndex})"
-                            style="border:none; border-radius:12px; padding:8px 18px; background:#dc2626; color:white; font-weight:700; font-size:14px; cursor:pointer;">
-                            🗑️ ลบ
-                        </button>
+                    <td>${monk.origin || ''}</td>     <td>${monk.education || ''}</td>  <td>${monk.note || ''}</td>       <td class="text-center">
+                        <button onclick="deleteMonk('${docItem.id}', ${monkIndex})" class="delete-btn">🗑️ ลบ</button>
                     </td>
                 </tr>
                 `;
@@ -1091,15 +1084,12 @@ window.filterByTemple = async function(templeName){
                 table.innerHTML += `
                 <tr>
                     <td>${monk.fullname || ''}</td>
-                    <td>${monk.alias || ''}</td> <td>${data.name || ''}</td>
+                    <td>${monk.alias || ''}</td>
+                    <td>${monk.age || ''}</td>        <td>${monk.pansa || ''}</td>      <td>${data.name || ''}</td>
                     <td>${data.state || ''}</td>
                     <td>${monk.passport || ''}</td>
-                    <td style="text-align:center;">
-                      <button
-                        onclick="deleteMonk('${docItem.id}', ${monkIndex})"
-                        style="border:none; border-radius:12px; padding:8px 18px; background:#dc2626; color:white; font-weight:700; font-size:14px; cursor:pointer;">
-                        🗑️ ลบ
-                      </button>
+                    <td>${monk.origin || ''}</td>     <td>${monk.education || ''}</td>  <td>${monk.note || ''}</td>       <td class="text-center">
+                      <button onclick="deleteMonk('${docItem.id}', ${monkIndex})" class="delete-btn">🗑️ ลบ</button>
                     </td>
                 </tr>
                 `;
