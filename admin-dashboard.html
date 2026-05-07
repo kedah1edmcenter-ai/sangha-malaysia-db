@@ -694,7 +694,7 @@ if(data.monks){
 
 data.monks.forEach((monk, monkIndex)=>{
 
-/* แก้ไขในส่วน loop ที่สร้าง table.innerHTML */
+/* แก้ไขในหน้า Dashboard ให้ตรงกับหน้าบันทึก */
 table.innerHTML += `
 <tr>
     <td>${monk.fullname || ''}</td>
@@ -704,12 +704,11 @@ table.innerHTML += `
     <td>${data.name || ''}</td>
     <td>${data.state || ''}</td>
     <td>${monk.passport || ''}</td>
-    <td>${monk.originalTemple || ''}</td> <td>${monk.education || ''}</td>      <td>${monk.note || ''}</td>
-    <td style="text-align:center;">
+    <td>${monk.origin || ''}</td>    <td>${monk.education || ''}</td>
+    <td>${monk.note || ''}</td>      <td style="text-align:center;">
         <button
             onclick="deleteMonk('${docItem.id}', ${monkIndex})"
-            class="btn red" 
-            style="padding:8px 18px; font-size:14px;">
+            style="border:none; border-radius:12px; padding:8px 18px; background:#dc2626; color:white; font-weight:700; font-size:14px; cursor:pointer;">
             🗑️ ลบ
         </button>
     </td>
