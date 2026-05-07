@@ -43,7 +43,6 @@ body {
     box-shadow: 0 0 0 4px rgba(34,197,94,.12);
 }
 
-/* ช่องขนาดเล็ก สำหรับ อายุ พรรษา เชื้อชาติ สัญชาติ */
 .input-sm {
     width: 100%;
     border: 1px solid #cbd5e1;
@@ -76,10 +75,10 @@ body {
     transform: translateY(-2px);
 }
 
-.add-btn  { background: #7c3aed; }
-.save-btn { background: #16a34a; }
-.check-btn{ background: #2563eb; }
-.edit-btn { background: #ea580c; }
+.add-btn    { background: #7c3aed; }
+.save-btn   { background: #16a34a; }
+.check-btn  { background: #2563eb; }
+.edit-btn   { background: #ea580c; }
 
 table {
     width: 100%;
@@ -116,7 +115,6 @@ td {
     overflow-x: auto;
 }
 
-/* Modal Overlay */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -242,7 +240,7 @@ td {
             </div>
         </div>
 
-        <!-- FORM แถวที่ 1: ชื่อ-นามสกุล | ฉายา | อายุ | พรรษา | เชื้อชาติ | สัญชาติ -->
+        <!-- FORM แถวที่ 1 -->
         <div class="flex gap-4 mb-4 items-end">
             <div style="flex:2.2; min-width:0;">
                 <input id="fullName" type="text" placeholder="ชื่อ/นามสกุล" class="input">
@@ -264,7 +262,7 @@ td {
             </div>
         </div>
 
-        <!-- FORM แถวที่ 2: IC/Passport | สังกัดเดิม | วิทยฐานะ | หมายเหตุ -->
+        <!-- FORM แถวที่ 2 -->
         <div class="flex gap-4 mb-6 items-end">
             <div style="flex:1.5; min-width:0;">
                 <input id="passport" type="text" placeholder="IC / Passport" class="input">
@@ -280,11 +278,11 @@ td {
             </div>
         </div>
 
-        <!-- BUTTON -->
+        <!-- BUTTON — 🔧 แก้ id ปุ่มไม่ให้ชนกัน -->
         <div class="flex flex-wrap gap-4 mb-8">
-            <button id="btnAdd"    class="btn add-btn">➕ เพิ่มรายชื่อ</button>
-            <button id="btnSearch" class="btn check-btn">🔍 ตรวจสอบข้อมูล</button>
-            <button id="btnEdit"   class="btn edit-btn">✏️ แก้ไขข้อมูล</button>
+            <button id="btnAdd"        class="btn add-btn">➕ เพิ่มรายชื่อ</button>
+            <button id="btnOpenSearch" class="btn check-btn">🔍 ตรวจสอบข้อมูล</button>
+            <button id="btnOpenEdit"   class="btn edit-btn">✏️ แก้ไขข้อมูล</button>
         </div>
 
         <!-- PREVIEW TABLE -->
@@ -309,10 +307,10 @@ td {
             </table>
         </div>
 
-        <!-- SAVE -->
+        <!-- SAVE — 🔧 แก้ id ปุ่มล่าง -->
         <div class="mt-8 grid md:grid-cols-2 gap-4">
-            <button id="btnSave"  class="btn save-btn">✅ ยืนยันบันทึกทั้งหมด</button>
-            <button id="btnCheck" class="btn check-btn">🔍 ตรวจสอบข้อมูลก่อนบันทึก</button>
+            <button id="btnSave"            class="btn save-btn">✅ ยืนยันบันทึกทั้งหมด</button>
+            <button id="btnCheckBeforeSave" class="btn check-btn">🔍 ตรวจสอบข้อมูลก่อนบันทึก</button>
         </div>
 
     </section>
@@ -342,7 +340,7 @@ td {
         <h2 class="text-3xl font-bold mb-2 text-slate-800">✏️ แก้ไขข้อมูลพระภิกษุรายบุคคล</h2>
         <p class="text-slate-500 mb-6">ค้นหาวัด → เลือกพระ → แก้ไขข้อมูล</p>
 
-        <!-- Step 1: ค้นหาวัด -->
+        <!-- Step 1 -->
         <div id="editStep1">
             <p class="font-bold text-slate-600 mb-3">ขั้นตอนที่ 1 — ค้นหาวัด</p>
             <div class="flex gap-3 mb-6">
@@ -352,7 +350,7 @@ td {
             <div id="editSearchResults"></div>
         </div>
 
-        <!-- Step 2: เลือกพระที่ต้องการแก้ไข -->
+        <!-- Step 2 -->
         <div id="editStep2" style="display:none;">
             <div class="mb-4 p-4 bg-orange-50 border border-orange-200 rounded-2xl flex justify-between items-center">
                 <p class="font-bold text-orange-700" id="editTempleNameLabel"></p>
@@ -362,7 +360,7 @@ td {
             <div id="editMonkSelectList"></div>
         </div>
 
-        <!-- Step 3: แก้ไขข้อมูลพระรายบุคคล -->
+        <!-- Step 3 -->
         <div id="editStep3" style="display:none;">
             <div class="mb-4 p-4 bg-orange-50 border border-orange-200 rounded-2xl flex justify-between items-center">
                 <p class="font-bold text-orange-700" id="editMonkLabel"></p>
@@ -558,7 +556,7 @@ function checkData(){
     );
 }
 
-/* ─── SEARCH (ตรวจสอบข้อมูลจาก Firestore) ─── */
+/* ─── SEARCH ─── */
 function openSearchModal(){
     document.getElementById('searchInput').value = '';
     document.getElementById('searchResults').innerHTML = '';
@@ -633,9 +631,9 @@ async function doSearch(){
     }
 }
 
-/* ─── EDIT — แก้ไขพระรายบุคคล ─── */
-let editingDocId  = null;
-let editingMonks  = [];
+/* ─── EDIT ─── */
+let editingDocId     = null;
+let editingMonks     = [];
 let editingMonkIndex = null;
 
 function openEditModal(){
@@ -685,7 +683,6 @@ async function doEditSearch(){
     }
 }
 
-/* Step 2: แสดงรายชื่อพระให้เลือก */
 function loadMonkSelectList(temple){
     editingDocId  = temple.id;
     editingMonks  = JSON.parse(JSON.stringify(temple.monks || []));
@@ -725,7 +722,6 @@ function loadMonkSelectList(temple){
     document.getElementById('editStep3').style.display = 'none';
 }
 
-/* Step 3: โหลดข้อมูลพระรูปที่เลือกลงฟอร์ม */
 function loadMonkEditForm(index){
     editingMonkIndex = index;
     const m = editingMonks[index];
@@ -748,7 +744,6 @@ function loadMonkEditForm(index){
     document.getElementById('editStep3').style.display = 'block';
 }
 
-/* บันทึกข้อมูลพระรายบุคคล → อัปเดต Firestore */
 async function saveEditData(){
     try {
         editingMonks[editingMonkIndex] = {
@@ -779,33 +774,32 @@ async function saveEditData(){
 }
 
 /* ─── WIRE UP ALL BUTTONS ─── */
-document.getElementById('btnAdd')       .addEventListener('click', addMonk);
-document.getElementById('btnSearch')    .addEventListener('click', openSearchModal);
-document.getElementById('btnEdit')      .addEventListener('click', openEditModal);
-document.getElementById('btnSave')      .addEventListener('click', saveAllData);
-document.getElementById('btnCheck')     .addEventListener('click', checkData);
+document.getElementById('btnAdd')            .addEventListener('click', addMonk);
+document.getElementById('btnOpenSearch')     .addEventListener('click', openSearchModal);
+document.getElementById('btnOpenEdit')       .addEventListener('click', openEditModal);
+document.getElementById('btnSave')           .addEventListener('click', saveAllData);
+document.getElementById('btnCheckBeforeSave').addEventListener('click', checkData);
 
-document.getElementById('closeSearch')  .addEventListener('click', () =>
+document.getElementById('closeSearch')       .addEventListener('click', () =>
     document.getElementById('modalSearch').classList.remove('active'));
-document.getElementById('btnDoSearch')  .addEventListener('click', doSearch);
-document.getElementById('searchInput')  .addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+document.getElementById('btnDoSearch')       .addEventListener('click', doSearch);
+document.getElementById('searchInput')       .addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
 
-document.getElementById('closeEdit')    .addEventListener('click', () =>
+document.getElementById('closeEdit')         .addEventListener('click', () =>
     document.getElementById('modalEdit').classList.remove('active'));
-document.getElementById('btnEditSearch').addEventListener('click', doEditSearch);
-document.getElementById('editSearchInput').addEventListener('keydown', e => { if(e.key==='Enter') doEditSearch(); });
-document.getElementById('btnSaveEdit')  .addEventListener('click', saveEditData);
-document.getElementById('btnBackToStep1').addEventListener('click', () => {
+document.getElementById('btnEditSearch')     .addEventListener('click', doEditSearch);
+document.getElementById('editSearchInput')   .addEventListener('keydown', e => { if(e.key==='Enter') doEditSearch(); });
+document.getElementById('btnSaveEdit')       .addEventListener('click', saveEditData);
+document.getElementById('btnBackToStep1')    .addEventListener('click', () => {
     document.getElementById('editStep1').style.display = 'block';
     document.getElementById('editStep2').style.display = 'none';
     document.getElementById('editStep3').style.display = 'none';
 });
-document.getElementById('btnBackToStep2').addEventListener('click', () => {
+document.getElementById('btnBackToStep2')    .addEventListener('click', () => {
     document.getElementById('editStep2').style.display = 'block';
     document.getElementById('editStep3').style.display = 'none';
 });
 
-/* ปิด modal เมื่อคลิก overlay */
 document.getElementById('modalSearch').addEventListener('click', function(e){
     if(e.target === this) this.classList.remove('active');
 });
