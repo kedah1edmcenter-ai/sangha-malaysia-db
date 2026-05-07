@@ -933,68 +933,38 @@ html
 }
 
 /* FILTER STATE */
-
 window.filterByState = async function(stateName){
+    const snapshot = await getDocs(collection(db,'temples'));
+    const table = document.getElementById('monkTable');
+    table.innerHTML = '';
 
-const snapshot =
-await getDocs(
-collection(db,'temples')
-);
+    snapshot.forEach(docItem=>{
+        const data = docItem.data();
+        
+        // ใช้ .trim() เพื่อให้เทียบข้อมูลได้แม่นยำขึ้น แม้จะมีเว้นวรรค
+        if((data.state || '').trim() !== stateName.trim()) return;
 
-const table =
-document.getElementById(
-'monkTable'
-);
-
-table.innerHTML = '';
-
-snapshot.forEach(docItem=>{
-
-const data = docItem.data();
-
-if(data.state !== stateName)
-return;
-
-if(data.monks){
-
-data.monks.forEach((monk, monkIndex)=>{
-
-table.innerHTML += `
-
-<tr>
-
-<td>${monk.fullname || ''}</td>
-<td>${monk.alias || ''}</td>
-<td>${data.name || ''}</td>
-<td>${data.state || ''}</td>
-<td>${monk.passport || ''}</td>
-<td style="text-align:center;">
-  <button
-    onclick="deleteMonk('${docItem.id}', ${monkIndex})"
-    style="
-      border:none;
-      border-radius:12px;
-      padding:8px 18px;
-      background:#dc2626;
-      color:white;
-      font-weight:700;
-      font-size:14px;
-      cursor:pointer;
-    ">
-    🗑️ ลบ
-  </button>
-</td>
-
-</tr>
-
-`;
-
-});
-
-}
-
-});
-
+        if(data.monks){
+            data.monks.forEach((monk, monkIndex)=>{
+                table.innerHTML += `
+                <tr>
+                    <td>${monk.fullname || ''}</td>
+                    <td>${monk.alias || ''}</td> <td>${data.name || ''}</td>
+                    <td>${data.state || ''}</td>
+                    <td>${monk.passport || ''}</td>
+                    <td style="text-align:center;">
+                      <button
+                        onclick="deleteMonk('${docItem.id}', ${monkIndex})"
+                        class="btn red" 
+                        style="padding:8px 18px; font-size:14px;">
+                        🗑️ ลบ
+                      </button>
+                    </td>
+                </tr>
+                `;
+            });
+        }
+    });
 }
 
 /* SELECT TEMPLE */
@@ -1120,68 +1090,35 @@ html
 }
 
 /* FILTER TEMPLE */
-
 window.filterByTemple = async function(templeName){
+    const snapshot = await getDocs(collection(db,'temples'));
+    const table = document.getElementById('monkTable');
+    table.innerHTML = '';
 
-const snapshot =
-await getDocs(
-collection(db,'temples')
-);
+    snapshot.forEach(docItem=>{
+        const data = docItem.data();
+        if((data.name || '').trim() !== templeName.trim()) return;
 
-const table =
-document.getElementById(
-'monkTable'
-);
-
-table.innerHTML = '';
-
-snapshot.forEach(docItem=>{
-
-const data = docItem.data();
-
-if(data.name !== templeName)
-return;
-
-if(data.monks){
-
-data.monks.forEach((monk, monkIndex)=>{
-
-table.innerHTML += `
-
-<tr>
-
-<td>${monk.fullname || ''}</td>
-<td>${monk.alias || ''}</td>
-<td>${data.name || ''}</td>
-<td>${data.state || ''}</td>
-<td>${monk.passport || ''}</td>
-<td style="text-align:center;">
-  <button
-    onclick="deleteMonk('${docItem.id}', ${monkIndex})"
-    style="
-      border:none;
-      border-radius:12px;
-      padding:8px 18px;
-      background:#dc2626;
-      color:white;
-      font-weight:700;
-      font-size:14px;
-      cursor:pointer;
-    ">
-    🗑️ ลบ
-  </button>
-</td>
-
-</tr>
-
-`;
-
-});
-
-}
-
-});
-
+        if(data.monks){
+            data.monks.forEach((monk, monkIndex)=>{
+                table.innerHTML += `
+                <tr>
+                    <td>${monk.fullname || ''}</td>
+                    <td>${monk.alias || ''}</td> <td>${data.name || ''}</td>
+                    <td>${data.state || ''}</td>
+                    <td>${monk.passport || ''}</td>
+                    <td style="text-align:center;">
+                      <button
+                        onclick="deleteMonk('${docItem.id}', ${monkIndex})"
+                        style="border:none; border-radius:12px; padding:8px 18px; background:#dc2626; color:white; font-weight:700; font-size:14px; cursor:pointer;">
+                        🗑️ ลบ
+                      </button>
+                    </td>
+                </tr>
+                `;
+            });
+        }
+    });
 }
 
 /* EXPORT ALL */
