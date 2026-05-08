@@ -507,7 +507,8 @@ function addMonk(){
         passport    : document.getElementById('passport').value,
         origin      : document.getElementById('origin').value,
         education   : document.getElementById('education').value,
-        note        : document.getElementById('remark').value
+        note        : document.getElementById('remark').value,
+        createdAt   : new Date().toISOString()  // ← เพิ่มตรงนี้
     };
     monkData.push(monk);
     renderTable();
@@ -593,14 +594,9 @@ async function saveAllData(){
             ];
 
             await updateDoc(doc(db, 'temples', existingId), {
-
                 name: templeName,
-
                 address: templeAddress,
-
-                monks: mergedMonks,
-
-                updatedAt: new Date()
+                monks: mergedMonks      // ← แต่ละ monk มี createdAt ของตัวเอง
             });
             alert('✅ อัปเดตข้อมูลสำเร็จ');
         } else {
@@ -943,6 +939,8 @@ function loadMonkEditForm(index){
 /* บันทึกข้อมูลพระรายบุคคล → อัปเดต Firestore */
 async function saveEditData(){
     try {
+        const oldCreatedAt = editingMonks[editingMonkIndex].createdAt; // ← เก็บเวลาเดิม
+
         editingMonks[editingMonkIndex] = {
             fullname    : document.getElementById('eFullName') .value.trim(),
             alias       : document.getElementById('eAlias')    .value.trim(),
@@ -953,12 +951,13 @@ async function saveEditData(){
             passport    : document.getElementById('ePassport') .value.trim(),
             origin      : document.getElementById('eOrigin')   .value.trim(),
             education   : document.getElementById('eEducation').value.trim(),
-            note        : document.getElementById('eRemark')   .value.trim()
+            note        : document.getElementById('eRemark')   .value.trim(),
+            createdAt   : oldCreatedAt || new Date().toISOString() // ← คืนเวลาเดิม
         };
 
         await updateDoc(doc(db, 'temples', editingDocId), {
-            monks: editingMonks,
-            updatedAt: new Date()
+            monks: editingMonks
+            // ไม่ใส่ updatedAt ที่ document level
         });
 
         alert('✅ บันทึกข้อมูลพระเรียบร้อยแล้ว');
