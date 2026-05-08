@@ -194,12 +194,15 @@ td{
                     <th>ฉายา</th>
                     <th>อายุ</th>
                     <th>พรรษา</th>
-                    <th>วัด</th>
+                    <!-- ✅ แก้: รวมชื่อวัด + ที่อยู่วัด -->
+                    <th>วัด / ที่อยู่</th>
                     <th>รัฐ</th>
                     <th>IC / Passport</th>
                     <th>ภูมิลำเนา/สังกัดเดิม</th>
                     <th>วิทยฐานะ</th>
                     <th>หมายเหตุ</th>
+                    <!-- ✅ เพิ่ม: คอลัมน์วันเวลาบันทึก -->
+                    <th>วัน/เวลาบันทึก</th>
                     <th>จัดการ</th>
                 </tr>
             </thead>
@@ -254,6 +257,32 @@ const db  = getFirestore(app);
 
 const developerUser = "sirichai";
 const developerPass = "Sb270887";
+
+/* ─── HELPER: รวมชื่อวัด + ที่อยู่ ─── */
+// ✅ ฟังก์ชันกลางสำหรับสร้าง "ชื่อวัด ที่อยู่"
+function templeFullName(data){
+    const name    = (data.name    || '').trim();
+    const address = (data.address || '').trim();
+    if(name && address) return `${name} ${address}`;
+    return name || address || '';
+}
+
+/* ─── HELPER: แปลง Timestamp เป็น วัน/เวลา ─── */
+// ✅ รองรับ Firestore Timestamp object และ JS Date
+function formatDateTime(val){
+    if(!val) return '-';
+    let d;
+    if(val && typeof val.toDate === 'function'){
+        d = val.toDate();          // Firestore Timestamp
+    } else if(val instanceof Date){
+        d = val;
+    } else {
+        d = new Date(val);
+    }
+    if(isNaN(d)) return '-';
+    const pad = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 /* ─── LOGIN ─── */
 window.loginAdmin = async function(){
@@ -335,22 +364,7 @@ async function loadMonks(){
         const data = docItem.data();
         if(data.monks){
             data.monks.forEach((monk, monkIndex)=>{
-                table.innerHTML += `
-                <tr>
-                    <td>${monk.fullname  || ''}</td>
-                    <td>${monk.alias     || ''}</td>
-                    <td>${monk.age       || ''}</td>
-                    <td>${monk.pansa     || ''}</td>
-                    <td>${data.name      || ''}</td>
-                    <td>${data.state     || ''}</td>
-                    <td>${monk.passport  || ''}</td>
-                    <td>${monk.origin    || ''}</td>
-                    <td>${monk.education || ''}</td>
-                    <td>${monk.note      || ''}</td>
-                    <td>
-                        <button onclick="deleteMonk('${docItem.id}', ${monkIndex})" class="delete-btn">🗑️ ลบ</button>
-                    </td>
-                </tr>`;
+                table.innerHTML += buildMonkRow(monk, data, docItem.id, monkIndex);
             });
         }
     });
@@ -401,13 +415,11 @@ window.filterByState = async function(stateName){
     const snapshot = await getDocs(collection(db,'temples'));
     const table    = document.getElementById('monkTable');
     table.innerHTML = '';
-
-    // 🔧 แก้: เอา "รัฐ" ออกก่อน match กับ data.state ที่เก็บแค่ชื่อรัฐ
     const cleanName = stateName.replace('รัฐ','').trim();
 
     snapshot.forEach(docItem=>{
-        const data     = docItem.data();
-        const dbState  = (data.state || '').trim();
+        const data    = docItem.data();
+        const dbState = (data.state || '').trim();
         if(!dbState.includes(cleanName)) return;
 
         if(data.monks){
@@ -452,19 +464,48 @@ window.filterByTemple = async function(templeDocId){
 /* ─── EXPORT ALL ─── */
 window.exportAllReport = async function(){
     const snapshot = await getDocs(collection(db,'temples'));
-    createExcelReport(snapshot, 'รายงานรวมทั้งหมด');
+    createExcelReport(snapshot, 'รายงานรวมทั้งหมด', null, null);
 }
 
 /* ─── EXPORT STATE POPUP ─── */
-window.exportStatePopup = function(){
-    const states = ['รัฐเคดาห์','รัฐเปอร์ลิส','รัฐปีนัง','รัฐเปรัก','รัฐสลังงอร์','รัฐยะโฮร์','รัฐกลันตันและตรังกานู'];
-    let html = buildModalStart('exportStateModal','🗺️ ดาวน์โหลดแบบรัฐ','550px');
-    states.forEach(state=>{
-        html += `<button onclick="exportByState('${state}');document.getElementById('exportStateModal').remove()"
-        style="width:100%;padding:20px;margin-bottom:14px;border:none;border-radius:18px;background:#2563eb;color:white;font-size:22px;font-weight:700;cursor:pointer;">${state}</button>`;
+// ✅ ดึง state จริงจาก Firestore ไม่ใช้ list คงที่
+window.exportStatePopup = async function(){
+    const snapshot = await getDocs(collection(db,'temples'));
+    const stateMap = {};
+
+    snapshot.forEach(docItem=>{
+        const data  = docItem.data();
+        const state = (data.state || '-').trim();
+        if(!stateMap[state]) stateMap[state] = [];
+        stateMap[state].push(docItem);
+    });
+
+    const stateNames = Object.keys(stateMap);
+    if(stateNames.length === 0){ alert('⚠️ ไม่พบข้อมูลรัฐในฐานข้อมูล'); return; }
+
+    let html = buildModalStart('exportStateModal','🗺️ ดาวน์โหลดแบบรัฐ','600px');
+    stateNames.forEach(state=>{
+        const monkCount = stateMap[state].reduce((sum,d)=>sum+(d.data().monks?d.data().monks.length:0),0);
+        html += `
+        <button onclick="exportByExactState(this)" data-state="${state.replace(/"/g,'&quot;')}" data-modalid="exportStateModal"
+        style="width:100%;padding:20px;margin-bottom:14px;border:none;border-radius:18px;background:#2563eb;color:white;font-size:20px;font-weight:700;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;">
+        <span>📍 ${state}</span>
+        <span style="font-size:14px;background:rgba(255,255,255,.25);padding:4px 12px;border-radius:10px;">${stateMap[state].length} วัด · ${monkCount} รูป</span>
+        </button>`;
     });
     html += buildModalEnd('exportStateModal');
     document.body.insertAdjacentHTML('beforeend', html);
+}
+
+/* ─── EXPORT BY EXACT STATE ─── */
+// ✅ match exactState จาก DB โดยตรง ไม่ต้องตัด "รัฐ"
+window.exportByExactState = async function(btn){
+    const exactState = btn.getAttribute('data-state');
+    const modalId    = btn.getAttribute('data-modalid');
+    document.getElementById(modalId)?.remove();
+
+    const snapshot = await getDocs(collection(db,'temples'));
+    createExcelReport(snapshot, exactState, exactState, null);
 }
 
 /* ─── EXPORT TEMPLE POPUP ─── */
@@ -473,7 +514,6 @@ window.exportTemplePopup = async function(){
     let html = buildModalStart('exportTempleModal','🛕 ดาวน์โหลดแบบวัด','650px');
     snapshot.forEach(docItem=>{
         const data = docItem.data();
-        // 🔧 แก้: ส่ง docItem.id ไปตรงๆ ไม่ใช่ชื่อวัด
         html += `<button onclick="exportByTemple('${docItem.id}','${(data.name||'วัด').replace(/'/g,'')}');document.getElementById('exportTempleModal').remove()"
         style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:18px;background:#ea580c;color:white;font-size:20px;font-weight:700;text-align:left;cursor:pointer;">
         ${data.name || 'ไม่ระบุชื่อวัด'}</button>`;
@@ -482,42 +522,36 @@ window.exportTemplePopup = async function(){
     document.body.insertAdjacentHTML('beforeend', html);
 }
 
-/* ─── EXPORT BY STATE ─── */
-// 🔧 แก้: เอา "รัฐ" ออกก่อน match เหมือน filterByState
-window.exportByState = async function(stateName){
-    const snapshot  = await getDocs(collection(db,'temples'));
-    const cleanName = stateName.replace('รัฐ','').trim();
-    createExcelReport(snapshot, stateName, cleanName, null);
-}
-
 /* ─── EXPORT BY TEMPLE ─── */
-// 🔧 แก้: รับ templeDocId และ templeName แยกกัน ไม่ปนกัน
 window.exportByTemple = async function(templeDocId, templeName){
     const snapshot = await getDocs(collection(db,'temples'));
     createExcelReport(snapshot, templeName || templeDocId, null, templeDocId);
 }
 
 /* ─── CREATE EXCEL REPORT ─── */
-// 🔧 แก้: แยก param ชัดเจน stateFilter = cleanName (ไม่มี "รัฐ"), templeIdFilter = docId
+// ✅ คอลัมน์ "วัด" = ชื่อวัด + ที่อยู่วัด รวมกัน
 function createExcelReport(snapshot, fileName, stateFilter = null, templeIdFilter = null){
-    const rows = [['ที่','วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ']];
+    const rows = [['ที่','วัด / ที่อยู่วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ','วัน/เวลาบันทึก']];
     let no = 1;
 
     snapshot.forEach(docItem=>{
-        const data     = docItem.data();
-        const dbState  = (data.state || '').trim();
+        const data    = docItem.data();
+        const dbState = (data.state || '').trim();
 
-        // 🔧 filter รัฐ: ตรวจว่า dbState มี cleanName อยู่ไหม
-        if(stateFilter && !dbState.includes(stateFilter)) return;
+        // filter รัฐ: exact match
+        if(stateFilter    && dbState !== stateFilter)        return;
+        // filter วัด: doc ID
+        if(templeIdFilter && docItem.id !== templeIdFilter)  return;
 
-        // 🔧 filter วัด: ตรวจ doc ID ตรงๆ
-        if(templeIdFilter && docItem.id !== templeIdFilter) return;
+        // ✅ รวมชื่อวัด + ที่อยู่วัด
+        const templeLabel = templeFullName(data);
 
         const monks = data.monks || [];
         monks.forEach((monk, index)=>{
             rows.push([
                 no,
-                index === 0 ? data.name || '' : '',
+                // แสดงชื่อวัด+ที่อยู่เฉพาะแถวแรกของวัดนั้น
+                index === 0 ? templeLabel : '',
                 monk.fullname    || '',
                 monk.alias       || '',
                 monk.age         || '',
@@ -527,7 +561,9 @@ function createExcelReport(snapshot, fileName, stateFilter = null, templeIdFilte
                 monk.nationality || '',
                 monk.race        || '',
                 monk.passport    || '',
-                monk.note        || ''
+                monk.note        || '',
+                // ✅ วัน/เวลาบันทึก: ดึงจาก monk.createdAt หรือ data.createdAt หรือ data.updatedAt
+                formatDateTime(monk.createdAt || data.updatedAt || data.createdAt)
             ]);
             no++;
         });
@@ -536,7 +572,7 @@ function createExcelReport(snapshot, fileName, stateFilter = null, templeIdFilte
     if(rows.length <= 1){ alert('⚠️ ไม่พบข้อมูลในรัฐ/วัดที่เลือก'); return; }
 
     const ws = XLSX.utils.aoa_to_sheet(rows);
-    ws['!cols'] = [{wch:8},{wch:30},{wch:30},{wch:20},{wch:10},{wch:10},{wch:30},{wch:35},{wch:15},{wch:15},{wch:25},{wch:30}];
+    ws['!cols'] = [{wch:6},{wch:40},{wch:30},{wch:20},{wch:8},{wch:8},{wch:28},{wch:35},{wch:12},{wch:12},{wch:22},{wch:28},{wch:20}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'รายงาน');
     XLSX.writeFile(wb, `${fileName}.xlsx`);
@@ -544,7 +580,6 @@ function createExcelReport(snapshot, fileName, stateFilter = null, templeIdFilte
 
 /* ─── EXPORT THAI MONKS POPUP ─── */
 window.exportThaiMonksPopup = function(){
-    const states = ['รัฐเคดาห์','รัฐเปอร์ลิส','รัฐปีนัง','รัฐเปรัก','รัฐสลังงอร์','รัฐยะโฮร์','รัฐกลันตันและตรังกานู'];
 
     const html = `
     <div id="thaiExportModal" style="position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:99999;display:flex;justify-content:center;align-items:center;">
@@ -568,7 +603,6 @@ window.exportThaiMonksPopup = function(){
     </div>`;
 
     document.body.insertAdjacentHTML('beforeend', html);
-    window._thaiExportStates = states;
 }
 
 window.setThaiExportMode = async function(mode){
@@ -582,12 +616,18 @@ window.setThaiExportMode = async function(mode){
 
     if(mode === 'all'){
         content.innerHTML = `<button onclick="doExportThaiAll()" style="width:100%;padding:22px;border:none;border-radius:18px;background:#b45309;color:white;font-size:22px;font-weight:800;cursor:pointer;">⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)</button>`;
+
     } else if(mode === 'state'){
+        // ✅ ดึง state จริงจาก DB
+        const snapshot = await getDocs(collection(db,'temples'));
+        const stateSet = new Set();
+        snapshot.forEach(d=>{ const s=(d.data().state||'').trim(); if(s) stateSet.add(s); });
         let h = '';
-        (window._thaiExportStates||[]).forEach(state=>{
-            h += `<button onclick="doExportThaiByState('${state}')" style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:16px;background:#2563eb;color:white;font-size:19px;font-weight:700;cursor:pointer;">${state}</button>`;
+        stateSet.forEach(state=>{
+            h += `<button onclick="doExportThaiByExactState('${state.replace(/'/g,'')}')" style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:16px;background:#2563eb;color:white;font-size:19px;font-weight:700;cursor:pointer;">${state}</button>`;
         });
         content.innerHTML = h;
+
     } else if(mode === 'temple'){
         const snapshot = await getDocs(collection(db,'temples'));
         let h = '';
@@ -605,11 +645,9 @@ window.doExportThaiAll = async function(){
     document.getElementById('thaiExportModal')?.remove();
 }
 
-window.doExportThaiByState = async function(stateName){
-    const snapshot  = await getDocs(collection(db,'temples'));
-    // 🔧 แก้: ส่ง cleanName เหมือนกัน
-    const cleanName = stateName.replace('รัฐ','').trim();
-    createThaiExcelReport(snapshot,`รายชื่อพระไทย-${stateName}`,cleanName,null);
+window.doExportThaiByExactState = async function(exactState){
+    const snapshot = await getDocs(collection(db,'temples'));
+    createThaiExcelReport(snapshot,`รายชื่อพระไทย-${exactState}`,exactState,null);
     document.getElementById('thaiExportModal')?.remove();
 }
 
@@ -619,23 +657,40 @@ window.doExportThaiByTemple = async function(templeDocId, templeName){
     document.getElementById('thaiExportModal')?.remove();
 }
 
+// ✅ Thai export ก็รวมชื่อวัด + ที่อยู่ และมีคอลัมน์ วัน/เวลาบันทึก
 function createThaiExcelReport(snapshot, fileName, stateFilter=null, templeIdFilter=null){
-    const rows = [['ที่','วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ']];
+    const rows = [['ที่','วัด / ที่อยู่วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ','วัน/เวลาบันทึก']];
     let no = 1;
 
     snapshot.forEach(docItem=>{
         const data    = docItem.data();
         const dbState = (data.state || '').trim();
 
-        if(stateFilter    && !dbState.includes(stateFilter)) return;
+        if(stateFilter    && dbState !== stateFilter)        return;
         if(templeIdFilter && docItem.id !== templeIdFilter)  return;
+
+        const templeLabel = templeFullName(data);
 
         (data.monks||[]).forEach((monk, index)=>{
             const nat  = (monk.nationality||'').trim();
             const race = (monk.race||'').trim();
             if(nat !== 'ไทย' || race !== 'ไทย') return;
 
-            rows.push([no, index===0 ? data.name||'' : '', monk.fullname||'', monk.alias||'', monk.age||'', monk.pansa||'', monk.education||'', monk.origin||'', monk.nationality||'', monk.race||'', monk.passport||'', monk.note||'']);
+            rows.push([
+                no,
+                index===0 ? templeLabel : '',
+                monk.fullname    || '',
+                monk.alias       || '',
+                monk.age         || '',
+                monk.pansa       || '',
+                monk.education   || '',
+                monk.origin      || '',
+                monk.nationality || '',
+                monk.race        || '',
+                monk.passport    || '',
+                monk.note        || '',
+                formatDateTime(monk.createdAt || data.updatedAt || data.createdAt)
+            ]);
             no++;
         });
     });
@@ -643,7 +698,7 @@ function createThaiExcelReport(snapshot, fileName, stateFilter=null, templeIdFil
     if(rows.length <= 1){ alert('⚠️ ไม่พบรายชื่อพระตามเงื่อนไขที่เลือก'); return; }
 
     const ws = XLSX.utils.aoa_to_sheet(rows);
-    ws['!cols'] = [{wch:8},{wch:30},{wch:30},{wch:20},{wch:10},{wch:10},{wch:30},{wch:35},{wch:15},{wch:15},{wch:25},{wch:30}];
+    ws['!cols'] = [{wch:6},{wch:40},{wch:30},{wch:20},{wch:8},{wch:8},{wch:28},{wch:35},{wch:12},{wch:12},{wch:22},{wch:28},{wch:20}];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'รายชื่อพระไทย');
     XLSX.writeFile(wb, `${fileName}.xlsx`);
@@ -736,19 +791,24 @@ window.confirmDeleteTemple = async function(id, name){
 window.logout = function(){ location.reload(); }
 
 /* ─── HELPERS ─── */
+
+// ✅ buildMonkRow: แสดง ชื่อวัด + ที่อยู่ รวมกัน และมีคอลัมน์วัน/เวลาบันทึก
 function buildMonkRow(monk, data, docId, idx){
+    const templeLabel = templeFullName(data);
+    const savedAt     = formatDateTime(monk.createdAt || data.updatedAt || data.createdAt);
     return `
     <tr>
         <td>${monk.fullname  ||''}</td>
         <td>${monk.alias     ||''}</td>
         <td>${monk.age       ||''}</td>
         <td>${monk.pansa     ||''}</td>
-        <td>${data.name      ||''}</td>
+        <td style="font-size:13px;">${templeLabel}</td>
         <td>${data.state     ||''}</td>
         <td>${monk.passport  ||''}</td>
         <td>${monk.origin    ||''}</td>
         <td>${monk.education ||''}</td>
         <td>${monk.note      ||''}</td>
+        <td style="font-size:13px;color:#64748b;white-space:nowrap;">${savedAt}</td>
         <td><button onclick="deleteMonk('${docId}',${idx})" class="delete-btn">🗑️ ลบ</button></td>
     </tr>`;
 }
