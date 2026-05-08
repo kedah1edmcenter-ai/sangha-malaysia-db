@@ -22,12 +22,7 @@ body{
 }
 
 .header-gradient{
-    background:
-    linear-gradient(
-        135deg,
-        #7c2d12 0%,
-        #ea580c 100%
-    );
+    background:linear-gradient(135deg,#7c2d12 0%,#ea580c 100%);
 }
 
 .card{
@@ -50,29 +45,12 @@ body{
     transform:translateY(-2px);
 }
 
-.blue{
-    background:#2563eb;
-}
-
-.green{
-    background:#16a34a;
-}
-
-.red{
-    background:#dc2626;
-}
-
-.orange{
-    background:#ea580c;
-}
-
-.purple{
-    background:#7c3aed;
-}
-
-.gold{
-    background:#b45309;
-}
+.blue  { background:#2563eb; }
+.green { background:#16a34a; }
+.red   { background:#dc2626; }
+.orange{ background:#ea580c; }
+.purple{ background:#7c3aed; }
+.gold  { background:#b45309; }
 
 table{
     width:100%;
@@ -100,11 +78,23 @@ td{
     border:1px solid #cbd5e1;
     outline:none;
     font-size:16px;
+    font-family:'Sarabun',sans-serif;
 }
 
 .input:focus{
     border-color:#ea580c;
     box-shadow:0 0 0 4px rgba(234,88,12,.1);
+}
+
+.delete-btn{
+    background:#dc2626;
+    color:white;
+    border:none;
+    padding:8px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+    font-family:'Sarabun',sans-serif;
 }
 
 </style>
@@ -113,1897 +103,666 @@ td{
 
 <body>
 
-<div
-id="loginPage"
-class="fixed inset-0 flex items-center justify-center bg-slate-900 z-50">
-
+<div id="loginPage" class="fixed inset-0 flex items-center justify-center bg-slate-900 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-10 w-[420px]">
-
         <div class="text-center mb-8">
-
-            <div class="text-6xl mb-3">
-                🔐
-            </div>
-
-            <h1 class="text-3xl font-bold text-slate-800">
-                ADMIN LOGIN
-            </h1>
-
+            <div class="text-6xl mb-3">🔐</div>
+            <h1 class="text-3xl font-bold text-slate-800">ADMIN LOGIN</h1>
         </div>
-
         <div class="space-y-5">
-
-            <input
-            type="text"
-            id="loginUser"
-            class="input"
-            placeholder="Username">
-
-            <input
-            type="password"
-            id="loginPass"
-            class="input"
-            placeholder="Password">
-
-            <button
-            onclick="loginAdmin()"
-            class="btn orange w-full text-lg">
-
-                เข้าสู่ระบบ
-
-            </button>
-
+            <input type="text" id="loginUser" class="input" placeholder="Username">
+            <input type="password" id="loginPass" class="input" placeholder="Password">
+            <button onclick="loginAdmin()" class="btn orange w-full text-lg">เข้าสู่ระบบ</button>
         </div>
-
     </div>
-
 </div>
 
 <div id="mainSystem" class="hidden">
 
 <header class="header-gradient text-white p-10 shadow-xl">
-
     <div class="max-w-7xl mx-auto">
-
         <div class="flex justify-between items-center">
-
             <div>
-
-                <h1 class="text-4xl font-bold">
-                    ระบบแอดมินกลางคณะสงฆ์มาเลเซีย
-                </h1>
-
-                <p class="text-orange-100 mt-3 text-xl">
-                    Sangha Malaysia Central Admin System
-                </p>
-
+                <h1 class="text-4xl font-bold">ระบบแอดมินกลางคณะสงฆ์มาเลเซีย</h1>
+                <p class="text-orange-100 mt-3 text-xl">Sangha Malaysia Central Admin System</p>
             </div>
-
             <div class="text-right">
-
-                <div
-                id="adminName"
-                class="font-bold text-xl">
-                </div>
-
-                <button
-                onclick="logout()"
-                class="mt-3 bg-white/20 px-5 py-2 rounded-xl hover:bg-white/30">
-
-                    ออกจากระบบ
-
-                </button>
-
+                <div id="adminName" class="font-bold text-xl"></div>
+                <button onclick="logout()" class="mt-3 bg-white/20 px-5 py-2 rounded-xl hover:bg-white/30">ออกจากระบบ</button>
             </div>
-
         </div>
-
     </div>
-
 </header>
 
 <main class="max-w-7xl mx-auto p-8 space-y-8">
 
 <div class="grid md:grid-cols-4 gap-6">
-
     <div class="card p-6">
-
-        <div class="text-slate-500">
-            จำนวนวัดทั้งหมด
-        </div>
-
-        <div
-        id="totalTemples"
-        class="text-5xl font-bold mt-3 text-orange-600">
-            0
-        </div>
-
+        <div class="text-slate-500">จำนวนวัดทั้งหมด</div>
+        <div id="totalTemples" class="text-5xl font-bold mt-3 text-orange-600">0</div>
     </div>
-
     <div class="card p-6">
-
-        <div class="text-slate-500">
-            จำนวนพระทั้งหมด
-        </div>
-
-        <div
-        id="totalMonks"
-        class="text-5xl font-bold mt-3 text-green-600">
-            0
-        </div>
-
+        <div class="text-slate-500">จำนวนพระทั้งหมด</div>
+        <div id="totalMonks" class="text-5xl font-bold mt-3 text-green-600">0</div>
     </div>
-
     <div class="card p-6">
-
-        <div class="text-slate-500">
-            จำนวนรัฐ
-        </div>
-
-        <div class="text-5xl font-bold mt-3 text-blue-600">
-            7
-        </div>
-
+        <div class="text-slate-500">จำนวนรัฐ</div>
+        <div class="text-5xl font-bold mt-3 text-blue-600">7</div>
     </div>
-
     <div class="card p-6">
-
-        <div class="text-slate-500">
-            จำนวนแอดมิน
-        </div>
-
-        <div
-        id="totalAdmins"
-        class="text-5xl font-bold mt-3 text-purple-600">
-            0
-        </div>
-
+        <div class="text-slate-500">จำนวนแอดมิน</div>
+        <div id="totalAdmins" class="text-5xl font-bold mt-3 text-purple-600">0</div>
     </div>
-
 </div>
 
 <div class="card p-8">
-
-<div class="flex justify-between items-center mb-6 flex-wrap gap-3">
-
-    <h2 class="text-3xl font-bold text-slate-800">
-        รายงานแยกรัฐ
-    </h2>
-
-    <div class="flex gap-3 flex-wrap">
-
-        <button
-        onclick="exportAllReport()"
-        class="btn green">
-
-            📦 Export รวมทั้งหมด
-
-        </button>
-
-        <button
-        onclick="exportStatePopup()"
-        class="btn blue">
-
-            🗺️ ดาวน์โหลดแบบรัฐ
-
-        </button>
-
-        <button
-        onclick="exportTemplePopup()"
-        class="btn orange">
-
-            🛕 ดาวน์โหลดแบบวัด
-
-        </button>
-
-        <button
-        onclick="exportThaiMonksPopup()"
-        class="btn gold">
-
-            🇹🇭 นำออกข้อมูลพระไทย
-
-        </button>
-
+    <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
+        <h2 class="text-3xl font-bold text-slate-800">รายงานแยกรัฐ</h2>
+        <div class="flex gap-3 flex-wrap">
+            <button onclick="exportAllReport()" class="btn green">📦 Export รวมทั้งหมด</button>
+            <button onclick="exportStatePopup()" class="btn blue">🗺️ ดาวน์โหลดแบบรัฐ</button>
+            <button onclick="exportTemplePopup()" class="btn orange">🛕 ดาวน์โหลดแบบวัด</button>
+            <button onclick="exportThaiMonksPopup()" class="btn gold">🇹🇭 นำออกข้อมูลพระไทย</button>
+        </div>
     </div>
-
-</div>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>รัฐ</th>
-<th>จำนวนวัด</th>
-<th>จำนวนพระ</th>
-
-</tr>
-
-</thead>
-
-<tbody id="stateTable">
-
-</tbody>
-
-</table>
-
+    <table>
+        <thead>
+            <tr>
+                <th>รัฐ</th>
+                <th>จำนวนวัด</th>
+                <th>จำนวนพระ</th>
+            </tr>
+        </thead>
+        <tbody id="stateTable"></tbody>
+    </table>
 </div>
 
 <div class="card p-8">
-
-<div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-
-<h2 class="text-3xl font-bold text-slate-800">
-รายชื่อพระทั้งหมด
-</h2>
-
-<div class="flex gap-3 flex-wrap">
-
-<button
-onclick="selectStatePopup()"
-class="btn blue">
-
-🗺️ คณะสงฆ์รัฐ
-
-</button>
-
-<button
-onclick="selectTemplePopup()"
-class="btn orange">
-
-🛕 ดูข้อมูลแบบวัด
-
-</button>
-
-<input
-type="text"
-id="searchInput"
-class="input w-[280px]"
-placeholder="ค้นหาชื่อพระ..."
-onkeyup="searchMonk()">
-
-</div>
-
-</div>
-
-<div class="overflow-x-auto">
-
-<table>
-
-<thead>
-    <tr>
-        <th>ชื่อ</th>
-        <th>ฉายา</th>
-        <th>อายุ</th> 
-        <th>พรรษา</th> 
-        <th>วัด</th>
-        <th>รัฐ</th>
-        <th>IC / Passport</th>
-        <th>ภูมิลำเนา/สังกัดเดิม</th> <th>วิทยฐานะ</th> <th>หมายเหตุ</th>
-        <th>จัดการ</th>
-    </tr>
-</thead>
-
-<tbody id="monkTable">
-
-</tbody>
-
-</table>
-
-</div>
-
+    <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+        <h2 class="text-3xl font-bold text-slate-800">รายชื่อพระทั้งหมด</h2>
+        <div class="flex gap-3 flex-wrap">
+            <button onclick="selectStatePopup()" class="btn blue">🗺️ คณะสงฆ์รัฐ</button>
+            <button onclick="selectTemplePopup()" class="btn orange">🛕 ดูข้อมูลแบบวัด</button>
+            <input type="text" id="searchInput" class="input w-[280px]" placeholder="ค้นหาชื่อพระ..." onkeyup="searchMonk()">
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table>
+            <thead>
+                <tr>
+                    <th>ชื่อ</th>
+                    <th>ฉายา</th>
+                    <th>อายุ</th>
+                    <th>พรรษา</th>
+                    <th>วัด</th>
+                    <th>รัฐ</th>
+                    <th>IC / Passport</th>
+                    <th>ภูมิลำเนา/สังกัดเดิม</th>
+                    <th>วิทยฐานะ</th>
+                    <th>หมายเหตุ</th>
+                    <th>จัดการ</th>
+                </tr>
+            </thead>
+            <tbody id="monkTable"></tbody>
+        </table>
+    </div>
 </div>
 
 <div class="card p-8">
-
-<div class="flex justify-between items-center mb-6">
-
-<h2 class="text-3xl font-bold text-slate-800">
-จัดการแอดมิน
-</h2>
-
-<div class="flex gap-3">
-    <button
-    onclick="deleteTemplePopup()"
-    class="btn red">
-    
-    🗑️ ลบรายชื่อวัด
-    
-    </button>
-
-    <button
-    onclick="addAdmin()"
-    class="btn blue">
-
-    ➕ เพิ่มแอดมิน
-
-    </button>
-</div>
-
-</div>
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Username</th>
-<th>Password</th>
-<th>สถานะ</th>
-<th>จัดการ</th>
-
-</tr>
-
-</thead>
-
-<tbody id="adminTable">
-
-</tbody>
-
-</table>
-
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-slate-800">จัดการแอดมิน</h2>
+        <div class="flex gap-3">
+            <button onclick="deleteTemplePopup()" class="btn red">🗑️ ลบรายชื่อวัด</button>
+            <button onclick="addAdmin()" class="btn blue">➕ เพิ่มแอดมิน</button>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Password</th>
+                <th>สถานะ</th>
+                <th>จัดการ</th>
+            </tr>
+        </thead>
+        <tbody id="adminTable"></tbody>
+    </table>
 </div>
 
 </main>
-
 </div>
 
 <script type="module">
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
-initializeApp
-}
-from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-
-import {
-getFirestore,
-collection,
-getDocs,
-addDoc,
-deleteDoc,
-doc,
-updateDoc,
-getDoc
-}
-from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    getFirestore, collection, getDocs,
+    addDoc, deleteDoc, doc, updateDoc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
-
-apiKey:
-"AIzaSyCOX6wT65phG79nSYFcqq40sQ4xTU15rI0",
-
-authDomain:
-"sangha-malaysia-db.firebaseapp.com",
-
-projectId:
-"sangha-malaysia-db",
-
-storageBucket:
-"sangha-malaysia-db.appspot.com",
-
-messagingSenderId:
-"113712257853",
-
-appId:
-"1:113712257853:web:8b8dc634917aeeb49ac354"
-
+    apiKey: "AIzaSyCOX6wT65phG79nSYFcqq40sQ4xTU15rI0",
+    authDomain: "sangha-malaysia-db.firebaseapp.com",
+    projectId: "sangha-malaysia-db",
+    storageBucket: "sangha-malaysia-db.appspot.com",
+    messagingSenderId: "113712257853",
+    appId: "1:113712257853:web:8b8dc634917aeeb49ac354"
 };
 
-const app =
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
 
-const db =
-getFirestore(app);
+const developerUser = "sirichai";
+const developerPass = "Sb270887";
 
-const developerUser =
-"sirichai";
-
-const developerPass =
-"Sb270887";
-
-/* LOGIN */
-
+/* ─── LOGIN ─── */
 window.loginAdmin = async function(){
+    const user = document.getElementById('loginUser').value;
+    const pass = document.getElementById('loginPass').value;
 
-const user =
-document.getElementById('loginUser').value;
+    if(user === developerUser && pass === developerPass){
+        startSystem(developerUser, true);
+        return;
+    }
 
-const pass =
-document.getElementById('loginPass').value;
+    const snapshot = await getDocs(collection(db,'admins'));
+    let found = false;
+    snapshot.forEach(docItem=>{
+        const data = docItem.data();
+        if(data.user === user && data.pass === pass){
+            found = true;
+            startSystem(data.user, false);
+        }
+    });
 
-if(
-user === developerUser &&
-pass === developerPass
-){
-
-startSystem(
-developerUser,
-true
-);
-
-return;
-
+    if(!found) alert('❌ Username หรือ Password ไม่ถูกต้อง');
 }
 
-const snapshot =
-await getDocs(
-collection(db,'admins')
-);
+/* ─── START ─── */
+async function startSystem(user, isDeveloper){
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('mainSystem').classList.remove('hidden');
+    document.getElementById('adminName').innerHTML = isDeveloper
+        ? `👑 ${user} (Developer)` : `🛡️ ${user}`;
 
-let found = false;
-
-snapshot.forEach(docItem=>{
-
-const data = docItem.data();
-
-if(
-data.user === user &&
-data.pass === pass
-){
-
-found = true;
-
-startSystem(
-data.user,
-false
-);
-
+    await loadStatistics();
+    await loadMonks();
+    await loadAdmins();
 }
 
-});
-
-if(!found){
-
-alert(
-'❌ Username หรือ Password ไม่ถูกต้อง'
-);
-
-}
-
-}
-
-/* START */
-
-async function startSystem(user,isDeveloper){
-
-document
-.getElementById('loginPage')
-.classList.add('hidden');
-
-document
-.getElementById('mainSystem')
-.classList.remove('hidden');
-
-document
-.getElementById('adminName')
-.innerHTML = isDeveloper
-? `👑 ${user} (Developer)`
-: `🛡️ ${user}`;
-
-await loadStatistics();
-await loadMonks();
-await loadAdmins();
-
-}
-
-/* LOAD STAT */
-
+/* ─── LOAD STATISTICS ─── */
 async function loadStatistics(){
-
-const snapshot =
-await getDocs(
-collection(db,'temples')
-);
-
-let totalTemple = 0;
-let totalMonk = 0;
-
-const stateData = {};
-
-snapshot.forEach(docItem=>{
-
-totalTemple++;
-
-const data = docItem.data();
-
-const state =
-data.state || '-';
-
-if(!stateData[state]){
-
-stateData[state] = {
-
-temples:0,
-monks:0
-
-};
-
-}
-
-stateData[state].temples++;
-
-const monkCount =
-data.monks
-? data.monks.length
-: 0;
-
-totalMonk += monkCount;
-
-stateData[state].monks += monkCount;
-
-});
-
-document.getElementById(
-'totalTemples'
-).innerHTML = totalTemple;
-
-document.getElementById(
-'totalMonks'
-).innerHTML = totalMonk;
-
-const table =
-document.getElementById(
-'stateTable'
-);
-
-table.innerHTML = '';
-
-Object.keys(stateData).forEach(state=>{
-
-table.innerHTML += `
-
-<tr>
-
-<td>${state}</td>
-<td>${stateData[state].temples}</td>
-<td>${stateData[state].monks}</td>
-
-</tr>
-
-`;
-
-});
-
-}
-
-/* ==========================================
-   LOAD MONKS (with delete button per row)
-   ========================================== */
-
-async function loadMonks(){
-
-const snapshot =
-await getDocs(
-collection(db,'temples')
-);
-
-const table =
-document.getElementById(
-'monkTable'
-);
-
-table.innerHTML = '';
-
-snapshot.forEach(docItem=>{
-
-const data = docItem.data();
-
-if(data.monks){
-
-data.monks.forEach((monk, monkIndex)=>{
-
-// ตัวอย่างส่วนการสร้างตารางในหน้า Dashboard
-table.innerHTML += `
-<tr>
-    <td>${monk.fullname || ''}</td>
-    <td>${monk.alias || ''}</td>
-    <td>${monk.age || ''}</td>
-    <td>${monk.pansa || ''}</td>
-    <td>${data.name || ''}</td>       <td>${data.state || ''}</td>      <td>${monk.passport || ''}</td>
-    <td>${monk.origin || ''}</td>     <td>${monk.education || ''}</td>  <td>${monk.note || ''}</td>       <td>
-        <button onclick="deleteMonk('${docItem.id}', ${monkIndex})" class="delete-btn">🗑️ ลบ</button>
-    </td>
-</tr>
-`;
-
-});
-
-}
-
-});
-
-}
-
-/* ==========================================
-   DELETE INDIVIDUAL MONK
-   ========================================== */
-
-window.deleteMonk = async function(templeDocId, monkIndex){
-
-const confirmDelete = confirm('ต้องการลบรายชื่อพระรูปนี้ใช่หรือไม่?');
-
-if(!confirmDelete) return;
-
-try {
-
-const templeRef = doc(db, 'temples', templeDocId);
-const templeSnap = await getDoc(templeRef);
-
-if(!templeSnap.exists()) {
-    alert('❌ ไม่พบข้อมูลวัด');
-    return;
-}
-
-const templeData = templeSnap.data();
-const monks = templeData.monks || [];
-
-monks.splice(monkIndex, 1);
-
-await updateDoc(templeRef, { monks: monks });
-
-alert('✅ ลบรายชื่อพระสำเร็จ');
-
-await loadMonks();
-await loadStatistics();
-
-} catch(err) {
-
-console.error(err);
-alert('❌ เกิดข้อผิดพลาด: ' + err.message);
-
-}
-
-}
-
-/* SEARCH */
-
-window.searchMonk = function(){
-
-const keyword =
-document
-.getElementById('searchInput')
-.value
-.toLowerCase();
-
-const rows =
-document.querySelectorAll(
-'#monkTable tr'
-);
-
-rows.forEach(row=>{
-
-const text =
-row.innerText.toLowerCase();
-
-row.style.display =
-text.includes(keyword)
-? ''
-: 'none';
-
-});
-
-}
-
-/* SELECT STATE */
-
-window.selectStatePopup = function(){
-
-const states = [
-
-'รัฐเคดาห์',
-'รัฐเปอร์ลิส',
-'รัฐปีนัง',
-'รัฐเปรัก',
-'รัฐสลังงอร์',
-'รัฐยะโฮร์',
-'รัฐกลันตันและตรังกานู'
-
-];
-
-let html = `
-
-<div
-id="stateModal"
-style="
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.55);
-z-index:99999;
-display:flex;
-justify-content:center;
-align-items:center;
-">
-
-<div
-style="
-width:550px;
-background:white;
-border-radius:30px;
-padding:35px;
-max-height:85vh;
-overflow:auto;
-">
-
-<h2
-style="
-font-size:42px;
-font-weight:800;
-margin-bottom:25px;
-">
-
-🗺️ เลือกรัฐ
-
-</h2>
-
-`;
-
-states.forEach(state=>{
-
-html += `
-
-<button
-
-onclick="
-filterByState('${state}');
-document.getElementById('stateModal').remove();
-"
-
-style="
-width:100%;
-padding:20px;
-margin-bottom:15px;
-border:none;
-border-radius:18px;
-background:#2563eb;
-color:white;
-font-size:22px;
-font-weight:700;
-cursor:pointer;
-"
-
->
-
-${state}
-
-</button>
-
-`;
-
-});
-
-html += `
-
-<button
-
-onclick="
-document.getElementById('stateModal').remove();
-"
-
-style="
-width:100%;
-padding:18px;
-margin-top:8px;
-border:none;
-border-radius:18px;
-background:#e2e8f0;
-font-size:20px;
-font-weight:700;
-cursor:pointer;
-"
-
->
-
-ปิดหน้าต่าง
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-document.body.insertAdjacentHTML(
-'beforeend',
-html
-);
-
-}
-
-//* FILTER STATE - แก้ไขเพื่อให้ค้นหาได้แม้ชื่อไม่ตรงเป๊ะ */
-window.filterByState = async function(stateName){
     const snapshot = await getDocs(collection(db,'temples'));
-    const table = document.getElementById('monkTable');
-    table.innerHTML = '';
+    let totalTemple = 0;
+    let totalMonk   = 0;
+    const stateData = {};
 
-    const cleanStateName = stateName.replace('รัฐ', '').trim();
+    snapshot.forEach(docItem=>{
+        totalTemple++;
+        const data  = docItem.data();
+        const state = data.state || '-';
+
+        if(!stateData[state]) stateData[state] = { temples:0, monks:0 };
+
+        stateData[state].temples++;
+        const monkCount = data.monks ? data.monks.length : 0;
+        totalMonk += monkCount;
+        stateData[state].monks += monkCount;
+    });
+
+    document.getElementById('totalTemples').innerHTML = totalTemple;
+    document.getElementById('totalMonks').innerHTML   = totalMonk;
+
+    const table = document.getElementById('stateTable');
+    table.innerHTML = '';
+    Object.keys(stateData).forEach(state=>{
+        table.innerHTML += `
+        <tr>
+            <td>${state}</td>
+            <td>${stateData[state].temples}</td>
+            <td>${stateData[state].monks}</td>
+        </tr>`;
+    });
+}
+
+/* ─── LOAD MONKS ─── */
+async function loadMonks(){
+    const snapshot = await getDocs(collection(db,'temples'));
+    const table    = document.getElementById('monkTable');
+    table.innerHTML = '';
 
     snapshot.forEach(docItem=>{
         const data = docItem.data();
-        const dbState = (data.state || '').trim();
-
-        if(!dbState.includes(cleanStateName)) return;
-
         if(data.monks){
             data.monks.forEach((monk, monkIndex)=>{
                 table.innerHTML += `
                 <tr>
-                    <td>${monk.fullname || ''}</td>
-                    <td>${monk.alias || ''}</td>
-                    <td>${monk.age || ''}</td>
-                    <td>${monk.pansa || ''}</td>
-                    <td>${data.name || ''}</td>
-                    <td>${data.state || ''}</td>
-                    <td>${monk.passport || ''}</td>
-                    <td>${monk.origin || ''}</td>     <td>${monk.education || ''}</td>  <td>${monk.note || ''}</td>       <td class="text-center">
+                    <td>${monk.fullname  || ''}</td>
+                    <td>${monk.alias     || ''}</td>
+                    <td>${monk.age       || ''}</td>
+                    <td>${monk.pansa     || ''}</td>
+                    <td>${data.name      || ''}</td>
+                    <td>${data.state     || ''}</td>
+                    <td>${monk.passport  || ''}</td>
+                    <td>${monk.origin    || ''}</td>
+                    <td>${monk.education || ''}</td>
+                    <td>${monk.note      || ''}</td>
+                    <td>
                         <button onclick="deleteMonk('${docItem.id}', ${monkIndex})" class="delete-btn">🗑️ ลบ</button>
                     </td>
-                </tr>
-                `;
+                </tr>`;
             });
         }
     });
 }
 
-/* SELECT TEMPLE */
+/* ─── DELETE MONK ─── */
+window.deleteMonk = async function(templeDocId, monkIndex){
+    if(!confirm('ต้องการลบรายชื่อพระรูปนี้ใช่หรือไม่?')) return;
 
-window.selectTemplePopup = async function(){
+    try {
+        const templeRef  = doc(db,'temples',templeDocId);
+        const templeSnap = await getDoc(templeRef);
+        if(!templeSnap.exists()){ alert('❌ ไม่พบข้อมูลวัด'); return; }
 
-const snapshot =
-await getDocs(
-collection(db,'temples')
-);
-
-let html = `
-
-<div
-id="templeModal"
-style="
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.55);
-z-index:99999;
-display:flex;
-justify-content:center;
-align-items:center;
-">
-
-<div
-style="
-width:650px;
-background:white;
-border-radius:30px;
-padding:35px;
-max-height:85vh;
-overflow:auto;
-">
-
-<h2
-style="
-font-size:42px;
-font-weight:800;
-margin-bottom:25px;
-">
-
-🛕 เลือกวัด
-
-</h2>
-
-`;
-
-snapshot.forEach(docItem=>{
-
-const data = docItem.data();
-
-html += `
-
-<button
-
-onclick="
-filterByTemple('${data.name}');
-document.getElementById('templeModal').remove();
-"
-
-style="
-width:100%;
-padding:18px;
-margin-bottom:12px;
-border:none;
-border-radius:18px;
-background:#ea580c;
-color:white;
-font-size:20px;
-font-weight:700;
-text-align:left;
-cursor:pointer;
-"
-
->
-
-${data.name || 'ไม่ระบุชื่อวัด'}
-
-</button>
-
-`;
-
-});
-
-html += `
-
-<button
-
-onclick="
-document.getElementById('templeModal').remove();
-"
-
-style="
-width:100%;
-padding:18px;
-margin-top:8px;
-border:none;
-border-radius:18px;
-background:#e2e8f0;
-font-size:20px;
-font-weight:700;
-cursor:pointer;
-"
-
->
-
-ปิดหน้าต่าง
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-document.body.insertAdjacentHTML(
-'beforeend',
-html
-);
-
+        const monks = templeSnap.data().monks || [];
+        monks.splice(monkIndex, 1);
+        await updateDoc(templeRef, { monks });
+        alert('✅ ลบรายชื่อพระสำเร็จ');
+        await loadMonks();
+        await loadStatistics();
+    } catch(err){
+        alert('❌ เกิดข้อผิดพลาด: ' + err.message);
+    }
 }
 
-/* FILTER TEMPLE */
-window.filterByTemple = async function(templeName){
+/* ─── SEARCH ─── */
+window.searchMonk = function(){
+    const keyword = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('#monkTable tr').forEach(row=>{
+        row.style.display = row.innerText.toLowerCase().includes(keyword) ? '' : 'none';
+    });
+}
+
+/* ─── SELECT STATE POPUP ─── */
+window.selectStatePopup = function(){
+    const states = ['รัฐเคดาห์','รัฐเปอร์ลิส','รัฐปีนัง','รัฐเปรัก','รัฐสลังงอร์','รัฐยะโฮร์','รัฐกลันตันและตรังกานู'];
+    let html = buildModalStart('stateModal','🗺️ เลือกรัฐ','550px');
+    states.forEach(state=>{
+        html += `<button onclick="filterByState('${state}');document.getElementById('stateModal').remove()"
+        style="width:100%;padding:20px;margin-bottom:15px;border:none;border-radius:18px;background:#2563eb;color:white;font-size:22px;font-weight:700;cursor:pointer;">${state}</button>`;
+    });
+    html += buildModalEnd('stateModal');
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+/* ─── FILTER BY STATE ─── */
+window.filterByState = async function(stateName){
     const snapshot = await getDocs(collection(db,'temples'));
-    const table = document.getElementById('monkTable');
+    const table    = document.getElementById('monkTable');
     table.innerHTML = '';
 
+    // 🔧 แก้: เอา "รัฐ" ออกก่อน match กับ data.state ที่เก็บแค่ชื่อรัฐ
+    const cleanName = stateName.replace('รัฐ','').trim();
+
     snapshot.forEach(docItem=>{
-        const data = docItem.data();
-        if((data.name || '').trim() !== templeName.trim()) return;
+        const data     = docItem.data();
+        const dbState  = (data.state || '').trim();
+        if(!dbState.includes(cleanName)) return;
 
         if(data.monks){
             data.monks.forEach((monk, monkIndex)=>{
-                table.innerHTML += `
-                <tr>
-                    <td>${monk.fullname || ''}</td>
-                    <td>${monk.alias || ''}</td>
-                    <td>${monk.age || ''}</td>        <td>${monk.pansa || ''}</td>      <td>${data.name || ''}</td>
-                    <td>${data.state || ''}</td>
-                    <td>${monk.passport || ''}</td>
-                    <td>${monk.origin || ''}</td>     <td>${monk.education || ''}</td>  <td>${monk.note || ''}</td>       <td class="text-center">
-                      <button onclick="deleteMonk('${docItem.id}', ${monkIndex})" class="delete-btn">🗑️ ลบ</button>
-                    </td>
-                </tr>
-                `;
+                table.innerHTML += buildMonkRow(monk, data, docItem.id, monkIndex);
             });
         }
     });
 }
 
-/* EXPORT ALL */
+/* ─── SELECT TEMPLE POPUP ─── */
+window.selectTemplePopup = async function(){
+    const snapshot = await getDocs(collection(db,'temples'));
+    let html = buildModalStart('templeModal','🛕 เลือกวัด','650px');
+    snapshot.forEach(docItem=>{
+        const data = docItem.data();
+        html += `<button onclick="filterByTemple('${docItem.id}');document.getElementById('templeModal').remove()"
+        style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:18px;background:#ea580c;color:white;font-size:20px;font-weight:700;text-align:left;cursor:pointer;">
+        ${data.name || 'ไม่ระบุชื่อวัด'}</button>`;
+    });
+    html += buildModalEnd('templeModal');
+    document.body.insertAdjacentHTML('beforeend', html);
+}
 
+/* ─── FILTER BY TEMPLE ─── */
+window.filterByTemple = async function(templeDocId){
+    const snapshot = await getDocs(collection(db,'temples'));
+    const table    = document.getElementById('monkTable');
+    table.innerHTML = '';
+
+    snapshot.forEach(docItem=>{
+        if(docItem.id !== templeDocId) return;
+        const data = docItem.data();
+        if(data.monks){
+            data.monks.forEach((monk, monkIndex)=>{
+                table.innerHTML += buildMonkRow(monk, data, docItem.id, monkIndex);
+            });
+        }
+    });
+}
+
+/* ─── EXPORT ALL ─── */
 window.exportAllReport = async function(){
-
-const snapshot =
-await getDocs(
-collection(db,'temples')
-);
-
-createExcelReport(
-snapshot,
-'รายงานรวมทั้งหมด'
-);
-
+    const snapshot = await getDocs(collection(db,'temples'));
+    createExcelReport(snapshot, 'รายงานรวมทั้งหมด');
 }
 
-/* EXPORT STATE POPUP */
-
+/* ─── EXPORT STATE POPUP ─── */
 window.exportStatePopup = function(){
-
-const states = [
-
-'รัฐเคดาห์',
-'รัฐเปอร์ลิส',
-'รัฐปีนัง',
-'รัฐเปรัก',
-'รัฐสลังงอร์',
-'รัฐยะโฮร์',
-'รัฐกลันตันและตรังกานู'
-
-];
-
-let html = `
-
-<div
-id="exportStateModal"
-style="
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.55);
-z-index:99999;
-display:flex;
-justify-content:center;
-align-items:center;
-">
-
-<div
-style="
-width:550px;
-background:white;
-border-radius:30px;
-padding:35px;
-max-height:85vh;
-overflow:auto;
-">
-
-<h2
-style="
-font-size:42px;
-font-weight:800;
-margin-bottom:25px;
-">
-
-🗺️ ดาวน์โหลดแบบรัฐ
-
-</h2>
-
-`;
-
-states.forEach(state=>{
-
-html += `
-
-<button
-
-onclick="
-exportByState('${state}');
-document.getElementById('exportStateModal').remove();
-"
-
-style="
-width:100%;
-padding:20px;
-margin-bottom:14px;
-border:none;
-border-radius:18px;
-background:#2563eb;
-color:white;
-font-size:22px;
-font-weight:700;
-cursor:pointer;
-"
-
->
-
-${state}
-
-</button>
-
-`;
-
-});
-
-html += `
-
-<button
-
-onclick="
-document.getElementById('exportStateModal').remove();
-"
-
-style="
-width:100%;
-padding:18px;
-margin-top:10px;
-border:none;
-border-radius:18px;
-background:#e2e8f0;
-font-size:20px;
-font-weight:700;
-cursor:pointer;
-"
-
->
-
-ปิดหน้าต่าง
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-document.body.insertAdjacentHTML(
-'beforeend',
-html
-);
-
+    const states = ['รัฐเคดาห์','รัฐเปอร์ลิส','รัฐปีนัง','รัฐเปรัก','รัฐสลังงอร์','รัฐยะโฮร์','รัฐกลันตันและตรังกานู'];
+    let html = buildModalStart('exportStateModal','🗺️ ดาวน์โหลดแบบรัฐ','550px');
+    states.forEach(state=>{
+        html += `<button onclick="exportByState('${state}');document.getElementById('exportStateModal').remove()"
+        style="width:100%;padding:20px;margin-bottom:14px;border:none;border-radius:18px;background:#2563eb;color:white;font-size:22px;font-weight:700;cursor:pointer;">${state}</button>`;
+    });
+    html += buildModalEnd('exportStateModal');
+    document.body.insertAdjacentHTML('beforeend', html);
 }
 
-/* EXPORT TEMPLE POPUP */
-
+/* ─── EXPORT TEMPLE POPUP ─── */
 window.exportTemplePopup = async function(){
-
-const snapshot =
-await getDocs(
-collection(db,'temples')
-);
-
-let html = `
-
-<div
-id="exportTempleModal"
-style="
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.55);
-z-index:99999;
-display:flex;
-justify-content:center;
-align-items:center;
-">
-
-<div
-style="
-width:650px;
-background:white;
-border-radius:30px;
-padding:35px;
-max-height:85vh;
-overflow:auto;
-">
-
-<h2
-style="
-font-size:42px;
-font-weight:800;
-margin-bottom:25px;
-">
-
-🛕 ดาวน์โหลดแบบวัด
-
-</h2>
-
-`;
-
-snapshot.forEach(docItem=>{
-
-const data = docItem.data();
-
-html += `
-
-<button
-
-onclick="
-exportByTemple('${docItem.id}');
-document.getElementById('exportTempleModal').remove();
-"
-
-style="
-width:100%;
-padding:18px;
-margin-bottom:12px;
-border:none;
-border-radius:18px;
-background:#ea580c;
-color:white;
-font-size:20px;
-font-weight:700;
-text-align:left;
-cursor:pointer;
-"
-
->
-
-${data.name || 'ไม่ระบุชื่อวัด'}
-
-</button>
-
-`;
-
-});
-
-html += `
-
-<button
-
-onclick="
-document.getElementById('exportTempleModal').remove();
-"
-
-style="
-width:100%;
-padding:18px;
-margin-top:10px;
-border:none;
-border-radius:18px;
-background:#e2e8f0;
-font-size:20px;
-font-weight:700;
-cursor:pointer;
-"
-
->
-
-ปิดหน้าต่าง
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-document.body.insertAdjacentHTML(
-'beforeend',
-html
-);
-
+    const snapshot = await getDocs(collection(db,'temples'));
+    let html = buildModalStart('exportTempleModal','🛕 ดาวน์โหลดแบบวัด','650px');
+    snapshot.forEach(docItem=>{
+        const data = docItem.data();
+        // 🔧 แก้: ส่ง docItem.id ไปตรงๆ ไม่ใช่ชื่อวัด
+        html += `<button onclick="exportByTemple('${docItem.id}','${(data.name||'วัด').replace(/'/g,'')}');document.getElementById('exportTempleModal').remove()"
+        style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:18px;background:#ea580c;color:white;font-size:20px;font-weight:700;text-align:left;cursor:pointer;">
+        ${data.name || 'ไม่ระบุชื่อวัด'}</button>`;
+    });
+    html += buildModalEnd('exportTempleModal');
+    document.body.insertAdjacentHTML('beforeend', html);
 }
 
-/* ==========================================
-   EXPORT THAI MONKS POPUP
-   เงื่อนไข: สัญชาติไทย และ เชื้อชาติไทย
-   ========================================== */
+/* ─── EXPORT BY STATE ─── */
+// 🔧 แก้: เอา "รัฐ" ออกก่อน match เหมือน filterByState
+window.exportByState = async function(stateName){
+    const snapshot  = await getDocs(collection(db,'temples'));
+    const cleanName = stateName.replace('รัฐ','').trim();
+    createExcelReport(snapshot, stateName, cleanName, null);
+}
 
+/* ─── EXPORT BY TEMPLE ─── */
+// 🔧 แก้: รับ templeDocId และ templeName แยกกัน ไม่ปนกัน
+window.exportByTemple = async function(templeDocId, templeName){
+    const snapshot = await getDocs(collection(db,'temples'));
+    createExcelReport(snapshot, templeName || templeDocId, null, templeDocId);
+}
+
+/* ─── CREATE EXCEL REPORT ─── */
+// 🔧 แก้: แยก param ชัดเจน stateFilter = cleanName (ไม่มี "รัฐ"), templeIdFilter = docId
+function createExcelReport(snapshot, fileName, stateFilter = null, templeIdFilter = null){
+    const rows = [['ที่','วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ']];
+    let no = 1;
+
+    snapshot.forEach(docItem=>{
+        const data     = docItem.data();
+        const dbState  = (data.state || '').trim();
+
+        // 🔧 filter รัฐ: ตรวจว่า dbState มี cleanName อยู่ไหม
+        if(stateFilter && !dbState.includes(stateFilter)) return;
+
+        // 🔧 filter วัด: ตรวจ doc ID ตรงๆ
+        if(templeIdFilter && docItem.id !== templeIdFilter) return;
+
+        const monks = data.monks || [];
+        monks.forEach((monk, index)=>{
+            rows.push([
+                no,
+                index === 0 ? data.name || '' : '',
+                monk.fullname    || '',
+                monk.alias       || '',
+                monk.age         || '',
+                monk.pansa       || '',
+                monk.education   || '',
+                monk.origin      || '',
+                monk.nationality || '',
+                monk.race        || '',
+                monk.passport    || '',
+                monk.note        || ''
+            ]);
+            no++;
+        });
+    });
+
+    if(rows.length <= 1){ alert('⚠️ ไม่พบข้อมูลในรัฐ/วัดที่เลือก'); return; }
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:8},{wch:30},{wch:30},{wch:20},{wch:10},{wch:10},{wch:30},{wch:35},{wch:15},{wch:15},{wch:25},{wch:30}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'รายงาน');
+    XLSX.writeFile(wb, `${fileName}.xlsx`);
+}
+
+/* ─── EXPORT THAI MONKS POPUP ─── */
 window.exportThaiMonksPopup = function(){
+    const states = ['รัฐเคดาห์','รัฐเปอร์ลิส','รัฐปีนัง','รัฐเปรัก','รัฐสลังงอร์','รัฐยะโฮร์','รัฐกลันตันและตรังกานู'];
 
-const states = [
+    const html = `
+    <div id="thaiExportModal" style="position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:99999;display:flex;justify-content:center;align-items:center;">
+    <div style="width:620px;background:white;border-radius:30px;padding:40px;max-height:90vh;overflow:auto;">
+        <h2 style="font-size:36px;font-weight:800;margin-bottom:6px;">🇹🇭 นำออกข้อมูลพระไทย</h2>
+        <p style="color:#64748b;font-size:17px;margin-bottom:28px;">เงื่อนไข: สัญชาติไทย และ เชื้อชาติไทย เท่านั้น</p>
+        <div style="display:flex;gap:12px;margin-bottom:28px;">
+            <button onclick="setThaiExportMode('all')" id="thaiModeAll"
+            style="flex:1;padding:16px;border:2px solid #b45309;border-radius:16px;background:#b45309;color:white;font-size:17px;font-weight:700;cursor:pointer;">📦 รวมทั้งหมด</button>
+            <button onclick="setThaiExportMode('state')" id="thaiModeState"
+            style="flex:1;padding:16px;border:2px solid #b45309;border-radius:16px;background:white;color:#b45309;font-size:17px;font-weight:700;cursor:pointer;">🗺️ แยกรัฐ</button>
+            <button onclick="setThaiExportMode('temple')" id="thaiModeTemple"
+            style="flex:1;padding:16px;border:2px solid #b45309;border-radius:16px;background:white;color:#b45309;font-size:17px;font-weight:700;cursor:pointer;">🛕 แยกวัด</button>
+        </div>
+        <div id="thaiExportContent">
+            <button onclick="doExportThaiAll()" style="width:100%;padding:22px;border:none;border-radius:18px;background:#b45309;color:white;font-size:22px;font-weight:800;cursor:pointer;">⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)</button>
+        </div>
+        <button onclick="document.getElementById('thaiExportModal').remove()"
+        style="width:100%;padding:16px;margin-top:18px;border:none;border-radius:16px;background:#e2e8f0;font-size:18px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
+    </div>
+    </div>`;
 
-'รัฐเคดาห์',
-'รัฐเปอร์ลิส',
-'รัฐปีนัง',
-'รัฐเปรัก',
-'รัฐสลังงอร์',
-'รัฐยะโฮร์',
-'รัฐกลันตันและตรังกานู'
-
-];
-
-let html = `
-
-<div
-id="thaiExportModal"
-style="
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.65);
-z-index:99999;
-display:flex;
-justify-content:center;
-align-items:center;
-">
-
-<div
-style="
-width:620px;
-background:white;
-border-radius:30px;
-padding:40px;
-max-height:90vh;
-overflow:auto;
-">
-
-<h2 style="font-size:36px;font-weight:800;margin-bottom:6px;">
-  🇹🇭 นำออกข้อมูลพระไทย
-</h2>
-<p style="color:#64748b;font-size:17px;margin-bottom:28px;">
-  เงื่อนไข: สัญชาติไทย และ เชื้อชาติไทย เท่านั้น
-</p>
-
-<div style="
-  display:flex;
-  gap:12px;
-  margin-bottom:28px;
-">
-
-  <button
-    onclick="setThaiExportMode('all')"
-    id="thaiModeAll"
-    style="
-      flex:1;
-      padding:16px;
-      border:2px solid #b45309;
-      border-radius:16px;
-      background:#b45309;
-      color:white;
-      font-size:17px;
-      font-weight:700;
-      cursor:pointer;
-    ">
-    📦 รวมทั้งหมด
-  </button>
-
-  <button
-    onclick="setThaiExportMode('state')"
-    id="thaiModeState"
-    style="
-      flex:1;
-      padding:16px;
-      border:2px solid #b45309;
-      border-radius:16px;
-      background:white;
-      color:#b45309;
-      font-size:17px;
-      font-weight:700;
-      cursor:pointer;
-    ">
-    🗺️ แยกรัฐ
-  </button>
-
-  <button
-    onclick="setThaiExportMode('temple')"
-    id="thaiModeTemple"
-    style="
-      flex:1;
-      padding:16px;
-      border:2px solid #b45309;
-      border-radius:16px;
-      background:white;
-      color:#b45309;
-      font-size:17px;
-      font-weight:700;
-      cursor:pointer;
-    ">
-    🛕 แยกวัด
-  </button>
-
-</div>
-
-<div id="thaiExportContent">
-  <button
-    onclick="doExportThaiAll()"
-    style="
-      width:100%;
-      padding:22px;
-      border:none;
-      border-radius:18px;
-      background:#b45309;
-      color:white;
-      font-size:22px;
-      font-weight:800;
-      cursor:pointer;
-    ">
-    ⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)
-  </button>
-</div>
-
-<button
-  onclick="document.getElementById('thaiExportModal').remove()"
-  style="
-    width:100%;
-    padding:16px;
-    margin-top:18px;
-    border:none;
-    border-radius:16px;
-    background:#e2e8f0;
-    font-size:18px;
-    font-weight:700;
-    cursor:pointer;
-  ">
-  ปิดหน้าต่าง
-</button>
-
-</div>
-</div>
-
-`;
-
-document.body.insertAdjacentHTML('beforeend', html);
-window._thaiExportStates = states;
-
+    document.body.insertAdjacentHTML('beforeend', html);
+    window._thaiExportStates = states;
 }
 
 window.setThaiExportMode = async function(mode){
+    ['all','state','temple'].forEach(m=>{
+        const btn = document.getElementById('thaiMode' + m.charAt(0).toUpperCase() + m.slice(1));
+        if(btn){ btn.style.background = (m===mode)?'#b45309':'white'; btn.style.color = (m===mode)?'white':'#b45309'; }
+    });
 
-['all','state','temple'].forEach(m=>{
-    const btn = document.getElementById('thaiMode' + m.charAt(0).toUpperCase() + m.slice(1));
-    if(btn){
-        btn.style.background = (m === mode) ? '#b45309' : 'white';
-        btn.style.color = (m === mode) ? 'white' : '#b45309';
+    const content = document.getElementById('thaiExportContent');
+    content.innerHTML = '';
+
+    if(mode === 'all'){
+        content.innerHTML = `<button onclick="doExportThaiAll()" style="width:100%;padding:22px;border:none;border-radius:18px;background:#b45309;color:white;font-size:22px;font-weight:800;cursor:pointer;">⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)</button>`;
+    } else if(mode === 'state'){
+        let h = '';
+        (window._thaiExportStates||[]).forEach(state=>{
+            h += `<button onclick="doExportThaiByState('${state}')" style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:16px;background:#2563eb;color:white;font-size:19px;font-weight:700;cursor:pointer;">${state}</button>`;
+        });
+        content.innerHTML = h;
+    } else if(mode === 'temple'){
+        const snapshot = await getDocs(collection(db,'temples'));
+        let h = '';
+        snapshot.forEach(docItem=>{
+            const data = docItem.data();
+            h += `<button onclick="doExportThaiByTemple('${docItem.id}','${(data.name||'วัด').replace(/'/g,'')}')" style="width:100%;padding:16px;margin-bottom:10px;border:none;border-radius:16px;background:#ea580c;color:white;font-size:18px;font-weight:700;text-align:left;cursor:pointer;">${data.name||'ไม่ระบุชื่อวัด'}</button>`;
+        });
+        content.innerHTML = h;
     }
-});
-
-const content = document.getElementById('thaiExportContent');
-content.innerHTML = '';
-
-if(mode === 'all'){
-    content.innerHTML = `<button onclick="doExportThaiAll()" style="width:100%;padding:22px;border:none;border-radius:18px;background:#b45309;color:white;font-size:22px;font-weight:800;cursor:pointer;">⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)</button>`;
-} else if(mode === 'state'){
-    const states = window._thaiExportStates || [];
-    let h = '';
-    states.forEach(state=>{
-        h += `<button onclick="doExportThaiByState('${state}')" style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:16px;background:#2563eb;color:white;font-size:19px;font-weight:700;cursor:pointer;">${state}</button>`;
-    });
-    content.innerHTML = h;
-} else if(mode === 'temple'){
-    const snapshot = await getDocs(collection(db,'temples'));
-    let h = '';
-    snapshot.forEach(docItem=>{
-        const data = docItem.data();
-        h += `<button onclick="doExportThaiByTemple('${docItem.id}')" style="width:100%;padding:16px;margin-bottom:10px;border:none;border-radius:16px;background:#ea580c;color:white;font-size:18px;font-weight:700;text-align:left;cursor:pointer;">${data.name || 'ไม่ระบุชื่อวัด'}</button>`;
-    });
-    content.innerHTML = h;
-}
-
 }
 
 window.doExportThaiAll = async function(){
-const snapshot = await getDocs(collection(db,'temples'));
-createThaiExcelReport(snapshot, 'รายชื่อพระไทย-ทั้งหมด', null, null);
-document.getElementById('thaiExportModal')?.remove();
+    const snapshot = await getDocs(collection(db,'temples'));
+    createThaiExcelReport(snapshot,'รายชื่อพระไทย-ทั้งหมด',null,null);
+    document.getElementById('thaiExportModal')?.remove();
 }
 
 window.doExportThaiByState = async function(stateName){
-const snapshot = await getDocs(collection(db,'temples'));
-createThaiExcelReport(snapshot, `รายชื่อพระไทย-${stateName}`, stateName, null);
-document.getElementById('thaiExportModal')?.remove();
+    const snapshot  = await getDocs(collection(db,'temples'));
+    // 🔧 แก้: ส่ง cleanName เหมือนกัน
+    const cleanName = stateName.replace('รัฐ','').trim();
+    createThaiExcelReport(snapshot,`รายชื่อพระไทย-${stateName}`,cleanName,null);
+    document.getElementById('thaiExportModal')?.remove();
 }
 
-window.doExportThaiByTemple = async function(templeId){
-const snapshot = await getDocs(collection(db,'temples'));
-createThaiExcelReport(snapshot, templeId, null, templeId);
-document.getElementById('thaiExportModal')?.remove();
+window.doExportThaiByTemple = async function(templeDocId, templeName){
+    const snapshot = await getDocs(collection(db,'temples'));
+    createThaiExcelReport(snapshot,`รายชื่อพระไทย-${templeName||templeDocId}`,null,templeDocId);
+    document.getElementById('thaiExportModal')?.remove();
 }
 
-function createThaiExcelReport(snapshot, fileName, stateFilter = null, templeIdFilter = null){
-const rows = [];
-rows.push(['ที่','วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ']);
-let no = 1;
-snapshot.forEach(docItem=>{
-const data = docItem.data();
-if(stateFilter && data.state !== stateFilter) return;
-if(templeIdFilter && docItem.id !== templeIdFilter) return;
-const monks = data.monks || [];
-monks.forEach((monk, index)=>{
-    const nat = (monk.nationality || '').trim();
-    const race = (monk.race || '').trim();
-    if(nat !== 'ไทย' || race !== 'ไทย') return;
-    rows.push([no, index === 0 ? data.name || '' : '', monk.fullname || '', monk.alias || '', monk.age || '', monk.pansa || '', monk.education || '', monk.origin || '', monk.nationality || '', monk.race || '', monk.passport || '', monk.note || '']);
-    no++;
-});
-});
-if(rows.length <= 1){ alert('⚠️ ไม่พบรายชื่อพระตามเงื่อนไขที่เลือก'); return; }
-const ws = XLSX.utils.aoa_to_sheet(rows);
-ws['!cols'] = [{wch:8},{wch:30},{wch:30},{wch:20},{wch:10},{wch:10},{wch:30},{wch:35},{wch:15},{wch:15},{wch:25},{wch:30}];
-const wb = XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(wb, ws, 'รายชื่อพระไทย');
-XLSX.writeFile(wb, `${fileName}.xlsx`);
+function createThaiExcelReport(snapshot, fileName, stateFilter=null, templeIdFilter=null){
+    const rows = [['ที่','วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ']];
+    let no = 1;
+
+    snapshot.forEach(docItem=>{
+        const data    = docItem.data();
+        const dbState = (data.state || '').trim();
+
+        if(stateFilter    && !dbState.includes(stateFilter)) return;
+        if(templeIdFilter && docItem.id !== templeIdFilter)  return;
+
+        (data.monks||[]).forEach((monk, index)=>{
+            const nat  = (monk.nationality||'').trim();
+            const race = (monk.race||'').trim();
+            if(nat !== 'ไทย' || race !== 'ไทย') return;
+
+            rows.push([no, index===0 ? data.name||'' : '', monk.fullname||'', monk.alias||'', monk.age||'', monk.pansa||'', monk.education||'', monk.origin||'', monk.nationality||'', monk.race||'', monk.passport||'', monk.note||'']);
+            no++;
+        });
+    });
+
+    if(rows.length <= 1){ alert('⚠️ ไม่พบรายชื่อพระตามเงื่อนไขที่เลือก'); return; }
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:8},{wch:30},{wch:30},{wch:20},{wch:10},{wch:10},{wch:30},{wch:35},{wch:15},{wch:15},{wch:25},{wch:30}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'รายชื่อพระไทย');
+    XLSX.writeFile(wb, `${fileName}.xlsx`);
 }
 
-/* EXPORT STATE */
-
-window.exportByState = async function(stateName){
-
-const snapshot =
-await getDocs(
-collection(db,'temples')
-);
-
-createExcelReport(
-snapshot,
-stateName,
-stateName,
-false
-);
-
-}
-
-/* EXPORT TEMPLE */
-
-window.exportByTemple = async function(templeId){
-
-const snapshot =
-await getDocs(
-collection(db,'temples')
-);
-
-createExcelReport(
-snapshot,
-templeId,
-null,
-true
-);
-
-}
-
-/* CREATE EXCEL */
-
-function createExcelReport(
-snapshot,
-fileName,
-stateFilter = null,
-templeMode = false
-){
-
-const rows = [];
-
-rows.push([
-
-'ที่',
-'วัด',
-'ชื่อ/นามสกุล',
-'ฉายา',
-'อายุ',
-'พรรษา',
-'วิทยฐานะ',
-'ภูมิลำเนาเดิม',
-'สัญชาติ',
-'เชื้อชาติ',
-'IC/PASSPORT',
-'หมายเหตุ'
-
-]);
-
-let no = 1;
-
-snapshot.forEach(docItem=>{
-
-const data = docItem.data();
-
-if(
-stateFilter &&
-data.state !== stateFilter
-){
-return;
-}
-
-if(
-templeMode &&
-docItem.id !== fileName
-){
-return;
-}
-
-const monks =
-data.monks || [];
-
-monks.forEach((monk,index)=>{
-
-rows.push([
-
-no,
-
-index === 0
-? data.name || ''
-: '',
-
-monk.fullname || '',
-
-monk.alias || '',
-
-monk.age || '',
-
-monk.pansa || '',
-
-monk.education || '',
-
-monk.origin || '',
-
-monk.nationality || '',
-
-monk.race || '',
-
-monk.passport || '',
-
-monk.note || ''
-
-]);
-
-no++;
-
-});
-
-});
-
-const ws =
-XLSX.utils.aoa_to_sheet(rows);
-
-ws['!cols'] = [
-
-{wch:8},
-{wch:30},
-{wch:30},
-{wch:20},
-{wch:10},
-{wch:10},
-{wch:30},
-{wch:35},
-{wch:15},
-{wch:15},
-{wch:25},
-{wch:30}
-
-];
-
-const wb =
-XLSX.utils.book_new();
-
-XLSX.utils.book_append_sheet(
-wb,
-ws,
-'รายงาน'
-);
-
-XLSX.writeFile(
-wb,
-`${fileName}.xlsx`
-);
-
-}
-
-/* ADMINS */
-
+/* ─── ADMIN ─── */
 async function loadAdmins(){
+    const snapshot = await getDocs(collection(db,'admins'));
+    const table    = document.getElementById('adminTable');
+    table.innerHTML = `
+    <tr>
+        <td>sirichai</td>
+        <td>********</td>
+        <td>👑 Developer</td>
+        <td>❌ ห้ามลบ/แก้ไข</td>
+    </tr>`;
 
-const snapshot =
-await getDocs(
-collection(db,'admins')
-);
+    let total = 1;
+    snapshot.forEach(docItem=>{
+        total++;
+        const data = docItem.data();
+        table.innerHTML += `
+        <tr>
+            <td>${data.user}</td>
+            <td>${data.pass}</td>
+            <td>Admin</td>
+            <td><button onclick="deleteAdmin('${docItem.id}')" class="btn red">ลบ</button></td>
+        </tr>`;
+    });
 
-const table =
-document.getElementById(
-'adminTable'
-);
-
-table.innerHTML = '';
-
-let total = 1;
-
-table.innerHTML += `
-
-<tr>
-
-<td>sirichai</td>
-<td>********</td>
-<td>👑 Developer</td>
-<td>❌ ห้ามลบ/แก้ไข</td>
-
-</tr>
-
-`;
-
-snapshot.forEach(docItem=>{
-
-total++;
-
-const data = docItem.data();
-
-table.innerHTML += `
-
-<tr>
-
-<td>${data.user}</td>
-<td>${data.pass}</td>
-<td>Admin</td>
-
-<td>
-
-<button
-onclick="deleteAdmin('${docItem.id}')"
-class="btn red">
-
-ลบ
-
-</button>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-document.getElementById(
-'totalAdmins'
-).innerHTML = total;
-
+    document.getElementById('totalAdmins').innerHTML = total;
 }
 
 window.addAdmin = async function(){
-
-const user =
-prompt('Username ใหม่');
-
-if(!user) return;
-
-const pass =
-prompt('Password ใหม่');
-
-if(!pass) return;
-
-await addDoc(
-collection(db,'admins'),
-{
-user:user,
-pass:pass
-}
-);
-
-alert('✅ เพิ่มแอดมินสำเร็จ');
-
-loadAdmins();
-
+    const user = prompt('Username ใหม่');
+    if(!user) return;
+    const pass = prompt('Password ใหม่');
+    if(!pass) return;
+    await addDoc(collection(db,'admins'),{ user, pass });
+    alert('✅ เพิ่มแอดมินสำเร็จ');
+    loadAdmins();
 }
 
 window.deleteAdmin = async function(id){
-
-const confirmDelete =
-confirm('ต้องการลบแอดมินใช่หรือไม่ ?');
-
-if(!confirmDelete) return;
-
-await deleteDoc(
-doc(db,'admins',id)
-);
-
-alert('✅ ลบแอดมินสำเร็จ');
-
-loadAdmins();
-
+    if(!confirm('ต้องการลบแอดมินใช่หรือไม่ ?')) return;
+    await deleteDoc(doc(db,'admins',id));
+    alert('✅ ลบแอดมินสำเร็จ');
+    loadAdmins();
 }
 
-/* ✅ ฟังก์ชันลบวัดที่เพิ่มใหม่ (ตามจุดที่ 1 สีแดง) */
-
+/* ─── DELETE TEMPLE POPUP ─── */
 window.deleteTemplePopup = async function(){
+    const snapshot = await getDocs(collection(db,'temples'));
+    let html = `
+    <div id="deleteTempleModal" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;justify-content:center;align-items:center;">
+    <div style="width:650px;background:white;border-radius:30px;padding:35px;max-height:85vh;overflow:auto;">
+        <h2 style="font-size:36px;font-weight:800;margin-bottom:10px;color:#dc2626;">🗑️ ลบรายชื่อวัด</h2>
+        <p style="color:#64748b;margin-bottom:25px;">คำเตือน: การลบวัดจะทำให้ข้อมูลทั้งหมดของวัดและรายชื่อพระหายไปถาวร</p>`;
 
-const snapshot = await getDocs(collection(db,'temples'));
+    snapshot.forEach(docItem=>{
+        const data = docItem.data();
+        html += `<button onclick="confirmDeleteTemple('${docItem.id}','${(data.name||'').replace(/'/g,'')}')"
+        style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:18px;background:#fee2e2;color:#dc2626;font-size:18px;font-weight:700;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+        <span>${data.name||'ไม่ระบุชื่อวัด'}</span>
+        <span style="font-size:12px;background:#fca5a5;padding:4px 10px;border-radius:10px;">ลบข้อมูล</span>
+        </button>`;
+    });
 
-let html = `
+    html += `<button onclick="document.getElementById('deleteTempleModal').remove()"
+    style="width:100%;padding:18px;margin-top:10px;border:none;border-radius:18px;background:#e2e8f0;font-size:20px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
+    </div></div>`;
 
-<div
-id="deleteTempleModal"
-style="
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.6);
-z-index:99999;
-display:flex;
-justify-content:center;
-align-items:center;
-">
-
-<div
-style="
-width:650px;
-background:white;
-border-radius:30px;
-padding:35px;
-max-height:85vh;
-overflow:auto;
-">
-
-<h2 style="font-size:36px;font-weight:800;margin-bottom:10px;color:#dc2626;">
-  🗑️ ลบรายชื่อวัด
-</h2>
-<p style="color:#64748b;margin-bottom:25px;">
-  คำเตือน: การลบวัดจะทำให้ข้อมูลทั้งหมดของวัดและรายชื่อพระที่อยู่ในวัดนั้นหายไปถาวร
-</p>
-
-`;
-
-snapshot.forEach(docItem=>{
-
-const data = docItem.data();
-
-html += `
-
-<button
-
-onclick="confirmDeleteTemple('${docItem.id}', '${data.name}')"
-
-style="
-width:100%;
-padding:18px;
-margin-bottom:12px;
-border:none;
-border-radius:18px;
-background:#fee2e2;
-color:#dc2626;
-font-size:18px;
-font-weight:700;
-text-align:left;
-cursor:pointer;
-display:flex;
-justify-content:space-between;
-align-items:center;
-"
-
->
-
-<span>${data.name || 'ไม่ระบุชื่อวัด'}</span>
-<span style="font-size:12px;background:#fca5a5;padding:4px 10px;border-radius:10px;">ลบข้อมูล</span>
-
-</button>
-
-`;
-
-});
-
-html += `
-
-<button
-
-onclick="
-document.getElementById('deleteTempleModal').remove();
-"
-
-style="
-width:100%;
-padding:18px;
-margin-top:10px;
-border:none;
-border-radius:18px;
-background:#e2e8f0;
-font-size:20px;
-font-weight:700;
-cursor:pointer;
-"
-
->
-
-ปิดหน้าต่าง
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-document.body.insertAdjacentHTML('beforeend', html);
-
+    document.body.insertAdjacentHTML('beforeend', html);
 }
 
 window.confirmDeleteTemple = async function(id, name){
-
-const check = confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบวัด "${name}" ? \n\n** ข้อมูลรายชื่อพระในวัดนี้ทั้งหมดจะหายไปด้วย **`);
-
-if(!check) return;
-
-try {
-    await deleteDoc(doc(db, 'temples', id));
-    alert('✅ ลบวัดสำเร็จ');
-    document.getElementById('deleteTempleModal').remove();
-    
-    // อัปเดตข้อมูลหน้าจอใหม่
-    await loadStatistics();
-    await loadMonks();
-} catch(e) {
-    alert('❌ เกิดข้อผิดพลาด: ' + e.message);
+    if(!confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบวัด "${name}" ?\n\n** ข้อมูลรายชื่อพระในวัดนี้ทั้งหมดจะหายไปด้วย **`)) return;
+    try {
+        await deleteDoc(doc(db,'temples',id));
+        alert('✅ ลบวัดสำเร็จ');
+        document.getElementById('deleteTempleModal').remove();
+        await loadStatistics();
+        await loadMonks();
+    } catch(e){
+        alert('❌ เกิดข้อผิดพลาด: ' + e.message);
+    }
 }
 
+/* ─── LOGOUT ─── */
+window.logout = function(){ location.reload(); }
+
+/* ─── HELPERS ─── */
+function buildMonkRow(monk, data, docId, idx){
+    return `
+    <tr>
+        <td>${monk.fullname  ||''}</td>
+        <td>${monk.alias     ||''}</td>
+        <td>${monk.age       ||''}</td>
+        <td>${monk.pansa     ||''}</td>
+        <td>${data.name      ||''}</td>
+        <td>${data.state     ||''}</td>
+        <td>${monk.passport  ||''}</td>
+        <td>${monk.origin    ||''}</td>
+        <td>${monk.education ||''}</td>
+        <td>${monk.note      ||''}</td>
+        <td><button onclick="deleteMonk('${docId}',${idx})" class="delete-btn">🗑️ ลบ</button></td>
+    </tr>`;
 }
 
-/* LOGOUT */
+function buildModalStart(id, title, width){
+    return `<div id="${id}" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;justify-content:center;align-items:center;">
+    <div style="width:${width};background:white;border-radius:30px;padding:35px;max-height:85vh;overflow:auto;">
+    <h2 style="font-size:38px;font-weight:800;margin-bottom:25px;">${title}</h2>`;
+}
 
-window.logout = function(){
-
-location.reload();
-
+function buildModalEnd(id){
+    return `<button onclick="document.getElementById('${id}').remove()"
+    style="width:100%;padding:18px;margin-top:8px;border:none;border-radius:18px;background:#e2e8f0;font-size:20px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
+    </div></div>`;
 }
 
 </script>
