@@ -417,8 +417,17 @@ window.filterByState = async function(stateName){
 
     snapshot.forEach(docItem=>{
         const data    = docItem.data();
-        const dbState = (data.state || '').trim();
-        if(!dbState.includes(cleanName)) return;
+        const dbState = (data.state || '')
+            .replace('รัฐ','')
+            .trim()
+            .toLowerCase();
+
+        const filterState = (stateFilter || '')
+            .replace('รัฐ','')
+            .trim()
+            .toLowerCase();
+
+        if(filterState && dbState !== filterState) return;
 
         if(data.monks){
             data.monks.forEach((monk, monkIndex)=>{
