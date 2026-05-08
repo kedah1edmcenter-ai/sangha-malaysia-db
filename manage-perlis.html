@@ -43,7 +43,6 @@ body {
     box-shadow: 0 0 0 4px rgba(34,197,94,.12);
 }
 
-/* ช่องขนาดเล็ก สำหรับ อายุ พรรษา เชื้อชาติ สัญชาติ */
 .input-sm {
     width: 100%;
     border: 1px solid #cbd5e1;
@@ -116,7 +115,6 @@ td {
     overflow-x: auto;
 }
 
-/* Modal Overlay */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -242,7 +240,7 @@ td {
             </div>
         </div>
 
-        <!-- FORM แถวที่ 1: ชื่อ-นามสกุล | ฉายา | อายุ | พรรษา | เชื้อชาติ | สัญชาติ -->
+        <!-- FORM แถวที่ 1 -->
         <div class="flex gap-4 mb-4 items-end">
             <div style="flex:2.2; min-width:0;">
                 <input id="fullName" type="text" placeholder="ชื่อ/นามสกุล" class="input">
@@ -264,7 +262,7 @@ td {
             </div>
         </div>
 
-        <!-- FORM แถวที่ 2: IC/Passport | สังกัดเดิม | วิทยฐานะ | หมายเหตุ -->
+        <!-- FORM แถวที่ 2 -->
         <div class="flex gap-4 mb-6 items-end">
             <div style="flex:1.5; min-width:0;">
                 <input id="passport" type="text" placeholder="IC / Passport" class="input">
@@ -283,13 +281,8 @@ td {
         <!-- BUTTON -->
         <div class="flex flex-wrap gap-4 mb-8">
             <button id="btnAdd"    class="btn add-btn">➕ เพิ่มรายชื่อ</button>
-
-            <button id="btnAppend" class="btn save-btn">
-            ➕ เพิ่มข้อมูลรายรูป
-            </button>
-
+            <button id="btnAppend" class="btn save-btn">➕ เพิ่มข้อมูลรายรูป</button>
             <button id="btnSearch" class="btn check-btn">🔍 ตรวจสอบข้อมูล</button>
-
             <button id="btnEdit"   class="btn edit-btn">✏️ แก้ไขข้อมูล</button>
         </div>
 
@@ -325,30 +318,27 @@ td {
 
 </main>
 
-<!-- ======== MODAL: ตรวจสอบข้อมูล ======== -->
+<!-- MODAL: ตรวจสอบข้อมูล -->
 <div id="modalSearch" class="modal-overlay">
     <div class="modal-box">
         <button class="modal-close" id="closeSearch">✕</button>
         <h2 class="text-3xl font-bold mb-2 text-slate-800">🔍 ตรวจสอบข้อมูลวัด</h2>
         <p class="text-slate-500 mb-6">ค้นหาวัดจาก Firestore เพื่อตรวจสอบข้อมูลที่บันทึกไว้</p>
-
         <div class="flex gap-3 mb-6">
             <input id="searchInput" type="text" placeholder="พิมพ์ชื่อวัดที่ต้องการค้นหา..." class="input" style="flex:1;">
             <button id="btnDoSearch" class="btn check-btn" style="white-space:nowrap;">ค้นหา</button>
         </div>
-
         <div id="searchResults"></div>
     </div>
 </div>
 
-<!-- ======== MODAL: แก้ไขข้อมูลพระรายบุคคล ======== -->
+<!-- MODAL: แก้ไขข้อมูลพระรายบุคคล -->
 <div id="modalEdit" class="modal-overlay">
     <div class="modal-box">
         <button class="modal-close" id="closeEdit">✕</button>
         <h2 class="text-3xl font-bold mb-2 text-slate-800">✏️ แก้ไขข้อมูลพระภิกษุรายบุคคล</h2>
         <p class="text-slate-500 mb-6">ค้นหาวัด → เลือกพระ → แก้ไขข้อมูล</p>
 
-        <!-- Step 1: ค้นหาวัด -->
         <div id="editStep1">
             <p class="font-bold text-slate-600 mb-3">ขั้นตอนที่ 1 — ค้นหาวัด</p>
             <div class="flex gap-3 mb-6">
@@ -358,7 +348,6 @@ td {
             <div id="editSearchResults"></div>
         </div>
 
-        <!-- Step 2: เลือกพระที่ต้องการแก้ไข -->
         <div id="editStep2" style="display:none;">
             <div class="mb-4 p-4 bg-orange-50 border border-orange-200 rounded-2xl flex justify-between items-center">
                 <p class="font-bold text-orange-700" id="editTempleNameLabel"></p>
@@ -368,7 +357,6 @@ td {
             <div id="editMonkSelectList"></div>
         </div>
 
-        <!-- Step 3: แก้ไขข้อมูลพระรายบุคคล -->
         <div id="editStep3" style="display:none;">
             <div class="mb-4 p-4 bg-orange-50 border border-orange-200 rounded-2xl flex justify-between items-center">
                 <p class="font-bold text-orange-700" id="editMonkLabel"></p>
@@ -423,50 +411,21 @@ td {
                 <button id="btnSaveEdit" class="btn save-btn">✅ บันทึกการแก้ไข</button>
             </div>
         </div>
-
     </div>
 </div>
 
-<!-- ===== MODAL เพิ่มข้อมูลรายรูป ===== -->
-
+<!-- MODAL: เพิ่มข้อมูลรายรูป -->
 <div id="modalAppend" class="modal-overlay">
-
     <div class="modal-box">
-
         <button class="modal-close" id="closeAppend">✕</button>
-
-        <h2 class="text-3xl font-bold mb-2 text-slate-800">
-            ➕ เพิ่มข้อมูลพระเข้าวัดเดิม
-        </h2>
-
-        <p class="text-slate-500 mb-6">
-            ค้นหาวัด → เลือกวัด → เพิ่มข้อมูลใหม่
-        </p>
-
+        <h2 class="text-3xl font-bold mb-2 text-slate-800">➕ เพิ่มข้อมูลพระเข้าวัดเดิม</h2>
+        <p class="text-slate-500 mb-6">ค้นหาวัด → เลือกวัด → เพิ่มข้อมูลใหม่</p>
         <div class="flex gap-3 mb-6">
-
-            <input
-                id="appendSearchInput"
-                type="text"
-                placeholder="พิมพ์ชื่อวัด..."
-                class="input"
-                style="flex:1;"
-            >
-
-            <button
-                id="btnAppendSearch"
-                class="btn save-btn"
-                style="white-space:nowrap;"
-            >
-                ค้นหา
-            </button>
-
+            <input id="appendSearchInput" type="text" placeholder="พิมพ์ชื่อวัด..." class="input" style="flex:1;">
+            <button id="btnAppendSearch" class="btn save-btn" style="white-space:nowrap;">ค้นหา</button>
         </div>
-
         <div id="appendSearchResults"></div>
-
     </div>
-
 </div>
 
 <script type="module">
@@ -492,8 +451,20 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
 let monkData = [];
-let appendTempleId = null;
+let appendTempleId   = null;
 let appendTempleData = null;
+
+/* ─── ฟังก์ชันแปลงวันที่เป็น string ─── */
+function formatDateTime(isoStr){
+    if(!isoStr) return '-';
+    const d = new Date(isoStr);
+    const yyyy = d.getFullYear();
+    const mm   = String(d.getMonth()+1).padStart(2,'0');
+    const dd   = String(d.getDate()).padStart(2,'0');
+    const hh   = String(d.getHours()).padStart(2,'0');
+    const min  = String(d.getMinutes()).padStart(2,'0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+}
 
 /* ─── ADD ─── */
 function addMonk(){
@@ -507,7 +478,8 @@ function addMonk(){
         passport    : document.getElementById('passport').value,
         origin      : document.getElementById('origin').value,
         education   : document.getElementById('education').value,
-        note        : document.getElementById('remark').value
+        note        : document.getElementById('remark').value,
+        createdAt   : new Date().toISOString()   /* ✅ บันทึกเวลาแต่ละรูปแยกกัน */
     };
     monkData.push(monk);
     renderTable();
@@ -562,173 +534,109 @@ async function saveAllData(){
             return;
         }
 
+        if(monkData.length === 0){
+            alert('⚠️ กรุณาเพิ่มรายชื่อพระก่อนบันทึก');
+            return;
+        }
+
         const snapshot = await getDocs(collection(db, 'temples'));
-        let existingId = null;
+        let existingId  = null;
+        let oldMonks    = [];
+
         snapshot.forEach(docItem => {
             const data = docItem.data();
             if(data.name && data.name.trim() === templeName){
                 existingId = docItem.id;
+                oldMonks   = data.monks || [];
             }
         });
 
+        /* รวมข้อมูลเก่า + ใหม่ — แต่ละรูปมี createdAt ของตัวเอง */
+        const mergedMonks = [...oldMonks, ...monkData];
+
         if(existingId){
-
-            let oldMonks = [];
-
-            snapshot.forEach(docItem => {
-
-                if(docItem.id === existingId){
-
-                    const oldData = docItem.data();
-
-                    oldMonks = oldData.monks || [];
-                }
-            });
-
-            /* รวมข้อมูลเก่า + ใหม่ */
-
-            const mergedMonks = [
-                ...oldMonks,
-                ...monkData
-            ];
-
+            /* อัปเดตวัดเดิม — ไม่ใส่ updatedAt ระดับ document */
             await updateDoc(doc(db, 'temples', existingId), {
-
-                name: templeName,
-
-                address: templeAddress,
-
-                monks: mergedMonks,
-
-                updatedAt: new Date()
+                name    : templeName,
+                address : templeAddress,
+                monks   : mergedMonks
             });
             alert('✅ อัปเดตข้อมูลสำเร็จ');
         } else {
+            /* สร้างวัดใหม่ */
             await addDoc(collection(db, 'temples'), {
-                name: templeName, address: templeAddress,
-                state: 'เปอร์ลิส', monks: monkData, createdAt: new Date()
+                name      : templeName,
+                address   : templeAddress,
+                state     : 'เปอร์ลิส',
+                monks     : monkData,
+                createdAt : new Date().toISOString()
             });
             alert('✅ บันทึกข้อมูลสำเร็จ');
         }
+
+        monkData = [];
+        renderTable();
+
     } catch(error){
         console.error(error);
         alert('❌ บันทึกไม่สำเร็จ: ' + error.message);
     }
 }
 
-/* ─────────────────────────────
-   APPEND NEW MONK TO OLD TEMPLE
-───────────────────────────── */
-
+/* ─── APPEND: เปิด Modal ─── */
 function openAppendModal(){
-
-    document.getElementById('appendSearchInput').value = '';
+    document.getElementById('appendSearchInput').value   = '';
     document.getElementById('appendSearchResults').innerHTML = '';
-
-    document.getElementById('modalAppend')
-        .classList.add('active');
+    document.getElementById('modalAppend').classList.add('active');
 }
 
-/* ค้นหาวัด */
-
+/* ─── APPEND: ค้นหาวัด ─── */
 async function doAppendSearch(){
-
-    const keyword =
-        document.getElementById('appendSearchInput')
-        .value.trim().toLowerCase();
-
-    const resultsDiv =
-        document.getElementById('appendSearchResults');
-
-    resultsDiv.innerHTML =
-        '<p class="text-slate-500">⏳ กำลังค้นหา...</p>';
+    const keyword    = document.getElementById('appendSearchInput').value.trim().toLowerCase();
+    const resultsDiv = document.getElementById('appendSearchResults');
+    resultsDiv.innerHTML = '<p class="text-slate-500">⏳ กำลังค้นหา...</p>';
 
     try {
-
-        const snapshot =
-            await getDocs(collection(db, 'temples'));
-
+        const snapshot = await getDocs(collection(db, 'temples'));
         let found = [];
-
         snapshot.forEach(docItem => {
-
             const data = docItem.data();
-
-            if(
-                !keyword ||
-                (data.name &&
-                 data.name.toLowerCase().includes(keyword))
-            ){
-                found.push({
-                    id: docItem.id,
-                    ...data
-                });
+            if(!keyword || (data.name && data.name.toLowerCase().includes(keyword))){
+                found.push({ id: docItem.id, ...data });
             }
         });
 
         if(found.length === 0){
-
-            resultsDiv.innerHTML =
-                '<p class="text-red-500 font-bold">❌ ไม่พบวัด</p>';
-
+            resultsDiv.innerHTML = '<p class="text-red-500 font-bold">❌ ไม่พบวัด</p>';
             return;
         }
 
         resultsDiv.innerHTML = '';
-
         found.forEach(temple => {
-
             const div = document.createElement('div');
-
             div.className = 'result-row';
-
             div.innerHTML = `
-                <p class="text-xl font-bold text-green-700">
-                    🏛️ ${temple.name}
-                </p>
-
-                <p class="text-slate-500 mt-1">
-                    👤 ${(temple.monks||[]).length} รูป
-                </p>
-
-                <p class="text-green-600 font-bold mt-2">
-                    คลิกเพื่อเลือกวัดนี้
-                </p>
-            `;
+                <p class="text-xl font-bold text-green-700">🏛️ ${temple.name}</p>
+                <p class="text-slate-500 mt-1">👤 ${(temple.monks||[]).length} รูป</p>
+                <p class="text-green-600 font-bold mt-2">คลิกเพื่อเลือกวัดนี้</p>`;
 
             div.addEventListener('click', () => {
-
                 appendTempleId   = temple.id;
                 appendTempleData = temple;
-
-                document.getElementById('templeName').value =
-                    temple.name || '';
-
-                document.getElementById('templeAddress').value =
-                    temple.address || '';
-
+                document.getElementById('templeName').value    = temple.name    || '';
+                document.getElementById('templeAddress').value = temple.address || '';
                 monkData = [];
-
                 renderTable();
-
-                document.getElementById('modalAppend')
-                    .classList.remove('active');
-
-                alert(
-                    '✅ เลือกวัดเรียบร้อย\n\n' +
-                    'กรอกข้อมูลพระใหม่ แล้วกด "ยืนยันบันทึกทั้งหมด"'
-                );
+                document.getElementById('modalAppend').classList.remove('active');
+                alert('✅ เลือกวัดเรียบร้อย\n\nกรอกข้อมูลพระใหม่ แล้วกด "ยืนยันบันทึกทั้งหมด"');
             });
 
             resultsDiv.appendChild(div);
         });
 
     } catch(err){
-
         console.error(err);
-
-        resultsDiv.innerHTML =
-            '<p class="text-red-500">❌ เกิดข้อผิดพลาด</p>';
+        resultsDiv.innerHTML = '<p class="text-red-500">❌ เกิดข้อผิดพลาด</p>';
     }
 }
 
@@ -737,11 +645,7 @@ function checkData(){
     const templeName = document.getElementById('templeName').value.trim();
     const templeAddr = document.getElementById('templeAddress').value.trim();
     const count      = monkData.length;
-
-    if(!templeName){
-        alert('⚠️ ยังไม่ได้กรอกชื่อวัด');
-        return;
-    }
+    if(!templeName){ alert('⚠️ ยังไม่ได้กรอกชื่อวัด'); return; }
     alert(
         `✅ ตรวจสอบข้อมูลเรียบร้อย\n\n` +
         `🏛️ ชื่อวัด : ${templeName}\n` +
@@ -750,15 +654,16 @@ function checkData(){
     );
 }
 
-/* ─── SEARCH (ตรวจสอบข้อมูลจาก Firestore) ─── */
+/* ─── SEARCH: เปิด Modal ─── */
 function openSearchModal(){
-    document.getElementById('searchInput').value = '';
+    document.getElementById('searchInput').value   = '';
     document.getElementById('searchResults').innerHTML = '';
     document.getElementById('modalSearch').classList.add('active');
 }
 
+/* ─── SEARCH: ค้นหา ─── */
 async function doSearch(){
-    const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+    const keyword    = document.getElementById('searchInput').value.trim().toLowerCase();
     const resultsDiv = document.getElementById('searchResults');
     resultsDiv.innerHTML = '<p class="text-slate-500">⏳ กำลังค้นหา...</p>';
 
@@ -780,7 +685,7 @@ async function doSearch(){
         resultsDiv.innerHTML = '';
         found.forEach(temple => {
             const monks = temple.monks || [];
-            const div = document.createElement('div');
+            const div   = document.createElement('div');
             div.className = 'result-row';
             div.innerHTML = `
                 <div class="flex justify-between items-center">
@@ -797,6 +702,7 @@ async function doSearch(){
                                 <th>ชื่อ</th><th>ฉายา</th><th>อายุ</th><th>พรรษา</th>
                                 <th>เชื้อชาติ</th><th>สัญชาติ</th><th>IC/Passport</th>
                                 <th>สังกัดเดิม</th><th>วิทยฐานะ</th><th>หมายเหตุ</th>
+                                <th>วัน/เวลาบันทึก</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -812,6 +718,7 @@ async function doSearch(){
                                     <td>${m.origin||''}</td>
                                     <td>${m.education||''}</td>
                                     <td>${m.note||''}</td>
+                                    <td>${formatDateTime(m.createdAt)}</td>
                                 </tr>`).join('')}
                         </tbody>
                     </table>
@@ -825,17 +732,17 @@ async function doSearch(){
     }
 }
 
-/* ─── EDIT — แก้ไขพระรายบุคคล ─── */
-let editingDocId  = null;
-let editingMonks  = [];
+/* ─── EDIT ─── */
+let editingDocId     = null;
+let editingMonks     = [];
 let editingMonkIndex = null;
 
 function openEditModal(){
-    document.getElementById('editSearchInput').value = '';
+    document.getElementById('editSearchInput').value      = '';
     document.getElementById('editSearchResults').innerHTML = '';
-    document.getElementById('editStep1').style.display = 'block';
-    document.getElementById('editStep2').style.display = 'none';
-    document.getElementById('editStep3').style.display = 'none';
+    document.getElementById('editStep1').style.display    = 'block';
+    document.getElementById('editStep2').style.display    = 'none';
+    document.getElementById('editStep3').style.display    = 'none';
     document.getElementById('modalEdit').classList.add('active');
 }
 
@@ -877,11 +784,9 @@ async function doEditSearch(){
     }
 }
 
-/* Step 2: แสดงรายชื่อพระให้เลือก */
 function loadMonkSelectList(temple){
     editingDocId  = temple.id;
     editingMonks  = JSON.parse(JSON.stringify(temple.monks || []));
-
     document.getElementById('editTempleNameLabel').textContent = `🏛️ วัด: ${temple.name}`;
 
     const list = document.getElementById('editMonkSelectList');
@@ -893,7 +798,6 @@ function loadMonkSelectList(temple){
         editingMonks.forEach((m, i) => {
             const row = document.createElement('div');
             row.className = 'result-row';
-            row.style.cursor = 'pointer';
             row.innerHTML = `
                 <div class="flex justify-between items-center">
                     <div>
@@ -902,7 +806,8 @@ function loadMonkSelectList(temple){
                             ฉายา: ${m.alias||'-'} &nbsp;|&nbsp;
                             อายุ: ${m.age||'-'} &nbsp;|&nbsp;
                             พรรษา: ${m.pansa||'-'} &nbsp;|&nbsp;
-                            IC: ${m.passport||'-'}
+                            IC: ${m.passport||'-'} &nbsp;|&nbsp;
+                            บันทึกเมื่อ: ${formatDateTime(m.createdAt)}
                         </p>
                     </div>
                     <span class="text-orange-500 font-bold text-sm">✏️ แก้ไข</span>
@@ -917,11 +822,9 @@ function loadMonkSelectList(temple){
     document.getElementById('editStep3').style.display = 'none';
 }
 
-/* Step 3: โหลดข้อมูลพระรูปที่เลือกลงฟอร์ม */
 function loadMonkEditForm(index){
     editingMonkIndex = index;
     const m = editingMonks[index];
-
     document.getElementById('editMonkLabel').textContent =
         `✏️ แก้ไข: รูปที่ ${index+1} — ${m.fullname || '(ไม่ระบุชื่อ)'}`;
 
@@ -940,9 +843,12 @@ function loadMonkEditForm(index){
     document.getElementById('editStep3').style.display = 'block';
 }
 
-/* บันทึกข้อมูลพระรายบุคคล → อัปเดต Firestore */
+/* ✅ บันทึกการแก้ไข — คง createdAt เดิมไว้ ไม่เปลี่ยน */
 async function saveEditData(){
     try {
+        /* เก็บ createdAt เดิมของรูปที่กำลังแก้ไข */
+        const originalCreatedAt = editingMonks[editingMonkIndex].createdAt || new Date().toISOString();
+
         editingMonks[editingMonkIndex] = {
             fullname    : document.getElementById('eFullName') .value.trim(),
             alias       : document.getElementById('eAlias')    .value.trim(),
@@ -953,12 +859,13 @@ async function saveEditData(){
             passport    : document.getElementById('ePassport') .value.trim(),
             origin      : document.getElementById('eOrigin')   .value.trim(),
             education   : document.getElementById('eEducation').value.trim(),
-            note        : document.getElementById('eRemark')   .value.trim()
+            note        : document.getElementById('eRemark')   .value.trim(),
+            createdAt   : originalCreatedAt   /* ✅ คืนเวลาเดิม ไม่เปลี่ยน */
         };
 
+        /* อัปเดตเฉพาะ array monks — ไม่แตะ timestamp ระดับ document */
         await updateDoc(doc(db, 'temples', editingDocId), {
-            monks: editingMonks,
-            updatedAt: new Date()
+            monks: editingMonks
         });
 
         alert('✅ บันทึกข้อมูลพระเรียบร้อยแล้ว');
@@ -970,23 +877,26 @@ async function saveEditData(){
     }
 }
 
-/* ─── WIRE UP ALL BUTTONS ─── */
+/* ─── WIRE UP ─── */
 document.getElementById('btnAdd')       .addEventListener('click', addMonk);
 document.getElementById('btnSearch')    .addEventListener('click', openSearchModal);
 document.getElementById('btnEdit')      .addEventListener('click', openEditModal);
 document.getElementById('btnSave')      .addEventListener('click', saveAllData);
 document.getElementById('btnCheck')     .addEventListener('click', checkData);
+document.getElementById('btnAppend')    .addEventListener('click', openAppendModal);
+document.getElementById('btnAppendSearch').addEventListener('click', doAppendSearch);
 
-document.getElementById('closeSearch')  .addEventListener('click', () =>
+document.getElementById('closeSearch') .addEventListener('click', () =>
     document.getElementById('modalSearch').classList.remove('active'));
-document.getElementById('btnDoSearch')  .addEventListener('click', doSearch);
-document.getElementById('searchInput')  .addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+document.getElementById('btnDoSearch') .addEventListener('click', doSearch);
+document.getElementById('searchInput') .addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
 
-document.getElementById('closeEdit')    .addEventListener('click', () =>
+document.getElementById('closeEdit')   .addEventListener('click', () =>
     document.getElementById('modalEdit').classList.remove('active'));
 document.getElementById('btnEditSearch').addEventListener('click', doEditSearch);
 document.getElementById('editSearchInput').addEventListener('keydown', e => { if(e.key==='Enter') doEditSearch(); });
-document.getElementById('btnSaveEdit')  .addEventListener('click', saveEditData);
+document.getElementById('btnSaveEdit') .addEventListener('click', saveEditData);
+
 document.getElementById('btnBackToStep1').addEventListener('click', () => {
     document.getElementById('editStep1').style.display = 'block';
     document.getElementById('editStep2').style.display = 'none';
@@ -997,24 +907,16 @@ document.getElementById('btnBackToStep2').addEventListener('click', () => {
     document.getElementById('editStep3').style.display = 'none';
 });
 
-document.getElementById('btnAppend')
-    .addEventListener('click', openAppendModal);
+document.getElementById('closeAppend') .addEventListener('click', () =>
+    document.getElementById('modalAppend').classList.remove('active'));
 
-document.getElementById('btnAppendSearch')
-    .addEventListener('click', doAppendSearch);
-
-document.getElementById('closeAppend')
-    .addEventListener('click', () => {
-
-        document.getElementById('modalAppend')
-            .classList.remove('active');
-});
-
-/* ปิด modal เมื่อคลิก overlay */
-document.getElementById('modalSearch').addEventListener('click', function(e){
+document.getElementById('modalSearch') .addEventListener('click', function(e){
     if(e.target === this) this.classList.remove('active');
 });
-document.getElementById('modalEdit').addEventListener('click', function(e){
+document.getElementById('modalEdit')   .addEventListener('click', function(e){
+    if(e.target === this) this.classList.remove('active');
+});
+document.getElementById('modalAppend') .addEventListener('click', function(e){
     if(e.target === this) this.classList.remove('active');
 });
 
