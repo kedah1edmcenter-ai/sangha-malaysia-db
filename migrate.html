@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Migration: เพิ่ม createdAt ให้ monk เก่า</title>
+<style>
+body { font-family: sans-serif; padding: 40px; background: #f1f5f9; }
+.log { background: #1e293b; color: #94e2a0; padding: 24px;
+       border-radius: 16px; font-size: 15px; line-height: 2;
+       max-height: 70vh; overflow-y: auto; white-space: pre-wrap; }
+button { padding: 18px 40px; font-size: 20px; font-weight: 700;
+         background: #16a34a; color: white; border: none;
+         border-radius: 14px; cursor: pointer; margin-bottom: 24px; }
+button:disabled { background: #94a3b8; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<h1>🔧 Migration: เพิ่ม createdAt ให้พระที่ยังไม่มี</h1>
+<p style="color:#64748b; margin-bottom:20px;">
+    รันครั้งเดียว — จะเพิ่ม <code>createdAt</code> ให้แต่ละ monk
+    ที่ยังไม่มี โดยใช้เวลาของ document เป็นค่าตั้งต้น
+</p>
+
+<button id="btnRun" onclick="runMigration()">▶️ เริ่ม Migration</button>
+
+<div id="log" class="log">รอคำสั่ง...</div>
+
+<script type="module">
+
+import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, getDocs, updateDoc, doc }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCOX6wT65phG79nSYFcqq40sQ4xTU15rI0",
+    authDomain: "sangha-malaysia-db.firebaseapp.com",
+    projectId: "sangha-malaysia-db",
+    storageBucket: "sangha-malaysia-db.appspot.com",
+    messagingSenderId: "113712257853",
+    appId: "1:113712257853:web:8b8dc634917aeeb49ac354"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+const logEl  = document.getElementById('log');
+const btnRun = document.getElementById('btnRun');
+
+function log(msg){ logEl.textContent += '\n' + msg; logEl.scrollTop = 9999; }
+
+window.runMigration = async function(){
+    btnRun.disabled = true;
+    logEl.textContent = '🚀 เริ่ม Migration...\n';
+
+    try {
+        const snapshot = await getDocs(collection(db, 'temples'));
+        let templeCount = 0;
+        let updatedMonk = 0;
+        let skippedMonk = 0;
+
+        for(const docItem of snapshot.docs){
+            const data   = docItem.data();
+            const monks  = data.monks || [];
+            const temple = data.name || docItem.id;
+
+            /* หา fallback timestamp จาก document */
+            let fallback = new Date().toISOString();
+
+            if(data.createdAt){
+                if(typeof data.createdAt.toDate === 'function'){
+                    fallback = data.createdAt.toDate().toISOString();
+                } else {
+                    fallback = new Date(data.createdAt).toISOString();
+                }
+            } else if(data.updatedAt){
+                if(typeof data.updatedAt.toDate === 'function'){
+                    fallback = data.updatedAt.toDate().toISOString();
+                } else {
+                    fallback = new Date(data.updatedAt).toISOString();
+                }
+            }
+
+            let changed = false;
+
+            const updatedMonks = monks.map((monk, i) => {
+                if(monk.createdAt){
+                    skippedMonk++;
+                    return monk; /* มีอยู่แล้ว ไม่แตะ */
+                }
+                /* ไม่มี createdAt → ใส่ fallback */
+                changed = true;
+                updatedMonk++;
+                log(`  ✅ [${temple}] รูปที่ ${i+1}: ${monk.fullname || '(ไม่ระบุ)'} → ${fallback}`);
+                return { ...monk, createdAt: fallback };
+            });
+
+            if(changed){
+                await updateDoc(doc(db, 'temples', docItem.id), {
+                    monks: updatedMonks
+                });
+                templeCount++;
+                log(`  💾 บันทึกวัด: ${temple} (${updatedMonks.length} รูป)\n`);
+            }
+        }
+
+        log('─────────────────────────────────');
+        log(`✅ Migration เสร็จสิ้น`);
+        log(`   วัดที่อัปเดต  : ${templeCount} วัด`);
+        log(`   พระที่อัปเดต  : ${updatedMonk} รูป`);
+        log(`   พระที่มีอยู่แล้ว: ${skippedMonk} รูป`);
+        log('─────────────────────────────────');
+        log('🎉 ปิดหน้านี้ได้เลย แล้วลองโหลดหน้าแอดมินใหม่');
+
+    } catch(err){
+        log('❌ Error: ' + err.message);
+        console.error(err);
+    }
+
+    btnRun.disabled = false;
+}
+
+</script>
+</body>
+</html>
