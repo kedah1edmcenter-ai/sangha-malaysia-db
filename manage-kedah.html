@@ -568,6 +568,10 @@ td {
 
             <button id="btnAdd"    class="btn add-btn">➕ เพิ่มรายชื่อ</button>
 
+            <button id="btnAppend" class="btn save-btn">
+            ➕ เพิ่มข้อมูลรายรูป
+            </button>
+
             <button id="btnSearch" class="btn check-btn">🔍 ตรวจสอบข้อมูล</button>
 
             <button id="btnEdit"   class="btn edit-btn">✏️ แก้ไขข้อมูล</button>
@@ -842,7 +846,47 @@ td {
 
 </div>
 
+<!-- ===== MODAL เพิ่มข้อมูลรายรูป ===== -->
 
+<div id="modalAppend" class="modal-overlay">
+
+    <div class="modal-box">
+
+        <button class="modal-close" id="closeAppend">✕</button>
+
+        <h2 class="text-3xl font-bold mb-2 text-slate-800">
+            ➕ เพิ่มข้อมูลพระเข้าวัดเดิม
+        </h2>
+
+        <p class="text-slate-500 mb-6">
+            ค้นหาวัด → เลือกวัด → เพิ่มข้อมูลใหม่
+        </p>
+
+        <div class="flex gap-3 mb-6">
+
+            <input
+                id="appendSearchInput"
+                type="text"
+                placeholder="พิมพ์ชื่อวัด..."
+                class="input"
+                style="flex:1;"
+            >
+
+            <button
+                id="btnAppendSearch"
+                class="btn save-btn"
+                style="white-space:nowrap;"
+            >
+                ค้นหา
+            </button>
+
+        </div>
+
+        <div id="appendSearchResults"></div>
+
+    </div>
+
+</div>
 
 <script type="module">
 
@@ -889,7 +933,8 @@ const db  = getFirestore(app);
 
 
 let monkData = [];
-
+let appendTempleId = null;
+let appendTempleData = null;
 
 
 /* ─── ADD ─── */
@@ -1046,24 +1091,34 @@ async function saveAllData(){
 
         if(existingId){
 
-            await updateDoc(doc(db, 'temples', existingId), {
+            let oldMonks = [];
 
-                name: templeName, address: templeAddress,
+            snapshot.forEach(docItem => {
 
-                monks: monkData, updatedAt: new Date()
+                if(docItem.id === existingId){
 
+                    const oldData = docItem.data();
+
+                    oldMonks = oldData.monks || [];
+                 }
             });
 
-            alert('✅ อัปเดตข้อมูลสำเร็จ');
+            /* รวมข้อมูลเก่า + ใหม่ */
 
-        } else {
+            const mergedMonks = [
+                ...oldMonks,
+                ...monkData
+            ];
 
-            await addDoc(collection(db, 'temples'), {
+            await updateDoc(doc(db, 'temples', existingId), {
 
-                name: templeName, address: templeAddress,
+                name: templeName,
 
-                state: 'เคดาห์', monks: monkData, createdAt: new Date()
+                address: templeAddress,
 
+                monks: mergedMonks,
+
+                updatedAt: new Date()
             });
 
             alert('✅ บันทึกข้อมูลสำเร็จ');
@@ -1080,7 +1135,121 @@ async function saveAllData(){
 
 }
 
+/* ─────────────────────────────
+   APPEND NEW MONK TO OLD TEMPLE
+───────────────────────────── */
 
+function openAppendModal(){
+
+    document.getElementById('appendSearchInput').value = '';
+    document.getElementById('appendSearchResults').innerHTML = '';
+
+    document.getElementById('modalAppend')
+        .classList.add('active');
+}
+
+/* ค้นหาวัด */
+
+async function doAppendSearch(){
+
+    const keyword =
+        document.getElementById('appendSearchInput')
+        .value.trim().toLowerCase();
+
+    const resultsDiv =
+        document.getElementById('appendSearchResults');
+
+    resultsDiv.innerHTML =
+        '<p class="text-slate-500">⏳ กำลังค้นหา...</p>';
+
+    try {
+
+        const snapshot =
+            await getDocs(collection(db, 'temples'));
+
+        let found = [];
+
+        snapshot.forEach(docItem => {
+
+            const data = docItem.data();
+
+            if(
+                !keyword ||
+                (data.name &&
+                 data.name.toLowerCase().includes(keyword))
+            ){
+                found.push({
+                    id: docItem.id,
+                    ...data
+                });
+            }
+        });
+
+        if(found.length === 0){
+
+            resultsDiv.innerHTML =
+                '<p class="text-red-500 font-bold">❌ ไม่พบวัด</p>';
+
+            return;
+        }
+
+        resultsDiv.innerHTML = '';
+
+        found.forEach(temple => {
+
+            const div = document.createElement('div');
+
+            div.className = 'result-row';
+
+            div.innerHTML = `
+                <p class="text-xl font-bold text-green-700">
+                    🏛️ ${temple.name}
+                </p>
+
+                <p class="text-slate-500 mt-1">
+                    👤 ${(temple.monks||[]).length} รูป
+                </p>
+
+                <p class="text-green-600 font-bold mt-2">
+                    คลิกเพื่อเลือกวัดนี้
+                </p>
+            `;
+
+            div.addEventListener('click', () => {
+
+                appendTempleId   = temple.id;
+                appendTempleData = temple;
+
+                document.getElementById('templeName').value =
+                    temple.name || '';
+
+                document.getElementById('templeAddress').value =
+                    temple.address || '';
+
+                monkData = [];
+
+                renderTable();
+
+                document.getElementById('modalAppend')
+                    .classList.remove('active');
+
+                alert(
+                    '✅ เลือกวัดเรียบร้อย\n\n' +
+                    'กรอกข้อมูลพระใหม่ แล้วกด "ยืนยันบันทึกทั้งหมด"'
+                );
+            });
+
+            resultsDiv.appendChild(div);
+        });
+
+    } catch(err){
+
+        console.error(err);
+
+        resultsDiv.innerHTML =
+            '<p class="text-red-500">❌ เกิดข้อผิดพลาด</p>';
+    }
+}
 
 /* ─── CHECK ─── */
 
@@ -1610,6 +1779,18 @@ document.getElementById('btnBackToStep2').addEventListener('click', () => {
 
 });
 
+document.getElementById('btnAppend')
+    .addEventListener('click', openAppendModal);
+
+document.getElementById('btnAppendSearch')
+    .addEventListener('click', doAppendSearch);
+
+document.getElementById('closeAppend')
+    .addEventListener('click', () => {
+
+        document.getElementById('modalAppend')
+            .classList.remove('active');
+});
 
 
 /* ปิด modal เมื่อคลิก overlay */
