@@ -1,108 +1,115 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>ระบบแอดมินกลาง</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-
 <style>
+body { font-family:'Sarabun',sans-serif; background:#f1f5f9; }
+.header-gradient { background:linear-gradient(135deg,#7c2d12 0%,#ea580c 100%); }
 
-body{
-    font-family:'Sarabun',sans-serif;
-    background:#f1f5f9;
+/* ── STAT CARDS ── */
+.stat-card {
+    background:white; border-radius:24px; padding:26px 28px;
+    box-shadow:0 8px 24px rgba(0,0,0,.07);
+    position:relative; overflow:hidden; transition:.25s;
+}
+.stat-card:hover { transform:translateY(-3px); box-shadow:0 14px 32px rgba(0,0,0,.11); }
+.stat-card .bg-icon {
+    position:absolute; right:-10px; bottom:-14px;
+    font-size:88px; opacity:.07; line-height:1; pointer-events:none; user-select:none;
+}
+.stat-card .s-label { font-size:13px; font-weight:700; color:#94a3b8; letter-spacing:.4px; margin-bottom:6px; }
+.stat-card .s-val   { font-size:52px; font-weight:800; line-height:1; }
+.stat-card .s-sub   { font-size:12px; color:#cbd5e1; margin-top:6px; }
+
+/* ── YEAR CARD (gradient) ── */
+.year-card {
+    border-radius:24px; padding:26px 28px; color:white;
+    position:relative; overflow:hidden; transition:.25s;
+}
+.year-card:hover { transform:translateY(-3px); }
+.year-card .bg-icon {
+    position:absolute; right:-10px; bottom:-14px;
+    font-size:88px; opacity:.12; line-height:1; pointer-events:none; user-select:none;
+}
+.year-card .yc-title { font-size:13px; font-weight:700; opacity:.75; letter-spacing:.5px; margin-bottom:4px; }
+.year-card .yc-year  { font-size:32px; font-weight:800; line-height:1; margin-bottom:16px; }
+.yc-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.yc-item {
+    background:rgba(255,255,255,.18); border-radius:16px; padding:14px 16px;
+    backdrop-filter:blur(4px);
+}
+.yc-item .yi-label { font-size:12px; opacity:.8; margin-bottom:4px; font-weight:600; }
+.yc-item .yi-val   { font-size:30px; font-weight:800; line-height:1; }
+
+/* ── YEAR FILTER BAR ── */
+.year-bar {
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    background:linear-gradient(90deg,#fff7ed,#fef3c7);
+    border:2px solid #fcd34d; border-radius:18px;
+    padding:12px 20px; margin-bottom:22px;
+}
+.year-bar .yb-label { font-size:14px; font-weight:700; color:#92400e; white-space:nowrap; }
+.year-pill {
+    padding:9px 20px; border-radius:12px; border:2px solid #fbbf24;
+    background:white; color:#92400e; font-weight:700; font-size:15px;
+    cursor:pointer; transition:.2s; font-family:'Sarabun',sans-serif;
+}
+.year-pill:hover  { background:#fbbf24; color:white; }
+.year-pill.active { background:#f59e0b; color:white; border-color:#f59e0b;
+                    box-shadow:0 4px 12px rgba(245,158,11,.35); }
+.year-bar .yb-hint {
+    margin-left:auto; font-size:12px; color:#b45309; font-weight:600;
+    background:#fef3c7; padding:6px 14px; border-radius:10px; white-space:nowrap;
 }
 
-.header-gradient{
-    background:linear-gradient(135deg,#7c2d12 0%,#ea580c 100%);
-}
+.card { background:white; border-radius:28px; box-shadow:0 10px 25px rgba(0,0,0,.07); }
 
-.card{
-    background:white;
-    border-radius:28px;
-    box-shadow:0 10px 25px rgba(0,0,0,.07);
-}
-
-.btn{
-    border:none;
-    border-radius:18px;
-    padding:14px 22px;
-    color:white;
-    font-weight:700;
-    cursor:pointer;
-    transition:.25s;
-}
-
-.btn:hover{
-    transform:translateY(-2px);
-}
-
-.blue  { background:#2563eb; }
-.green { background:#16a34a; }
-.red   { background:#dc2626; }
-.orange{ background:#ea580c; }
-.purple{ background:#7c3aed; }
-.gold  { background:#b45309; }
-
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-th{
-    background:#e2e8f0;
-    padding:14px;
-    border:1px solid #cbd5e1;
-    text-align:center;
+.btn {
+    border:none; border-radius:16px; padding:13px 20px; color:white;
+    font-weight:700; cursor:pointer; transition:.25s; font-family:'Sarabun',sans-serif;
     font-size:15px;
 }
+.btn:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,.15); }
+.blue   { background:#2563eb; }
+.green  { background:#16a34a; }
+.red    { background:#dc2626; }
+.orange { background:#ea580c; }
+.purple { background:#7c3aed; }
+.gold   { background:#b45309; }
 
-td{
-    padding:12px;
-    border:1px solid #e2e8f0;
-    font-size:15px;
+table { width:100%; border-collapse:collapse; }
+th { background:#e2e8f0; padding:13px; border:1px solid #cbd5e1; text-align:center; font-size:14px; }
+td { padding:11px; border:1px solid #e2e8f0; font-size:14px; }
+tr:nth-child(even) td { background:#f8fafc; }
+
+.input {
+    width:100%; padding:13px 16px; border-radius:14px;
+    border:1px solid #cbd5e1; outline:none;
+    font-size:15px; font-family:'Sarabun',sans-serif;
+}
+.input:focus { border-color:#ea580c; box-shadow:0 0 0 4px rgba(234,88,12,.1); }
+
+.delete-btn {
+    background:#dc2626; color:white; border:none;
+    padding:7px 13px; border-radius:10px;
+    cursor:pointer; font-weight:700; font-family:'Sarabun',sans-serif; font-size:14px;
 }
 
-.input{
-    width:100%;
-    padding:14px 16px;
-    border-radius:14px;
-    border:1px solid #cbd5e1;
-    outline:none;
-    font-size:16px;
-    font-family:'Sarabun',sans-serif;
+.filter-active-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    background:#dbeafe; color:#1d4ed8; border-radius:10px;
+    padding:5px 12px; font-size:13px; font-weight:700;
 }
-
-.input:focus{
-    border-color:#ea580c;
-    box-shadow:0 0 0 4px rgba(234,88,12,.1);
-}
-
-.delete-btn{
-    background:#dc2626;
-    color:white;
-    border:none;
-    padding:8px 14px;
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:700;
-    font-family:'Sarabun',sans-serif;
-}
-
 </style>
-
 </head>
-
 <body>
 
+<!-- ── LOGIN ── -->
 <div id="loginPage" class="fixed inset-0 flex items-center justify-center bg-slate-900 z-50">
     <div class="bg-white rounded-3xl shadow-2xl p-10 w-[420px]">
         <div class="text-center mb-8">
@@ -110,13 +117,14 @@ td{
             <h1 class="text-3xl font-bold text-slate-800">ADMIN LOGIN</h1>
         </div>
         <div class="space-y-5">
-            <input type="text" id="loginUser" class="input" placeholder="Username">
+            <input type="text"     id="loginUser" class="input" placeholder="Username">
             <input type="password" id="loginPass" class="input" placeholder="Password">
-            <button onclick="loginAdmin()" class="btn orange w-full text-lg">เข้าสู่ระบบ</button>
+            <button onclick="loginAdmin()" class="btn orange w-full text-lg" style="padding:16px;">เข้าสู่ระบบ</button>
         </div>
     </div>
 </div>
 
+<!-- ── MAIN ── -->
 <div id="mainSystem" class="hidden">
 
 <header class="header-gradient text-white p-10 shadow-xl">
@@ -124,11 +132,11 @@ td{
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-4xl font-bold">ระบบแอดมินกลาง</h1>
-                <p class="text-orange-100 mt-3 text-xl">Central Admin System</p>
+                <p class="text-orange-100 mt-2 text-xl">Central Admin System — คณะสงฆ์มาเลเซีย</p>
             </div>
             <div class="text-right">
                 <div id="adminName" class="font-bold text-xl"></div>
-                <button onclick="logout()" class="mt-3 bg-white/20 px-5 py-2 rounded-xl hover:bg-white/30">ออกจากระบบ</button>
+                <button onclick="logout()" class="mt-3 bg-white/20 px-5 py-2 rounded-xl hover:bg-white/30 transition">ออกจากระบบ</button>
             </div>
         </div>
     </div>
@@ -136,25 +144,50 @@ td{
 
 <main class="max-w-7xl mx-auto p-8 space-y-8">
 
-<div class="grid md:grid-cols-4 gap-6">
-    <div class="card p-6">
-        <div class="text-slate-500">จำนวนวัดทั้งหมด</div>
-        <div id="totalTemples" class="text-5xl font-bold mt-3 text-orange-600">0</div>
+<!-- ── DASHBOARD CARDS ── -->
+<!-- Layout: [วัดทั้งหมด] [พระทั้งหมด] [การ์ดปี 2569] — 3 คอลัมน์เท่ากัน -->
+<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; align-items:stretch;">
+
+    <!-- วัดทั้งหมด -->
+    <div class="stat-card">
+        <div class="bg-icon">🏛️</div>
+        <div class="s-label">🏛️ วัดทั้งหมด</div>
+        <div class="s-val" id="totalTemples" style="color:#ea580c;">0</div>
+        <div class="s-sub">ทุกรัฐในมาเลเซีย</div>
     </div>
-    <div class="card p-6">
-        <div class="text-slate-500">จำนวนพระทั้งหมด</div>
-        <div id="totalMonks" class="text-5xl font-bold mt-3 text-green-600">0</div>
+
+    <!-- พระทั้งหมด -->
+    <div class="stat-card">
+        <div class="bg-icon">🧘</div>
+        <div class="s-label">🧘 พระภิกษุทั้งหมด</div>
+        <div class="s-val" id="totalMonks" style="color:#16a34a;">0</div>
+        <div class="s-sub">รวมทุกสัญชาติ</div>
     </div>
-    <div class="card p-6">
-        <div class="text-slate-500">จำนวนรัฐ</div>
-        <div class="text-5xl font-bold mt-3 text-blue-600">7</div>
-    </div>
-    <div class="card p-6">
-        <div class="text-slate-500">จำนวนแอดมิน</div>
-        <div id="totalAdmins" class="text-5xl font-bold mt-3 text-purple-600">0</div>
+
+    <!-- การ์ดปี 2569 (ย้ายมาอยู่แถวเดียวกัน) -->
+    <div class="year-card" style="background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 60%,#7c3aed 100%);
+        box-shadow:0 10px 30px rgba(37,99,235,.30);">
+        <div class="bg-icon">📅</div>
+        <div class="yc-title">📌 ปีสำรวจ</div>
+        <div class="yc-year">พรรษา 2569</div>
+        <div class="yc-grid">
+            <div class="yc-item">
+                <div class="yi-label">🏛️ จำนวนวัด</div>
+                <div class="yi-val" id="y69Temples">0</div>
+            </div>
+            <div class="yc-item">
+                <div class="yi-label">🧘 พระทั้งหมด</div>
+                <div class="yi-val" id="y69Monks">0</div>
+            </div>
+            <div class="yc-item">
+                <div class="yi-label">🇹🇭 พระไทย</div>
+                <div class="yi-val" id="y69ThaiMonks">0</div>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- ── รายงานแยกรัฐ ── -->
 <div class="card p-8">
     <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
         <h2 class="text-3xl font-bold text-slate-800">รายงานแยกรัฐ</h2>
@@ -165,104 +198,66 @@ td{
             <button onclick="exportThaiMonksPopup()" class="btn gold">🇹🇭 นำออกข้อมูลพระไทย</button>
         </div>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th>รัฐ</th>
-                <th>จำนวนวัด</th>
-                <th>จำนวนพระ</th>
-            </tr>
-        </thead>
-        <tbody id="stateTable"></tbody>
-    </table>
-</div>
-
-<div class="card p-8">
-
-    <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-
-        <h2 class="text-3xl font-bold text-slate-800">
-            รายชื่อพระทั้งหมด
-        </h2>
-
-        <div class="flex gap-3 flex-wrap items-center">
-
-            <!-- เลือกปี -->
-            <select
-                id="yearFilter"
-                onchange="filterByYear()"
-                class="input w-[140px] font-bold">
-
-                <option value="ทั้งหมด">
-                    📅 ทุกปี
-                </option>
-
-                <option value="2569">
-                    ปี 2569
-                </option>
-
-                <option value="2570">
-                    ปี 2570
-                </option>
-
-                <option value="2571">
-                    ปี 2571
-                </option>
-
-            </select>
-
-            <!-- แยกรัฐ -->
-            <button
-                onclick="selectStatePopup()"
-                class="btn blue">
-
-                🗺️ คณะสงฆ์รัฐ
-
-            </button>
-
-            <!-- แยกวัด -->
-            <button
-                onclick="selectTemplePopup()"
-                class="btn orange">
-
-                🛕 ดูข้อมูลแบบวัด
-
-            </button>
-
-            <!-- ค้นหา -->
-            <input
-                type="text"
-                id="searchInput"
-                class="input w-[280px]"
-                placeholder="ค้นหาชื่อพระ..."
-                onkeyup="searchMonk()">
-
-        </div>
-
-    </div>
     <div class="overflow-x-auto">
         <table>
-            <thead>
-                <tr>
-                    <th>ชื่อ</th>
-                    <th>ฉายา</th>
-                    <th>อายุ</th>
-                    <th>พรรษา</th>
-                    <th>วัด / ที่อยู่</th>
-                    <th>รัฐ</th>
-                    <th>IC / Passport</th>
-                    <th>ภูมิลำเนา/สังกัดเดิม</th>
-                    <th>วิทยฐานะ</th>
-                    <th>หมายเหตุ</th>
-                    <th>วัน/เวลาบันทึก</th>
-                    <th>จัดการ</th>
-                </tr>
-            </thead>
-            <tbody id="monkTable"></tbody>
+            <thead><tr><th>รัฐ</th><th>จำนวนวัด</th><th>จำนวนพระ</th></tr></thead>
+            <tbody id="stateTable"></tbody>
         </table>
     </div>
 </div>
 
+<!-- ── รายชื่อพระทั้งหมด ── -->
+<div class="card p-8">
+
+    <div class="flex justify-between items-center mb-5 flex-wrap gap-4">
+        <div>
+            <h2 class="text-3xl font-bold text-slate-800">รายชื่อพระทั้งหมด</h2>
+            <div id="filterStatusBadge" class="mt-2"></div>
+        </div>
+        <div class="flex gap-3 flex-wrap items-center">
+            <!-- ค้นหา -->
+            <input type="text" id="searchInput" class="input" style="width:260px;"
+                placeholder="🔍 ค้นหาชื่อพระ..." onkeyup="searchMonk()">
+        </div>
+    </div>
+
+    <!-- ── YEAR FILTER BAR ── -->
+    <div class="year-bar">
+        <span class="yb-label">📅 เลือกปีสำรวจ:</span>
+        <button class="year-pill active" onclick="setYear('ทั้งหมด',this)">ทุกปี</button>
+        <button class="year-pill"        onclick="setYear('2569',this)">ปี 2569</button>
+        <button class="year-pill"        onclick="setYear('2570',this)">ปี 2570</button>
+        <button class="year-pill"        onclick="setYear('2571',this)">ปี 2571</button>
+        <span class="yb-hint">⚠️ เลือกปีก่อน แล้วค่อยกรองรัฐ/วัด</span>
+
+        <!-- ปุ่มคณะสงฆ์รัฐ / ดูแบบวัด อยู่ใน bar -->
+        <div style="margin-left:auto; display:flex; gap:10px; flex-wrap:wrap;">
+            <button onclick="selectStatePopup()" class="btn blue" style="padding:10px 18px;">🗺️ คณะสงฆ์รัฐ</button>
+            <button onclick="selectTemplePopup()" class="btn orange" style="padding:10px 18px;">🛕 ดูแบบวัด</button>
+            <button onclick="resetFilter()" class="btn" style="background:#94a3b8; padding:10px 18px;">↺ รีเซ็ต</button>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table>
+            <thead>
+                <tr>
+                    <th>ชื่อ</th><th>ฉายา</th><th>อายุ</th><th>พรรษา</th>
+                    <th>วัด / ที่อยู่</th><th>รัฐ</th>
+                    <th>IC / Passport</th><th>ภูมิลำเนา/สังกัดเดิม</th>
+                    <th>วิทยฐานะ</th><th>หมายเหตุ</th>
+                    <th>วัน/เวลาบันทึก</th><th>จัดการ</th>
+                </tr>
+            </thead>
+            <tbody id="monkTable"></tbody>
+        </table>
+        <div id="monkTableEmpty" style="display:none;text-align:center;padding:40px;color:#94a3b8;font-size:18px;">
+            ไม่พบข้อมูลในเงื่อนไขที่เลือก
+        </div>
+    </div>
+</div>
+
+<!-- ── จัดการแอดมิน ── -->
 <div class="card p-8">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-3xl font-bold text-slate-800">จัดการแอดมิน</h2>
@@ -272,23 +267,15 @@ td{
         </div>
     </div>
     <table>
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Password</th>
-                <th>สถานะ</th>
-                <th>จัดการ</th>
-            </tr>
-        </thead>
+        <thead><tr><th>Username</th><th>Password</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
         <tbody id="adminTable"></tbody>
     </table>
 </div>
 
 </main>
-</div>
+</div><!-- /mainSystem -->
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
     getFirestore, collection, getDocs,
@@ -310,363 +297,363 @@ const db  = getFirestore(app);
 const developerUser = "sirichai";
 const developerPass = "Sb270887";
 
-/* ─── HELPER: รวมชื่อวัด + ที่อยู่ ─── */
+/* ── state ── */
+let selectedYear   = 'ทั้งหมด';   // ปีที่เลือก
+let allTempleSnap  = null;         // cache snapshot
+
+/* ── HELPERS ── */
 function templeFullName(data){
-    const name    = (data.name    || '').trim();
-    const address = (data.address || '').trim();
-    if(name && address) return `${name} ${address}`;
-    return name || address || '';
+    const n = (data.name    || '').trim();
+    const a = (data.address || '').trim();
+    return (n && a) ? `${n} ${a}` : (n || a || '');
 }
 
-/* ─── HELPER: แปลงเวลา ─── */
-/* ✅ อ่านจาก monk.createdAt เท่านั้น
-   ถ้าไม่มี → แสดง '-' ไม่ fallback ไป document level
-   เพราะ document updatedAt เปลี่ยนทุกครั้งที่บันทึกใหม่ */
 function formatDateTime(val){
     if(!val) return '-';
     let d;
-    if(val && typeof val.toDate === 'function'){
-        d = val.toDate();
-    } else if(val instanceof Date){
-        d = val;
-    } else {
-        d = new Date(val);
-    }
+    if(val && typeof val.toDate === 'function') d = val.toDate();
+    else if(val instanceof Date) d = val;
+    else d = new Date(val);
     if(isNaN(d.getTime())) return '-';
-    const pad = n => String(n).padStart(2,'0');
-    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const p = n => String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
-/* ─── LOGIN ─── */
+/* ── แปลง ค.ศ. → พ.ศ. ──
+   monk.createdAt เก็บเป็น ISO string ค.ศ.
+   ปี 2026 ค.ศ. = ปี 2569 พ.ศ. */
+function getBuddhistYear(val){
+    if(!val) return null;
+    let d;
+    if(val && typeof val.toDate === 'function') d = val.toDate();
+    else if(val instanceof Date) d = val;
+    else d = new Date(val);
+    if(isNaN(d.getTime())) return null;
+    return String(d.getFullYear() + 543);
+}
+
+/* ── กรองปี ── */
+function monkMatchYear(monk){
+    if(selectedYear === 'ทั้งหมด') return true;
+    return getBuddhistYear(monk.createdAt) === selectedYear;
+}
+
+/* ── LOGIN ── */
 window.loginAdmin = async function(){
-    const user = document.getElementById('loginUser').value;
-    const pass = document.getElementById('loginPass').value;
-
-    if(user === developerUser && pass === developerPass){
-        startSystem(developerUser, true);
-        return;
-    }
-
-    const snapshot = await getDocs(collection(db,'admins'));
+    const user = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value.trim();
+    if(user === developerUser && pass === developerPass){ startSystem(user, true); return; }
+    const snap = await getDocs(collection(db,'admins'));
     let found = false;
-    snapshot.forEach(docItem=>{
-        const data = docItem.data();
-        if(data.user === user && data.pass === pass){
-            found = true;
-            startSystem(data.user, false);
-        }
+    snap.forEach(d=>{
+        const data = d.data();
+        if(data.user === user && data.pass === pass){ found = true; startSystem(data.user, false); }
     });
-
     if(!found) alert('❌ Username หรือ Password ไม่ถูกต้อง');
-}
+};
 
-/* ─── START ─── */
-async function startSystem(user, isDeveloper){
+/* ── START ── */
+async function startSystem(user, isDev){
     document.getElementById('loginPage').classList.add('hidden');
     document.getElementById('mainSystem').classList.remove('hidden');
-    document.getElementById('adminName').innerHTML = isDeveloper
-        ? `👑 ${user} (Developer)` : `🛡️ ${user}`;
-
-    await loadStatistics();
-    await loadMonks();
-    await loadAdmins();
+    document.getElementById('adminName').innerHTML = isDev ? `👑 ${user} (Developer)` : `🛡️ ${user}`;
+    allTempleSnap = await getDocs(collection(db,'temples'));
+    loadStatistics();
+    renderMonkTable(allTempleSnap, null, null);
+    loadAdmins();
 }
 
-/* ─── LOAD STATISTICS ─── */
-async function loadStatistics(){
-    const snapshot = await getDocs(collection(db,'temples'));
-    let totalTemple = 0;
-    let totalMonk   = 0;
+/* ── STATISTICS ── */
+function loadStatistics(){
+    let totalTemple = 0, totalMonk = 0;
+    let y69Temple = 0, y69Monk = 0, y69Thai = 0;
     const stateData = {};
 
-    snapshot.forEach(docItem=>{
+    allTempleSnap.forEach(docItem=>{
         totalTemple++;
         const data  = docItem.data();
         const state = data.state || '-';
-
         if(!stateData[state]) stateData[state] = { temples:0, monks:0 };
         stateData[state].temples++;
-        const monkCount = data.monks ? data.monks.length : 0;
-        totalMonk += monkCount;
-        stateData[state].monks += monkCount;
+
+        const monks = data.monks || [];
+        totalMonk += monks.length;
+        stateData[state].monks += monks.length;
+
+        // ปี 2569 = ค.ศ. 2026
+        let has69 = false;
+        monks.forEach(m=>{
+            const by = getBuddhistYear(m.createdAt);
+            if(by === '2569'){
+                if(!has69){ y69Temple++; has69 = true; }
+                y69Monk++;
+                const nat  = (m.nationality||'').trim();
+                const race = (m.race||'').trim();
+                if(nat === 'ไทย' && race === 'ไทย') y69Thai++;
+            }
+        });
     });
 
-    document.getElementById('totalTemples').innerHTML = totalTemple;
-    document.getElementById('totalMonks').innerHTML   = totalMonk;
+    document.getElementById('totalTemples').textContent = totalTemple;
+    document.getElementById('totalMonks').textContent   = totalMonk;
+    document.getElementById('y69Temples').textContent   = y69Temple;
+    document.getElementById('y69Monks').textContent     = y69Monk;
+    document.getElementById('y69ThaiMonks').textContent = y69Thai;
 
     const table = document.getElementById('stateTable');
     table.innerHTML = '';
-    Object.keys(stateData).forEach(state=>{
-        table.innerHTML += `
-        <tr>
+    Object.keys(stateData).sort().forEach(state=>{
+        table.innerHTML += `<tr>
             <td>${state}</td>
-            <td>${stateData[state].temples}</td>
-            <td>${stateData[state].monks}</td>
+            <td style="text-align:center;">${stateData[state].temples}</td>
+            <td style="text-align:center;">${stateData[state].monks}</td>
         </tr>`;
     });
 }
 
-/* ─── LOAD MONKS ─── */
-async function loadMonks(){
-
-    const selectedYear =
-        document.getElementById('yearFilter').value;
-
-    const snapshot =
-        await getDocs(collection(db,'temples'));
-
-    const table =
-        document.getElementById('monkTable');
-
+/* ── RENDER TABLE (core) ──
+   stateFilter   = ชื่อรัฐ (string) หรือ null
+   templeIdFilter = docId (string) หรือ null
+*/
+function renderMonkTable(snap, stateFilter, templeIdFilter){
+    const table  = document.getElementById('monkTable');
+    const empty  = document.getElementById('monkTableEmpty');
     table.innerHTML = '';
 
-    snapshot.forEach(docItem=>{
+    const cleanState = (stateFilter||'').replace('รัฐ','').trim().toLowerCase();
+    let count = 0;
 
+    snap.forEach(docItem=>{
         const data = docItem.data();
 
-        /* กรองปี */
-        if(
-            selectedYear !== 'ทั้งหมด'
-            &&
-            data.surveyYear !== selectedYear
-        ){
-            return;
+        // filter วัด
+        if(templeIdFilter && docItem.id !== templeIdFilter) return;
+
+        // filter รัฐ
+        if(stateFilter){
+            const dbState = (data.state||'').replace('รัฐ','').trim().toLowerCase();
+            if(dbState !== cleanState) return;
         }
 
-        if(data.monks){
-
-            data.monks.forEach((monk, monkIndex)=>{
-
-                table.innerHTML += buildMonkRow(
-                    monk,
-                    data,
-                    docItem.id,
-                    monkIndex
-                );
-
-            });
-
-        }
-
+        (data.monks||[]).forEach((monk, idx)=>{
+            // ✅ filter ปีจาก monk.createdAt → พ.ศ.
+            if(!monkMatchYear(monk)) return;
+            table.innerHTML += buildMonkRow(monk, data, docItem.id, idx);
+            count++;
+        });
     });
 
+    empty.style.display = count === 0 ? 'block' : 'none';
+    updateFilterBadge(stateFilter, templeIdFilter, count);
 }
 
-/* ─── DELETE MONK ─── */
-window.deleteMonk = async function(templeDocId, monkIndex){
-    if(!confirm('ต้องการลบรายชื่อพระรูปนี้ใช่หรือไม่?')) return;
-
-    try {
-        const templeRef  = doc(db,'temples',templeDocId);
-        const templeSnap = await getDoc(templeRef);
-        if(!templeSnap.exists()){ alert('❌ ไม่พบข้อมูลวัด'); return; }
-
-        const monks = templeSnap.data().monks || [];
-        monks.splice(monkIndex, 1);
-        await updateDoc(templeRef, { monks });
-        alert('✅ ลบรายชื่อพระสำเร็จ');
-        await loadMonks();
-        await loadStatistics();
-    } catch(err){
-        alert('❌ เกิดข้อผิดพลาด: ' + err.message);
-    }
+/* ── badge แสดงสถานะ filter ── */
+function updateFilterBadge(stateFilter, templeIdFilter, count){
+    const el = document.getElementById('filterStatusBadge');
+    let txt = '';
+    if(selectedYear !== 'ทั้งหมด') txt += `📅 ปี ${selectedYear} `;
+    if(stateFilter)    txt += `| 🗺️ ${stateFilter} `;
+    if(templeIdFilter) txt += `| 🛕 (วัดที่เลือก) `;
+    el.innerHTML = txt
+        ? `<span class="filter-active-badge">${txt.trim()} — พบ ${count} รูป</span>`
+        : '';
 }
 
-/* ─── SEARCH ─── */
-window.searchMonk = function(){
-    const keyword = document.getElementById('searchInput').value.toLowerCase();
-    document.querySelectorAll('#monkTable tr').forEach(row=>{
-        row.style.display = row.innerText.toLowerCase().includes(keyword) ? '' : 'none';
-    });
-}
+/* ── ตัวแปรเก็บ filter ปัจจุบัน ── */
+let currentStateFilter  = null;
+let currentTempleFilter = null;
 
-/* ─── SELECT STATE POPUP ─── */
+/* ── SET YEAR ── */
+window.setYear = function(year, btn){
+    selectedYear = year;
+    document.querySelectorAll('.year-pill').forEach(b=> b.classList.remove('active'));
+    btn.classList.add('active');
+    // รีเซ็ต state/temple filter เมื่อเปลี่ยนปี
+    currentStateFilter  = null;
+    currentTempleFilter = null;
+    renderMonkTable(allTempleSnap, null, null);
+};
+
+/* ── RESET ── */
+window.resetFilter = function(){
+    selectedYear        = 'ทั้งหมด';
+    currentStateFilter  = null;
+    currentTempleFilter = null;
+    document.querySelectorAll('.year-pill').forEach(b=> b.classList.remove('active'));
+    document.querySelector('.year-pill').classList.add('active');
+    renderMonkTable(allTempleSnap, null, null);
+};
+
+/* ── SELECT STATE POPUP (กรองตามปีที่เลือกไว้) ── */
 window.selectStatePopup = function(){
     const states = ['รัฐเคดาห์','รัฐเปอร์ลิส','รัฐปีนัง','รัฐเปรัก','รัฐสลังงอร์','รัฐยะโฮร์','รัฐกลันตันและตรังกานู'];
     let html = buildModalStart('stateModal','🗺️ เลือกรัฐ','550px');
+    const yearNote = selectedYear !== 'ทั้งหมด'
+        ? `<p style="color:#2563eb;font-weight:700;margin-bottom:18px;">📅 กรองปี ${selectedYear} อยู่</p>` : '';
+    html += yearNote;
     states.forEach(state=>{
         html += `<button onclick="filterByState('${state}');document.getElementById('stateModal').remove()"
-        style="width:100%;padding:20px;margin-bottom:15px;border:none;border-radius:18px;background:#2563eb;color:white;font-size:22px;font-weight:700;cursor:pointer;">${state}</button>`;
+            style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:18px;
+            background:#2563eb;color:white;font-size:20px;font-weight:700;cursor:pointer;
+            text-align:left;">${state}</button>`;
     });
     html += buildModalEnd('stateModal');
     document.body.insertAdjacentHTML('beforeend', html);
-}
+};
 
-/* ─── FILTER BY STATE ─── */
-window.filterByState = async function(stateName){
+window.filterByState = function(stateName){
+    currentStateFilter  = stateName;
+    currentTempleFilter = null;
+    renderMonkTable(allTempleSnap, stateName, null);
+};
 
-    const snapshot = await getDocs(collection(db,'temples'));
-
-    const table = document.getElementById('monkTable');
-
-    table.innerHTML = '';
-
-    const cleanName = (stateName || '')
-        .replace('รัฐ','')
-        .trim()
-        .toLowerCase();
-
-    snapshot.forEach(docItem => {
-
-        const data = docItem.data();
-
-        const dbState = (data.state || '')
-            .replace('รัฐ','')
-            .trim()
-            .toLowerCase();
-
-        if(dbState !== cleanName) return;
-
-        if(data.monks){
-
-            data.monks.forEach((monk, monkIndex) => {
-
-                table.innerHTML += buildMonkRow(
-                    monk,
-                    data,
-                    docItem.id,
-                    monkIndex
-                );
-            });
-        }
-    });
-}
-
-/* ─── SELECT TEMPLE POPUP ─── */
+/* ── SELECT TEMPLE POPUP (กรองตามปีที่เลือกไว้) ── */
 window.selectTemplePopup = async function(){
-    const snapshot = await getDocs(collection(db,'temples'));
     let html = buildModalStart('templeModal','🛕 เลือกวัด','650px');
-    snapshot.forEach(docItem=>{
+    const yearNote = selectedYear !== 'ทั้งหมด'
+        ? `<p style="color:#ea580c;font-weight:700;margin-bottom:18px;">📅 กรองปี ${selectedYear} อยู่</p>` : '';
+    html += yearNote;
+    allTempleSnap.forEach(docItem=>{
         const data = docItem.data();
         html += `<button onclick="filterByTemple('${docItem.id}');document.getElementById('templeModal').remove()"
-        style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:18px;background:#ea580c;color:white;font-size:20px;font-weight:700;text-align:left;cursor:pointer;">
-        ${data.name || 'ไม่ระบุชื่อวัด'}</button>`;
+            style="width:100%;padding:16px;margin-bottom:10px;border:none;border-radius:18px;
+            background:#ea580c;color:white;font-size:18px;font-weight:700;text-align:left;cursor:pointer;">
+            ${data.name || 'ไม่ระบุชื่อวัด'}
+            <span style="font-size:13px;opacity:.8;margin-left:8px;">(${(data.monks||[]).length} รูป)</span>
+        </button>`;
     });
     html += buildModalEnd('templeModal');
     document.body.insertAdjacentHTML('beforeend', html);
-}
+};
 
-/* ─── FILTER BY TEMPLE ─── */
-window.filterByTemple = async function(templeDocId){
-    const snapshot = await getDocs(collection(db,'temples'));
-    const table    = document.getElementById('monkTable');
-    table.innerHTML = '';
+window.filterByTemple = function(templeDocId){
+    currentStateFilter  = null;
+    currentTempleFilter = templeDocId;
+    renderMonkTable(allTempleSnap, null, templeDocId);
+};
 
-    snapshot.forEach(docItem=>{
-        if(docItem.id !== templeDocId) return;
-        const data = docItem.data();
-        if(data.monks){
-            data.monks.forEach((monk, monkIndex)=>{
-                table.innerHTML += buildMonkRow(monk, data, docItem.id, monkIndex);
-            });
-        }
+/* ── SEARCH ── */
+window.searchMonk = function(){
+    const kw = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('#monkTable tr').forEach(row=>{
+        row.style.display = row.innerText.toLowerCase().includes(kw) ? '' : 'none';
     });
+};
+
+/* ── DELETE MONK ── */
+window.deleteMonk = async function(templeDocId, monkIndex){
+    if(!confirm('ต้องการลบรายชื่อพระรูปนี้ใช่หรือไม่?')) return;
+    try {
+        const ref  = doc(db,'temples',templeDocId);
+        const snap = await getDoc(ref);
+        if(!snap.exists()){ alert('❌ ไม่พบข้อมูลวัด'); return; }
+        const monks = snap.data().monks || [];
+        monks.splice(monkIndex, 1);
+        await updateDoc(ref, { monks });
+        alert('✅ ลบรายชื่อพระสำเร็จ');
+        allTempleSnap = await getDocs(collection(db,'temples'));
+        loadStatistics();
+        renderMonkTable(allTempleSnap, currentStateFilter, currentTempleFilter);
+    } catch(err){ alert('❌ เกิดข้อผิดพลาด: ' + err.message); }
+};
+
+/* ── BUILD MONK ROW ── */
+function buildMonkRow(monk, data, docId, idx){
+    const temple  = templeFullName(data);
+    const savedAt = formatDateTime(monk.createdAt || null);
+    const isThaiNat  = (monk.nationality||'').trim() === 'ไทย';
+    const isThaiRace = (monk.race||'').trim() === 'ไทย';
+    const thaiFlag   = (isThaiNat && isThaiRace) ? '🇹🇭 ' : '';
+    return `<tr>
+        <td>${thaiFlag}${monk.fullname||''}</td>
+        <td>${monk.alias    ||''}</td>
+        <td style="text-align:center;">${monk.age  ||''}</td>
+        <td style="text-align:center;">${monk.pansa||''}</td>
+        <td style="font-size:13px;">${temple}</td>
+        <td>${data.state   ||''}</td>
+        <td>${monk.passport||''}</td>
+        <td>${monk.origin  ||''}</td>
+        <td>${monk.education||''}</td>
+        <td>${monk.note    ||''}</td>
+        <td style="font-size:12px;color:#64748b;white-space:nowrap;">${savedAt}</td>
+        <td><button onclick="deleteMonk('${docId}',${idx})" class="delete-btn">🗑️ ลบ</button></td>
+    </tr>`;
 }
 
-/* ─── EXPORT ALL ─── */
+/* ── EXPORT ALL ── */
 window.exportAllReport = async function(){
-    const snapshot = await getDocs(collection(db,'temples'));
-    createExcelReport(snapshot, 'รายงานรวมทั้งหมด', null, null);
-}
+    createExcelReport(allTempleSnap,'รายงานรวมทั้งหมด',null,null);
+};
 
-/* ─── EXPORT STATE POPUP ─── */
+/* ── EXPORT STATE POPUP ── */
 window.exportStatePopup = async function(){
-    const snapshot = await getDocs(collection(db,'temples'));
     const stateMap = {};
-
-    snapshot.forEach(docItem=>{
-        const data  = docItem.data();
-        const state = (data.state || '-').trim();
-        if(!stateMap[state]) stateMap[state] = [];
-        stateMap[state].push(docItem);
+    allTempleSnap.forEach(d=>{
+        const s = (d.data().state||'-').trim();
+        if(!stateMap[s]) stateMap[s] = [];
+        stateMap[s].push(d);
     });
-
-    const stateName = Object.keys(stateMap);
-    if(stateName.length === 0){ alert('⚠️ ไม่พบข้อมูลรัฐในฐานข้อมูล'); return; }
-
+    const states = Object.keys(stateMap);
+    if(!states.length){ alert('⚠️ ไม่พบข้อมูลรัฐ'); return; }
     let html = buildModalStart('exportStateModal','🗺️ ดาวน์โหลดแบบรัฐ','600px');
-    stateName.forEach(state=>{
-        const monkCount = stateMap[state].reduce((sum,d)=>sum+(d.data().monks?d.data().monks.length:0),0);
-        html += `
-        <button onclick="exportByExactState(this)" data-state="${state.replace(/"/g,'&quot;')}" data-modalid="exportStateModal"
-        style="width:100%;padding:20px;margin-bottom:14px;border:none;border-radius:18px;background:#2563eb;color:white;font-size:20px;font-weight:700;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;">
-        <span>📍 ${state}</span>
-        <span style="font-size:14px;background:rgba(255,255,255,.25);padding:4px 12px;border-radius:10px;">${stateMap[state].length} วัด · ${monkCount} รูป</span>
+    states.forEach(state=>{
+        const cnt = stateMap[state].reduce((s,d)=>s+(d.data().monks||[]).length,0);
+        html += `<button onclick="exportByExactState(this)" data-state="${state.replace(/"/g,'&quot;')}" data-modalid="exportStateModal"
+            style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:18px;background:#2563eb;color:white;
+            font-size:18px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+            <span>📍 ${state}</span>
+            <span style="font-size:13px;background:rgba(255,255,255,.25);padding:4px 12px;border-radius:10px;">
+                ${stateMap[state].length} วัด · ${cnt} รูป</span>
         </button>`;
     });
     html += buildModalEnd('exportStateModal');
     document.body.insertAdjacentHTML('beforeend', html);
-}
+};
 
-/* ─── EXPORT BY EXACT STATE ─── */
 window.exportByExactState = async function(btn){
     const exactState = btn.getAttribute('data-state');
-    const modalId    = btn.getAttribute('data-modalid');
-    document.getElementById(modalId)?.remove();
+    document.getElementById(btn.getAttribute('data-modalid'))?.remove();
+    createExcelReport(allTempleSnap, exactState, exactState, null);
+};
 
-    const snapshot = await getDocs(collection(db,'temples'));
-    createExcelReport(snapshot, exactState, exactState, null);
-}
-
-/* ─── EXPORT TEMPLE POPUP ─── */
+/* ── EXPORT TEMPLE POPUP ── */
 window.exportTemplePopup = async function(){
-    const snapshot = await getDocs(collection(db,'temples'));
     let html = buildModalStart('exportTempleModal','🛕 ดาวน์โหลดแบบวัด','650px');
-    snapshot.forEach(docItem=>{
-        const data = docItem.data();
-        html += `<button onclick="exportByTemple('${docItem.id}','${(data.name||'วัด').replace(/'/g,'')}');document.getElementById('exportTempleModal').remove()"
-        style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:18px;background:#ea580c;color:white;font-size:20px;font-weight:700;text-align:left;cursor:pointer;">
-        ${data.name || 'ไม่ระบุชื่อวัด'}</button>`;
+    allTempleSnap.forEach(d=>{
+        const data = d.data();
+        html += `<button onclick="exportByTemple('${d.id}','${(data.name||'วัด').replace(/'/g,'')}');document.getElementById('exportTempleModal').remove()"
+            style="width:100%;padding:16px;margin-bottom:10px;border:none;border-radius:18px;background:#ea580c;
+            color:white;font-size:18px;font-weight:700;text-align:left;cursor:pointer;">
+            ${data.name||'ไม่ระบุชื่อวัด'}
+            <span style="font-size:13px;opacity:.8;margin-left:8px;">(${(data.monks||[]).length} รูป)</span>
+        </button>`;
     });
     html += buildModalEnd('exportTempleModal');
     document.body.insertAdjacentHTML('beforeend', html);
-}
+};
 
-/* ─── EXPORT BY TEMPLE ─── */
-window.exportByTemple = async function(templeDocId, templeName){
-    const snapshot = await getDocs(collection(db,'temples'));
-    createExcelReport(snapshot, templeName || templeDocId, null, templeDocId);
-}
+window.exportByTemple = async function(id, name){
+    createExcelReport(allTempleSnap, name||id, null, id);
+};
 
-/* ─── CREATE EXCEL REPORT ─── */
-/* ✅ ใช้ monk.createdAt เท่านั้น ไม่ fallback ไป data.updatedAt */
-function createExcelReport(snapshot, fileName, stateFilter = null, templeIdFilter = null){
-    const rows = [['ที่','วัด / ที่อยู่วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ','วัน/เวลาบันทึก']];
+/* ── CREATE EXCEL ── */
+function createExcelReport(snap, fileName, stateFilter, templeIdFilter){
+    const rows = [['ที่','วัด / ที่อยู่วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา',
+                   'วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ','วัน/เวลาบันทึก']];
     let no = 1;
-
-    snapshot.forEach(docItem=>{
-        const data    = docItem.data();
-        const dbState = (data.state || '').trim();
-
-        if(stateFilter    && dbState !== stateFilter)        return;
-        if(templeIdFilter && docItem.id !== templeIdFilter)  return;
-
-        const templeLabel = templeFullName(data);
-        const monks       = data.monks || [];
-
-        monks.forEach((monk, index)=>{
-            rows.push([
-                no,
-                index === 0 ? templeLabel : '',
-                monk.fullname    || '',
-                monk.alias       || '',
-                monk.age         || '',
-                monk.pansa       || '',
-                monk.education   || '',
-                monk.origin      || '',
-                monk.nationality || '',
-                monk.race        || '',
-                monk.passport    || '',
-                monk.note        || '',
-                /* ✅ อ่านจาก monk.createdAt เท่านั้น */
-                formatDateTime(monk.createdAt || null)
-            ]);
-            no++;
+    const cleanState = (stateFilter||'').trim();
+    snap.forEach(d=>{
+        const data = d.data();
+        if(stateFilter   && (data.state||'').trim() !== cleanState) return;
+        if(templeIdFilter && d.id !== templeIdFilter) return;
+        const label = templeFullName(data);
+        (data.monks||[]).forEach((m, i)=>{
+            rows.push([no++, i===0?label:'', m.fullname||'', m.alias||'', m.age||'', m.pansa||'',
+                m.education||'', m.origin||'', m.nationality||'', m.race||'',
+                m.passport||'', m.note||'', formatDateTime(m.createdAt||null)]);
         });
     });
-
-    if(rows.length <= 1){ alert('⚠️ ไม่พบข้อมูลในรัฐ/วัดที่เลือก'); return; }
-
+    if(rows.length<=1){ alert('⚠️ ไม่พบข้อมูล'); return; }
     const ws = XLSX.utils.aoa_to_sheet(rows);
     ws['!cols'] = [{wch:6},{wch:40},{wch:30},{wch:20},{wch:8},{wch:8},{wch:28},{wch:35},{wch:12},{wch:12},{wch:22},{wch:28},{wch:20}];
     const wb = XLSX.utils.book_new();
@@ -674,260 +661,147 @@ function createExcelReport(snapshot, fileName, stateFilter = null, templeIdFilte
     XLSX.writeFile(wb, `${fileName}.xlsx`);
 }
 
-/* ─── EXPORT THAI MONKS POPUP ─── */
+/* ── EXPORT THAI MONKS POPUP ── */
 window.exportThaiMonksPopup = function(){
     const html = `
     <div id="thaiExportModal" style="position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:99999;display:flex;justify-content:center;align-items:center;">
     <div style="width:620px;background:white;border-radius:30px;padding:40px;max-height:90vh;overflow:auto;">
-        <h2 style="font-size:36px;font-weight:800;margin-bottom:6px;">🇹🇭 นำออกข้อมูลพระไทย</h2>
-        <p style="color:#64748b;font-size:17px;margin-bottom:28px;">เงื่อนไข: สัญชาติไทย และ เชื้อชาติไทย เท่านั้น</p>
-        <div style="display:flex;gap:12px;margin-bottom:28px;">
-            <button onclick="setThaiExportMode('all')" id="thaiModeAll"
-            style="flex:1;padding:16px;border:2px solid #b45309;border-radius:16px;background:#b45309;color:white;font-size:17px;font-weight:700;cursor:pointer;">📦 รวมทั้งหมด</button>
-            <button onclick="setThaiExportMode('state')" id="thaiModeState"
-            style="flex:1;padding:16px;border:2px solid #b45309;border-radius:16px;background:white;color:#b45309;font-size:17px;font-weight:700;cursor:pointer;">🗺️ แยกรัฐ</button>
-            <button onclick="setThaiExportMode('temple')" id="thaiModeTemple"
-            style="flex:1;padding:16px;border:2px solid #b45309;border-radius:16px;background:white;color:#b45309;font-size:17px;font-weight:700;cursor:pointer;">🛕 แยกวัด</button>
+        <h2 style="font-size:32px;font-weight:800;margin-bottom:6px;">🇹🇭 นำออกข้อมูลพระไทย</h2>
+        <p style="color:#64748b;font-size:16px;margin-bottom:24px;">เงื่อนไข: สัญชาติ = ไทย และ เชื้อชาติ = ไทย เท่านั้น</p>
+        <div style="display:flex;gap:12px;margin-bottom:24px;">
+            <button onclick="setThaiMode('all')"    id="thaiModeAll"    style="flex:1;padding:14px;border:2px solid #b45309;border-radius:14px;background:#b45309;color:white;font-size:16px;font-weight:700;cursor:pointer;">📦 รวมทั้งหมด</button>
+            <button onclick="setThaiMode('state')"  id="thaiModeState"  style="flex:1;padding:14px;border:2px solid #b45309;border-radius:14px;background:white;color:#b45309;font-size:16px;font-weight:700;cursor:pointer;">🗺️ แยกรัฐ</button>
+            <button onclick="setThaiMode('temple')" id="thaiModeTemple" style="flex:1;padding:14px;border:2px solid #b45309;border-radius:14px;background:white;color:#b45309;font-size:16px;font-weight:700;cursor:pointer;">🛕 แยกวัด</button>
         </div>
         <div id="thaiExportContent">
-            <button onclick="doExportThaiAll()" style="width:100%;padding:22px;border:none;border-radius:18px;background:#b45309;color:white;font-size:22px;font-weight:800;cursor:pointer;">⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)</button>
+            <button onclick="doExportThaiAll()" style="width:100%;padding:20px;border:none;border-radius:16px;background:#b45309;color:white;font-size:20px;font-weight:800;cursor:pointer;">⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)</button>
         </div>
         <button onclick="document.getElementById('thaiExportModal').remove()"
-        style="width:100%;padding:16px;margin-top:18px;border:none;border-radius:16px;background:#e2e8f0;font-size:18px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
-    </div>
-    </div>`;
+            style="width:100%;padding:14px;margin-top:16px;border:none;border-radius:14px;background:#e2e8f0;font-size:17px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
+    </div></div>`;
     document.body.insertAdjacentHTML('beforeend', html);
-}
+};
 
-window.setThaiExportMode = async function(mode){
+window.setThaiMode = async function(mode){
     ['all','state','temple'].forEach(m=>{
-        const btn = document.getElementById('thaiMode' + m.charAt(0).toUpperCase() + m.slice(1));
-        if(btn){ btn.style.background = (m===mode)?'#b45309':'white'; btn.style.color = (m===mode)?'white':'#b45309'; }
+        const b = document.getElementById('thaiMode'+m.charAt(0).toUpperCase()+m.slice(1));
+        if(b){ b.style.background = m===mode?'#b45309':'white'; b.style.color = m===mode?'white':'#b45309'; }
     });
-
-    const content = document.getElementById('thaiExportContent');
-    content.innerHTML = '';
-
-    if(mode === 'all'){
-        content.innerHTML = `<button onclick="doExportThaiAll()" style="width:100%;padding:22px;border:none;border-radius:18px;background:#b45309;color:white;font-size:22px;font-weight:800;cursor:pointer;">⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)</button>`;
-
-    } else if(mode === 'state'){
-        const snapshot = await getDocs(collection(db,'temples'));
-        const stateSet = new Set();
-        snapshot.forEach(d=>{ const s=(d.data().state||'').trim(); if(s) stateSet.add(s); });
-        let h = '';
-        stateSet.forEach(state=>{
-            h += `<button onclick="doExportThaiByExactState('${state.replace(/'/g,'')}')" style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:16px;background:#2563eb;color:white;font-size:19px;font-weight:700;cursor:pointer;">${state}</button>`;
-        });
-        content.innerHTML = h;
-
-    } else if(mode === 'temple'){
-        const snapshot = await getDocs(collection(db,'temples'));
-        let h = '';
-        snapshot.forEach(docItem=>{
-            const data = docItem.data();
-            h += `<button onclick="doExportThaiByTemple('${docItem.id}','${(data.name||'วัด').replace(/'/g,'')}')" style="width:100%;padding:16px;margin-bottom:10px;border:none;border-radius:16px;background:#ea580c;color:white;font-size:18px;font-weight:700;text-align:left;cursor:pointer;">${data.name||'ไม่ระบุชื่อวัด'}</button>`;
-        });
-        content.innerHTML = h;
+    const c = document.getElementById('thaiExportContent'); c.innerHTML='';
+    if(mode==='all'){
+        c.innerHTML=`<button onclick="doExportThaiAll()" style="width:100%;padding:20px;border:none;border-radius:16px;background:#b45309;color:white;font-size:20px;font-weight:800;cursor:pointer;">⬇️ ดาวน์โหลดรายชื่อพระไทย (ทั้งหมด)</button>`;
+    } else if(mode==='state'){
+        const ss=new Set(); allTempleSnap.forEach(d=>{ const s=(d.data().state||'').trim(); if(s) ss.add(s); });
+        let h=''; ss.forEach(s=>{ h+=`<button onclick="doExportThaiByState('${s.replace(/'/g,'')}')" style="width:100%;padding:16px;margin-bottom:10px;border:none;border-radius:14px;background:#2563eb;color:white;font-size:17px;font-weight:700;cursor:pointer;">${s}</button>`; });
+        c.innerHTML=h;
+    } else {
+        let h=''; allTempleSnap.forEach(d=>{ const data=d.data(); h+=`<button onclick="doExportThaiByTemple('${d.id}','${(data.name||'วัด').replace(/'/g,'')}')" style="width:100%;padding:14px;margin-bottom:8px;border:none;border-radius:14px;background:#ea580c;color:white;font-size:16px;font-weight:700;text-align:left;cursor:pointer;">${data.name||'ไม่ระบุชื่อวัด'}</button>`; });
+        c.innerHTML=h;
     }
-}
+};
 
-window.doExportThaiAll = async function(){
-    const snapshot = await getDocs(collection(db,'temples'));
-    createThaiExcelReport(snapshot,'รายชื่อพระไทย-ทั้งหมด',null,null);
-    document.getElementById('thaiExportModal')?.remove();
-}
+window.doExportThaiAll = function(){ createThaiExcel(allTempleSnap,'รายชื่อพระไทย-ทั้งหมด',null,null); document.getElementById('thaiExportModal')?.remove(); };
+window.doExportThaiByState  = function(s){ createThaiExcel(allTempleSnap,`รายชื่อพระไทย-${s}`,s,null); document.getElementById('thaiExportModal')?.remove(); };
+window.doExportThaiByTemple = function(id,name){ createThaiExcel(allTempleSnap,`รายชื่อพระไทย-${name||id}`,null,id); document.getElementById('thaiExportModal')?.remove(); };
 
-window.doExportThaiByExactState = async function(exactState){
-    const snapshot = await getDocs(collection(db,'temples'));
-    createThaiExcelReport(snapshot,`รายชื่อพระไทย-${exactState}`,exactState,null);
-    document.getElementById('thaiExportModal')?.remove();
-}
-
-window.doExportThaiByTemple = async function(templeDocId, templeName){
-    const snapshot = await getDocs(collection(db,'temples'));
-    createThaiExcelReport(snapshot,`รายชื่อพระไทย-${templeName||templeDocId}`,null,templeDocId);
-    document.getElementById('thaiExportModal')?.remove();
-}
-
-/* ─── CREATE THAI EXCEL REPORT ─── */
-/* ✅ ใช้ monk.createdAt เท่านั้น ไม่ fallback ไป data.updatedAt */
-function createThaiExcelReport(snapshot, fileName, stateFilter=null, templeIdFilter=null){
-    const rows = [['ที่','วัด / ที่อยู่วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ','วัน/เวลาบันทึก']];
-    let no = 1;
-
-    snapshot.forEach(docItem=>{
-        const data    = docItem.data();
-        const dbState = (data.state || '').trim();
-
-        if(stateFilter    && dbState !== stateFilter)        return;
-        if(templeIdFilter && docItem.id !== templeIdFilter)  return;
-
-        const templeLabel = templeFullName(data);
-
-        (data.monks||[]).forEach((monk, index)=>{
-            const nat  = (monk.nationality||'').trim();
-            const race = (monk.race||'').trim();
-            if(nat !== 'ไทย' || race !== 'ไทย') return;
-
-            rows.push([
-                no,
-                index===0 ? templeLabel : '',
-                monk.fullname    || '',
-                monk.alias       || '',
-                monk.age         || '',
-                monk.pansa       || '',
-                monk.education   || '',
-                monk.origin      || '',
-                monk.nationality || '',
-                monk.race        || '',
-                monk.passport    || '',
-                monk.note        || '',
-                /* ✅ อ่านจาก monk.createdAt เท่านั้น */
-                formatDateTime(monk.createdAt || null)
-            ]);
-            no++;
+function createThaiExcel(snap, fileName, stateFilter, templeIdFilter){
+    const rows=[['ที่','วัด / ที่อยู่วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ','วัน/เวลาบันทึก']];
+    let no=1;
+    const cleanState=(stateFilter||'').trim();
+    snap.forEach(d=>{
+        const data=d.data();
+        if(stateFilter    && (data.state||'').trim()!==cleanState) return;
+        if(templeIdFilter && d.id!==templeIdFilter) return;
+        const label=templeFullName(data);
+        (data.monks||[]).forEach((m,i)=>{
+            if((m.nationality||'').trim()!=='ไทย'||(m.race||'').trim()!=='ไทย') return;
+            rows.push([no++,i===0?label:'',m.fullname||'',m.alias||'',m.age||'',m.pansa||'',
+                m.education||'',m.origin||'',m.nationality||'',m.race||'',
+                m.passport||'',m.note||'',formatDateTime(m.createdAt||null)]);
         });
     });
-
-    if(rows.length <= 1){ alert('⚠️ ไม่พบรายชื่อพระตามเงื่อนไขที่เลือก'); return; }
-
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-    ws['!cols'] = [{wch:6},{wch:40},{wch:30},{wch:20},{wch:8},{wch:8},{wch:28},{wch:35},{wch:12},{wch:12},{wch:22},{wch:28},{wch:20}];
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'รายชื่อพระไทย');
-    XLSX.writeFile(wb, `${fileName}.xlsx`);
+    if(rows.length<=1){ alert('⚠️ ไม่พบรายชื่อพระตามเงื่อนไขที่เลือก'); return; }
+    const ws=XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols']=[{wch:6},{wch:40},{wch:30},{wch:20},{wch:8},{wch:8},{wch:28},{wch:35},{wch:12},{wch:12},{wch:22},{wch:28},{wch:20}];
+    const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'รายชื่อพระไทย');
+    XLSX.writeFile(wb,`${fileName}.xlsx`);
 }
 
-/* ─── ADMIN ─── */
+/* ── ADMIN ── */
 async function loadAdmins(){
-    const snapshot = await getDocs(collection(db,'admins'));
-    const table    = document.getElementById('adminTable');
-    table.innerHTML = `
-    <tr>
-        <td>sirichai</td>
-        <td>********</td>
-        <td>👑 Developer</td>
-        <td>❌ ห้ามลบ/แก้ไข</td>
-    </tr>`;
-
-    let total = 1;
-    snapshot.forEach(docItem=>{
-        total++;
-        const data = docItem.data();
-        table.innerHTML += `
-        <tr>
-            <td>${data.user}</td>
-            <td>${data.pass}</td>
-            <td>Admin</td>
-            <td><button onclick="deleteAdmin('${docItem.id}')" class="btn red">ลบ</button></td>
+    const snap = await getDocs(collection(db,'admins'));
+    const table = document.getElementById('adminTable');
+    table.innerHTML = `<tr><td>sirichai</td><td>********</td><td>👑 Developer</td><td>❌ ห้ามลบ/แก้ไข</td></tr>`;
+    snap.forEach(d=>{
+        const data = d.data();
+        table.innerHTML += `<tr>
+            <td>${data.user}</td><td>${data.pass}</td><td>🛡️ Admin</td>
+            <td><button onclick="deleteAdmin('${d.id}')" class="delete-btn">ลบ</button></td>
         </tr>`;
     });
-
-    document.getElementById('totalAdmins').innerHTML = total;
 }
 
 window.addAdmin = async function(){
-    const user = prompt('Username ใหม่');
-    if(!user) return;
-    const pass = prompt('Password ใหม่');
-    if(!pass) return;
+    const user = prompt('Username ใหม่'); if(!user) return;
+    const pass = prompt('Password ใหม่'); if(!pass) return;
     await addDoc(collection(db,'admins'),{ user, pass });
-    alert('✅ เพิ่มแอดมินสำเร็จ');
-    loadAdmins();
-}
+    alert('✅ เพิ่มแอดมินสำเร็จ'); loadAdmins();
+};
 
 window.deleteAdmin = async function(id){
     if(!confirm('ต้องการลบแอดมินใช่หรือไม่ ?')) return;
     await deleteDoc(doc(db,'admins',id));
-    alert('✅ ลบแอดมินสำเร็จ');
-    loadAdmins();
-}
+    alert('✅ ลบแอดมินสำเร็จ'); loadAdmins();
+};
 
-/* ─── DELETE TEMPLE POPUP ─── */
+/* ── DELETE TEMPLE POPUP ── */
 window.deleteTemplePopup = async function(){
-    const snapshot = await getDocs(collection(db,'temples'));
-    let html = `
-    <div id="deleteTempleModal" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;justify-content:center;align-items:center;">
+    let html = `<div id="deleteTempleModal" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;justify-content:center;align-items:center;">
     <div style="width:650px;background:white;border-radius:30px;padding:35px;max-height:85vh;overflow:auto;">
-        <h2 style="font-size:36px;font-weight:800;margin-bottom:10px;color:#dc2626;">🗑️ ลบรายชื่อวัด</h2>
-        <p style="color:#64748b;margin-bottom:25px;">คำเตือน: การลบวัดจะทำให้ข้อมูลทั้งหมดของวัดและรายชื่อพระหายไปถาวร</p>`;
-
-    snapshot.forEach(docItem=>{
-        const data = docItem.data();
-        html += `<button onclick="confirmDeleteTemple('${docItem.id}','${(data.name||'').replace(/'/g,'')}')"
-        style="width:100%;padding:18px;margin-bottom:12px;border:none;border-radius:18px;background:#fee2e2;color:#dc2626;font-size:18px;font-weight:700;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
-        <span>${data.name||'ไม่ระบุชื่อวัด'}</span>
-        <span style="font-size:12px;background:#fca5a5;padding:4px 10px;border-radius:10px;">ลบข้อมูล</span>
+    <h2 style="font-size:32px;font-weight:800;margin-bottom:10px;color:#dc2626;">🗑️ ลบรายชื่อวัด</h2>
+    <p style="color:#64748b;margin-bottom:22px;">⚠️ การลบวัดจะลบข้อมูลพระทั้งหมดในวัดนั้นด้วย</p>`;
+    allTempleSnap.forEach(d=>{
+        const data=d.data();
+        html+=`<button onclick="confirmDeleteTemple('${d.id}','${(data.name||'').replace(/'/g,'')}')"
+            style="width:100%;padding:16px;margin-bottom:10px;border:none;border-radius:16px;background:#fee2e2;
+            color:#dc2626;font-size:17px;font-weight:700;text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+            <span>${data.name||'ไม่ระบุชื่อวัด'}</span>
+            <span style="font-size:12px;background:#fca5a5;padding:4px 10px;border-radius:8px;">${(data.monks||[]).length} รูป — ลบข้อมูล</span>
         </button>`;
     });
-
-    html += `<button onclick="document.getElementById('deleteTempleModal').remove()"
-    style="width:100%;padding:18px;margin-top:10px;border:none;border-radius:18px;background:#e2e8f0;font-size:20px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
+    html+=`<button onclick="document.getElementById('deleteTempleModal').remove()"
+        style="width:100%;padding:16px;margin-top:8px;border:none;border-radius:16px;background:#e2e8f0;font-size:18px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
     </div></div>`;
-
     document.body.insertAdjacentHTML('beforeend', html);
-}
+};
 
 window.confirmDeleteTemple = async function(id, name){
-    if(!confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบวัด "${name}" ?\n\n** ข้อมูลรายชื่อพระในวัดนี้ทั้งหมดจะหายไปด้วย **`)) return;
+    if(!confirm(`ยืนยันลบวัด "${name}" ?\n\n⚠️ ข้อมูลรายชื่อพระทั้งหมดจะหายถาวร`)) return;
     try {
         await deleteDoc(doc(db,'temples',id));
         alert('✅ ลบวัดสำเร็จ');
         document.getElementById('deleteTempleModal').remove();
-        await loadStatistics();
-        await loadMonks();
-    } catch(e){
-        alert('❌ เกิดข้อผิดพลาด: ' + e.message);
-    }
-}
+        allTempleSnap = await getDocs(collection(db,'temples'));
+        loadStatistics();
+        renderMonkTable(allTempleSnap, null, null);
+    } catch(e){ alert('❌ เกิดข้อผิดพลาด: '+e.message); }
+};
 
-/* ─── LOGOUT ─── */
-window.logout = function(){ location.reload(); }
-
-/* ─── BUILD MONK ROW ─── */
-/* ✅ ใช้ monk.createdAt เท่านั้น ไม่ fallback ไป data.updatedAt */
-function buildMonkRow(monk, data, docId, idx){
-    const templeLabel = templeFullName(data);
-    const savedAt     = formatDateTime(monk.createdAt || null);
-    return `
-    <tr data-year="${data.surveyYear || '2569'}">
-        <td>${monk.fullname  ||''}</td>
-        <td>${monk.alias     ||''}</td>
-        <td>${monk.age       ||''}</td>
-        <td>${monk.pansa     ||''}</td>
-        <td style="font-size:13px;">${templeLabel}</td>
-        <td>${data.state     ||''}</td>
-        <td>${monk.passport  ||''}</td>
-        <td>${monk.origin    ||''}</td>
-        <td>${monk.education ||''}</td>
-        <td>${monk.note      ||''}</td>
-        <td style="font-size:13px;color:#64748b;white-space:nowrap;">${savedAt}</td>
-        <td><button onclick="deleteMonk('${docId}',${idx})" class="delete-btn">🗑️ ลบ</button></td>
-    </tr>`;
-}
-
-/* ─── MODAL HELPERS ─── */
+/* ── MODAL HELPERS ── */
 function buildModalStart(id, title, width){
-    return `<div id="${id}" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;justify-content:center;align-items:center;">
-    <div style="width:${width};background:white;border-radius:30px;padding:35px;max-height:85vh;overflow:auto;">
-    <h2 style="font-size:38px;font-weight:800;margin-bottom:25px;">${title}</h2>`;
+    return `<div id="${id}" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;
+        display:flex;justify-content:center;align-items:center;">
+        <div style="width:${width};background:white;border-radius:28px;padding:32px;max-height:85vh;overflow:auto;">
+        <h2 style="font-size:34px;font-weight:800;margin-bottom:22px;">${title}</h2>`;
 }
-
 function buildModalEnd(id){
     return `<button onclick="document.getElementById('${id}').remove()"
-    style="width:100%;padding:18px;margin-top:8px;border:none;border-radius:18px;background:#e2e8f0;font-size:20px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
-    </div></div>`;
+        style="width:100%;padding:16px;margin-top:8px;border:none;border-radius:16px;
+        background:#e2e8f0;font-size:18px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
+        </div></div>`;
 }
 
-/* ─── FILTER YEAR ─── */
-window.filterByYear = function(){
-
-    loadMonks();
-
-}
-
+window.logout = function(){ location.reload(); };
 </script>
-
 </body>
 </html>
