@@ -408,18 +408,48 @@ async function loadStatistics(){
 
 /* ─── LOAD MONKS ─── */
 async function loadMonks(){
-    const snapshot = await getDocs(collection(db,'temples'));
-    const table    = document.getElementById('monkTable');
+
+    const selectedYear =
+        document.getElementById('yearFilter').value;
+
+    const snapshot =
+        await getDocs(collection(db,'temples'));
+
+    const table =
+        document.getElementById('monkTable');
+
     table.innerHTML = '';
 
     snapshot.forEach(docItem=>{
+
         const data = docItem.data();
-        if(data.monks){
-            data.monks.forEach((monk, monkIndex)=>{
-                table.innerHTML += buildMonkRow(monk, data, docItem.id, monkIndex);
-            });
+
+        /* กรองปี */
+        if(
+            selectedYear !== 'ทั้งหมด'
+            &&
+            data.surveyYear !== selectedYear
+        ){
+            return;
         }
+
+        if(data.monks){
+
+            data.monks.forEach((monk, monkIndex)=>{
+
+                table.innerHTML += buildMonkRow(
+                    monk,
+                    data,
+                    docItem.id,
+                    monkIndex
+                );
+
+            });
+
+        }
+
     });
+
 }
 
 /* ─── DELETE MONK ─── */
@@ -890,35 +920,10 @@ function buildModalEnd(id){
     </div></div>`;
 }
 
-/* ─── FILTER YEAR ─── */
+* ─── FILTER YEAR ─── */
 window.filterByYear = function(){
 
-    const selectedYear =
-        document.getElementById('yearFilter').value;
-
-    const rows =
-        document.querySelectorAll('#monkTable tr');
-
-    rows.forEach(row=>{
-
-        const rowYear =
-            row.getAttribute('data-year');
-
-        if(
-            selectedYear === 'ทั้งหมด'
-            ||
-            rowYear === selectedYear
-        ){
-
-            row.style.display = '';
-
-        }else{
-
-            row.style.display = 'none';
-
-        }
-
-    });
+    loadMonks();
 
 }
 
