@@ -3,204 +3,128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>ระบบสำรวจข้อมูลพระสงฆ์และวัดรัฐปีนัง</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
-
+<!-- SheetJS สำหรับอ่านไฟล์ Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
-
 <style>
-
-body {
-    font-family: 'Sarabun', sans-serif;
-    background: #f1f5f9;
-}
-
-.header-gradient {
-    background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
-}
-
-.card {
-    background: #fff;
-    border-radius: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.05);
-}
-
+body { font-family: 'Sarabun', sans-serif; background: #f1f5f9; }
+.header-gradient { background: linear-gradient(135deg, #15803d 0%, #16a34a 100%); }
+.card { background: #fff; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,.05); }
 .input {
-    width: 100%;
-    border: 1px solid #cbd5e1;
-    border-radius: 18px;
-    padding: 16px;
-    font-size: 17px;
-    font-weight: 600;
-    outline: none;
+    width: 100%; border: 1px solid #cbd5e1; border-radius: 18px;
+    padding: 16px; font-size: 17px; font-weight: 600; outline: none;
     font-family: 'Sarabun', sans-serif;
 }
-
-.input:focus {
-    border-color: #16a34a;
-    box-shadow: 0 0 0 4px rgba(34,197,94,.12);
-}
-
-/* ช่องขนาดเล็ก สำหรับ อายุ พรรษา เชื้อชาติ สัญชาติ */
+.input:focus { border-color: #16a34a; box-shadow: 0 0 0 4px rgba(34,197,94,.12); }
 .input-sm {
-    width: 100%;
-    border: 1px solid #cbd5e1;
-    border-radius: 18px;
-    padding: 16px 10px;
-    font-size: 17px;
-    font-weight: 600;
-    outline: none;
+    width: 100%; border: 1px solid #cbd5e1; border-radius: 18px;
+    padding: 16px 10px; font-size: 17px; font-weight: 600; outline: none;
     font-family: 'Sarabun', sans-serif;
 }
-
-.input-sm:focus {
-    border-color: #16a34a;
-    box-shadow: 0 0 0 4px rgba(34,197,94,.12);
-}
-
+.input-sm:focus { border-color: #16a34a; box-shadow: 0 0 0 4px rgba(34,197,94,.12); }
 .btn {
-    border: none;
+    border: none; border-radius: 18px; padding: 16px 22px; color: #fff;
+    font-size: 18px; font-weight: 700; cursor: pointer; transition: .25s;
+    font-family: 'Sarabun', sans-serif;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+.add-btn   { background: #7c3aed; }
+.save-btn  { background: #16a34a; }
+.check-btn { background: #2563eb; }
+.edit-btn  { background: #ea580c; }
+
+/* ── ปุ่ม Excel ── */
+.excel-btn {
+    background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+    border: 2px dashed #4ade80;
     border-radius: 18px;
-    padding: 16px 22px;
+    padding: 14px 22px;
     color: #fff;
     font-size: 18px;
     font-weight: 700;
     cursor: pointer;
     transition: .25s;
     font-family: 'Sarabun', sans-serif;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-}
-
-.add-btn  { background: #7c3aed; }
-.save-btn { background: #16a34a; }
-.check-btn{ background: #2563eb; }
-.edit-btn { background: #ea580c; }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    background: #e5e7eb;
-    border: 1px solid #cbd5e1;
-    padding: 14px;
-    font-size: 16px;
-    font-weight: 700;
-    text-align: center;
-}
-
-td {
-    border: 1px solid #dbe2ea;
-    padding: 12px;
-    font-size: 16px;
-}
-
-.delete-btn {
-    background: #dc2626;
-    color: #fff;
-    border: none;
-    padding: 10px 14px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 700;
-    font-family: 'Sarabun', sans-serif;
-}
-
-.table-wrapper {
-    overflow-x: auto;
-}
-
-/* Modal Overlay */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 1000;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 40px 20px;
-    overflow-y: auto;
-}
-
-.modal-overlay.active {
-    display: flex;
-}
-
-.modal-box {
-    background: #fff;
-    border-radius: 24px;
-    padding: 36px;
-    width: 100%;
-    max-width: 900px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     position: relative;
+    overflow: hidden;
+}
+.excel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(22,101,52,.35);
+    border-color: #86efac;
+    background: linear-gradient(135deg, #14532d 0%, #166534 100%);
+}
+.excel-btn input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
 }
 
+table { width: 100%; border-collapse: collapse; }
+th {
+    background: #e5e7eb; border: 1px solid #cbd5e1; padding: 14px;
+    font-size: 16px; font-weight: 700; text-align: center;
+}
+td { border: 1px solid #dbe2ea; padding: 12px; font-size: 16px; }
+.delete-btn {
+    background: #dc2626; color: #fff; border: none; padding: 10px 14px;
+    border-radius: 12px; cursor: pointer; font-weight: 700; font-family: 'Sarabun', sans-serif;
+}
+.table-wrapper { overflow-x: auto; }
+
+/* ── Modal ── */
+.modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 1000; justify-content: center; align-items: flex-start;
+    padding: 40px 20px; overflow-y: auto;
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+    background: #fff; border-radius: 24px; padding: 36px; width: 100%;
+    max-width: 900px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); position: relative;
+}
 .modal-close {
-    position: absolute;
-    top: 18px;
-    right: 22px;
-    background: #e5e7eb;
-    border: none;
-    border-radius: 50%;
-    width: 38px;
-    height: 38px;
-    font-size: 20px;
-    cursor: pointer;
-    line-height: 38px;
-    text-align: center;
+    position: absolute; top: 18px; right: 22px; background: #e5e7eb;
+    border: none; border-radius: 50%; width: 38px; height: 38px;
+    font-size: 20px; cursor: pointer; line-height: 38px; text-align: center;
 }
-
-.modal-close:hover {
-    background: #dc2626;
-    color: #fff;
-}
-
+.modal-close:hover { background: #dc2626; color: #fff; }
 .result-row {
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    padding: 18px 22px;
-    margin-bottom: 14px;
-    background: #f8fafc;
-    cursor: pointer;
-    transition: .2s;
+    border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px 22px;
+    margin-bottom: 14px; background: #f8fafc; cursor: pointer; transition: .2s;
 }
+.result-row:hover { background: #dcfce7; border-color: #16a34a; }
+.edit-field-label { font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 6px; display: block; }
+.edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.edit-grid-full { grid-column: 1 / -1; }
 
-.result-row:hover {
-    background: #dcfce7;
-    border-color: #16a34a;
+/* ── Toast notification ── */
+#toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: #166534; color: #fff; padding: 14px 28px; border-radius: 20px;
+    font-size: 17px; font-weight: 700; z-index: 9999; box-shadow: 0 8px 30px rgba(0,0,0,.2);
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
+    opacity: 0; pointer-events: none; font-family: 'Sarabun', sans-serif;
 }
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-.edit-field-label {
-    font-size: 14px;
-    font-weight: 700;
-    color: #475569;
-    margin-bottom: 6px;
-    display: block;
+/* ── Preview Modal (Excel) ── */
+#modalExcel .excel-preview-table th { background: #166534; color: #fff; font-size: 13px; padding: 10px 8px; }
+#modalExcel .excel-preview-table td { font-size: 13px; padding: 8px; }
+#modalExcel .excel-preview-table tr:nth-child(even) td { background: #f0fdf4; }
+.badge-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #dcfce7; color: #166534; border-radius: 999px;
+    padding: 2px 12px; font-size: 14px; font-weight: 700; margin-left: 10px;
 }
-
-.edit-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 20px;
-}
-
-.edit-grid-full {
-    grid-column: 1 / -1;
-}
-
 </style>
-
 </head>
 <body>
+
+<div id="toast"></div>
 
 <header class="header-gradient text-white p-10 shadow-xl">
     <div class="max-w-7xl mx-auto">
@@ -242,7 +166,7 @@ td {
             </div>
         </div>
 
-        <!-- FORM แถวที่ 1: ชื่อ-นามสกุล | ฉายา | อายุ | พรรษา | เชื้อชาติ | สัญชาติ -->
+        <!-- FORM แถวที่ 1 -->
         <div class="flex gap-4 mb-4 items-end">
             <div style="flex:2.2; min-width:0;">
                 <input id="fullName" type="text" placeholder="ชื่อ/นามสกุล" class="input">
@@ -264,7 +188,7 @@ td {
             </div>
         </div>
 
-        <!-- FORM แถวที่ 2: IC/Passport | สังกัดเดิม | วิทยฐานะ | หมายเหตุ -->
+        <!-- FORM แถวที่ 2 -->
         <div class="flex gap-4 mb-6 items-end">
             <div style="flex:1.5; min-width:0;">
                 <input id="passport" type="text" placeholder="IC / Passport" class="input">
@@ -280,17 +204,22 @@ td {
             </div>
         </div>
 
-        <!-- BUTTON -->
+        <!-- BUTTON ROW -->
         <div class="flex flex-wrap gap-4 mb-8">
             <button id="btnAdd"    class="btn add-btn">➕ เพิ่มรายชื่อ</button>
-
-            <button id="btnAppend" class="btn save-btn">
-            ➕ เพิ่มข้อมูลรายรูป
-            </button>
-
+            <button id="btnAppend" class="btn save-btn">➕ เพิ่มข้อมูลรายรูป</button>
             <button id="btnSearch" class="btn check-btn">🔍 ตรวจสอบข้อมูล</button>
-
             <button id="btnEdit"   class="btn edit-btn">✏️ แก้ไขข้อมูล</button>
+
+            <!-- ── ปุ่มอัพโหลด Excel (แทนกล่องสีแดงว่าง) ── -->
+            <label class="excel-btn" title="รองรับไฟล์ .xlsx และ .xls">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 3v6h6"/>
+                </svg>
+                📂 นำเข้า Excel
+                <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+            </label>
         </div>
 
         <!-- PREVIEW TABLE -->
@@ -298,17 +227,10 @@ td {
             <table>
                 <thead>
                     <tr>
-                        <th>ชื่อ</th>
-                        <th>ฉายา</th>
-                        <th>อายุ</th>
-                        <th>พรรษา</th>
-                        <th>เชื้อชาติ</th>
-                        <th>สัญชาติ</th>
-                        <th>IC / Passport</th>
-                        <th>ภูมิลำเนา / สังกัดเดิม</th>
-                        <th>วิทยฐานะ น.ธ. ป.ธ. จบการศึกษา</th>
-                        <th>หมายเหตุ</th>
-                        <th>จัดการ</th>
+                        <th>ชื่อ</th><th>ฉายา</th><th>อายุ</th><th>พรรษา</th>
+                        <th>เชื้อชาติ</th><th>สัญชาติ</th><th>IC / Passport</th>
+                        <th>ภูมิลำเนา / สังกัดเดิม</th><th>วิทยฐานะ น.ธ. ป.ธ. จบการศึกษา</th>
+                        <th>หมายเหตุ</th><th>จัดการ</th>
                     </tr>
                 </thead>
                 <tbody id="previewTable"></tbody>
@@ -322,7 +244,6 @@ td {
         </div>
 
     </section>
-
 </main>
 
 <!-- ======== MODAL: ตรวจสอบข้อมูล ======== -->
@@ -331,12 +252,10 @@ td {
         <button class="modal-close" id="closeSearch">✕</button>
         <h2 class="text-3xl font-bold mb-2 text-slate-800">🔍 ตรวจสอบข้อมูลวัด</h2>
         <p class="text-slate-500 mb-6">ค้นหาวัดจาก Firestore เพื่อตรวจสอบข้อมูลที่บันทึกไว้</p>
-
         <div class="flex gap-3 mb-6">
             <input id="searchInput" type="text" placeholder="พิมพ์ชื่อวัดที่ต้องการค้นหา..." class="input" style="flex:1;">
             <button id="btnDoSearch" class="btn check-btn" style="white-space:nowrap;">ค้นหา</button>
         </div>
-
         <div id="searchResults"></div>
     </div>
 </div>
@@ -347,8 +266,6 @@ td {
         <button class="modal-close" id="closeEdit">✕</button>
         <h2 class="text-3xl font-bold mb-2 text-slate-800">✏️ แก้ไขข้อมูลพระภิกษุรายบุคคล</h2>
         <p class="text-slate-500 mb-6">ค้นหาวัด → เลือกพระ → แก้ไขข้อมูล</p>
-
-        <!-- Step 1: ค้นหาวัด -->
         <div id="editStep1">
             <p class="font-bold text-slate-600 mb-3">ขั้นตอนที่ 1 — ค้นหาวัด</p>
             <div class="flex gap-3 mb-6">
@@ -357,8 +274,6 @@ td {
             </div>
             <div id="editSearchResults"></div>
         </div>
-
-        <!-- Step 2: เลือกพระที่ต้องการแก้ไข -->
         <div id="editStep2" style="display:none;">
             <div class="mb-4 p-4 bg-orange-50 border border-orange-200 rounded-2xl flex justify-between items-center">
                 <p class="font-bold text-orange-700" id="editTempleNameLabel"></p>
@@ -367,113 +282,104 @@ td {
             <p class="font-bold text-slate-600 mb-3">ขั้นตอนที่ 2 — เลือกพระที่ต้องการแก้ไข</p>
             <div id="editMonkSelectList"></div>
         </div>
-
-        <!-- Step 3: แก้ไขข้อมูลพระรายบุคคล -->
         <div id="editStep3" style="display:none;">
             <div class="mb-4 p-4 bg-orange-50 border border-orange-200 rounded-2xl flex justify-between items-center">
                 <p class="font-bold text-orange-700" id="editMonkLabel"></p>
                 <button id="btnBackToStep2" class="btn" style="background:#94a3b8; padding:10px 18px; font-size:15px;">← รายชื่อพระ</button>
             </div>
             <p class="font-bold text-slate-600 mb-4">ขั้นตอนที่ 3 — แก้ไขข้อมูล</p>
-
             <div class="edit-grid">
-                <div>
-                    <span class="edit-field-label">ชื่อ/นามสกุล</span>
-                    <input id="eFullName" class="input" type="text">
-                </div>
-                <div>
-                    <span class="edit-field-label">ฉายา</span>
-                    <input id="eAlias" class="input" type="text">
-                </div>
-                <div>
-                    <span class="edit-field-label">อายุ</span>
-                    <input id="eAge" class="input" type="number">
-                </div>
-                <div>
-                    <span class="edit-field-label">พรรษา</span>
-                    <input id="ePansa" class="input" type="number">
-                </div>
-                <div>
-                    <span class="edit-field-label">เชื้อชาติ</span>
-                    <input id="eRace" class="input" type="text">
-                </div>
-                <div>
-                    <span class="edit-field-label">สัญชาติ</span>
-                    <input id="eNation" class="input" type="text">
-                </div>
-                <div>
-                    <span class="edit-field-label">IC / Passport</span>
-                    <input id="ePassport" class="input" type="text">
-                </div>
-                <div>
-                    <span class="edit-field-label">ภูมิลำเนา / สังกัดวัดเดิม</span>
-                    <input id="eOrigin" class="input" type="text">
-                </div>
-                <div>
-                    <span class="edit-field-label">วิทยฐานะ น.ธ. ป.ธ. วุฒิทางโลก</span>
-                    <input id="eEducation" class="input" type="text">
-                </div>
-                <div>
-                    <span class="edit-field-label">หมายเหตุ / ตำแหน่ง / Phone No.</span>
-                    <input id="eRemark" class="input" type="text">
-                </div>
+                <div><span class="edit-field-label">ชื่อ/นามสกุล</span><input id="eFullName" class="input" type="text"></div>
+                <div><span class="edit-field-label">ฉายา</span><input id="eAlias" class="input" type="text"></div>
+                <div><span class="edit-field-label">อายุ</span><input id="eAge" class="input" type="number"></div>
+                <div><span class="edit-field-label">พรรษา</span><input id="ePansa" class="input" type="number"></div>
+                <div><span class="edit-field-label">เชื้อชาติ</span><input id="eRace" class="input" type="text"></div>
+                <div><span class="edit-field-label">สัญชาติ</span><input id="eNation" class="input" type="text"></div>
+                <div><span class="edit-field-label">IC / Passport</span><input id="ePassport" class="input" type="text"></div>
+                <div><span class="edit-field-label">ภูมิลำเนา / สังกัดวัดเดิม</span><input id="eOrigin" class="input" type="text"></div>
+                <div><span class="edit-field-label">วิทยฐานะ น.ธ. ป.ธ. วุฒิทางโลก</span><input id="eEducation" class="input" type="text"></div>
+                <div><span class="edit-field-label">หมายเหตุ / ตำแหน่ง / Phone No.</span><input id="eRemark" class="input" type="text"></div>
             </div>
-
             <div class="flex gap-4 mt-6">
                 <button id="btnSaveEdit" class="btn save-btn">✅ บันทึกการแก้ไข</button>
             </div>
         </div>
-
     </div>
 </div>
 
-<!-- ===== MODAL เพิ่มข้อมูลรายรูป ===== -->
-
+<!-- ======== MODAL: เพิ่มข้อมูลรายรูป ======== -->
 <div id="modalAppend" class="modal-overlay">
-
     <div class="modal-box">
-
         <button class="modal-close" id="closeAppend">✕</button>
-
-        <h2 class="text-3xl font-bold mb-2 text-slate-800">
-            ➕ เพิ่มข้อมูลพระเข้าวัดเดิม
-        </h2>
-
-        <p class="text-slate-500 mb-6">
-            ค้นหาวัด → เลือกวัด → เพิ่มข้อมูลใหม่
-        </p>
-
+        <h2 class="text-3xl font-bold mb-2 text-slate-800">➕ เพิ่มข้อมูลพระเข้าวัดเดิม</h2>
+        <p class="text-slate-500 mb-6">ค้นหาวัด → เลือกวัด → เพิ่มข้อมูลใหม่</p>
         <div class="flex gap-3 mb-6">
+            <input id="appendSearchInput" type="text" placeholder="พิมพ์ชื่อวัด..." class="input" style="flex:1;">
+            <button id="btnAppendSearch" class="btn save-btn" style="white-space:nowrap;">ค้นหา</button>
+        </div>
+        <div id="appendSearchResults"></div>
+    </div>
+</div>
 
-            <input
-                id="appendSearchInput"
-                type="text"
-                placeholder="พิมพ์ชื่อวัด..."
-                class="input"
-                style="flex:1;"
-            >
+<!-- ======== MODAL: Preview Excel ======== -->
+<div id="modalExcel" class="modal-overlay">
+    <div class="modal-box" style="max-width:1100px;">
+        <button class="modal-close" id="closeExcel">✕</button>
+        <h2 class="text-3xl font-bold mb-1 text-slate-800">📂 ตรวจสอบข้อมูลจาก Excel</h2>
+        <p class="text-slate-500 mb-2" id="excelFileName"></p>
 
-            <button
-                id="btnAppendSearch"
-                class="btn save-btn"
-                style="white-space:nowrap;"
-            >
-                ค้นหา
-            </button>
-
+        <!-- แถบสถานะ -->
+        <div class="flex flex-wrap items-center gap-4 mb-5">
+            <div id="excelStatTotal" class="flex items-center gap-2 bg-blue-50 border border-blue-200 px-4 py-2 rounded-xl">
+                <span class="text-blue-600 font-bold text-lg" id="statTotal">0</span>
+                <span class="text-blue-500 text-sm font-semibold">แถวทั้งหมด</span>
+            </div>
+            <div id="excelStatValid" class="flex items-center gap-2 bg-green-50 border border-green-200 px-4 py-2 rounded-xl">
+                <span class="text-green-600 font-bold text-lg" id="statValid">0</span>
+                <span class="text-green-500 text-sm font-semibold">ใช้ได้</span>
+            </div>
+            <div id="excelStatWarn" class="flex items-center gap-2 bg-amber-50 border border-amber-200 px-4 py-2 rounded-xl">
+                <span class="text-amber-600 font-bold text-lg" id="statWarn">0</span>
+                <span class="text-amber-500 text-sm font-semibold">ขาดข้อมูลบางส่วน</span>
+            </div>
         </div>
 
-        <div id="appendSearchResults"></div>
+        <!-- Download template -->
+        <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-2xl flex flex-wrap items-center gap-4">
+            <div>
+                <p class="font-bold text-green-700 text-lg">📋 รูปแบบคอลัมน์ที่รองรับ</p>
+                <p class="text-green-600 text-sm mt-1">
+                    ชื่อ/นามสกุล | ฉายา | อายุ | พรรษา | เชื้อชาติ | สัญชาติ | IC/Passport | ภูมิลำเนา/สังกัดเดิม | วิทยฐานะ | หมายเหตุ
+                </p>
+            </div>
+            <button id="btnDownloadTemplate" class="btn save-btn" style="font-size:15px; padding:12px 18px; white-space:nowrap; margin-left:auto;">
+                ⬇️ โหลด Template
+            </button>
+        </div>
 
+        <!-- Preview Table -->
+        <div class="table-wrapper" style="max-height:380px; overflow-y:auto;">
+            <table class="excel-preview-table">
+                <thead id="excelPreviewHead"></thead>
+                <tbody id="excelPreviewBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-wrap gap-4 mt-6">
+            <button id="btnImportConfirm" class="btn save-btn" style="flex:1; min-width:200px;">
+                ✅ นำเข้าข้อมูลทั้งหมด (<span id="confirmCount">0</span> แถว)
+            </button>
+            <button id="btnCancelImport" class="btn" style="background:#94a3b8; padding:16px 28px;">
+                ยกเลิก
+            </button>
+        </div>
     </div>
-
 </div>
 
 <script type="module">
-
 import { initializeApp }
     from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-
 import {
     getFirestore, collection, addDoc,
     getDocs, updateDoc, doc
@@ -487,15 +393,24 @@ const firebaseConfig = {
     messagingSenderId: "113712257853",
     appId: "1:113712257853:web:8b8dc634917aeeb49ac354"
 };
-
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
 let monkData = [];
-let appendTempleId = null;
+let appendTempleId   = null;
 let appendTempleData = null;
+let excelImportRows  = [];   // แถวที่อ่านจาก Excel รอ confirm
 
-/* ─── ADD ─── */
+/* ── Toast ── */
+function showToast(msg, color='#166534'){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = color;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ── ADD ── */
 function addMonk(){
     const monk = {
         fullname    : document.getElementById('fullName').value,
@@ -508,103 +423,68 @@ function addMonk(){
         origin      : document.getElementById('origin').value,
         education   : document.getElementById('education').value,
         note        : document.getElementById('remark').value,
-        createdAt   : new Date().toISOString()  // ← เพิ่มตรงนี้
+        createdAt   : new Date().toISOString()
     };
     monkData.push(monk);
     renderTable();
     clearInputs();
 }
 
-/* ─── RENDER TABLE ─── */
+/* ── RENDER TABLE ── */
 function renderTable(){
     const table = document.getElementById('previewTable');
     table.innerHTML = '';
     monkData.forEach((m, i) => {
         table.innerHTML += `
             <tr>
-                <td>${m.fullname}</td>
-                <td>${m.alias}</td>
-                <td>${m.age}</td>
-                <td>${m.pansa}</td>
-                <td>${m.race}</td>
-                <td>${m.nationality}</td>
-                <td>${m.passport}</td>
-                <td>${m.origin}</td>
-                <td>${m.education}</td>
+                <td>${m.fullname}</td><td>${m.alias}</td><td>${m.age}</td>
+                <td>${m.pansa}</td><td>${m.race}</td><td>${m.nationality}</td>
+                <td>${m.passport}</td><td>${m.origin}</td><td>${m.education}</td>
                 <td>${m.note}</td>
-                <td>
-                    <button onclick="window._deleteMonk(${i})" class="delete-btn">ลบ</button>
-                </td>
+                <td><button onclick="window._deleteMonk(${i})" class="delete-btn">ลบ</button></td>
             </tr>`;
     });
 }
 
-/* ─── DELETE ─── */
 window._deleteMonk = function(index){
-    monkData.splice(index, 1);
-    renderTable();
+    monkData.splice(index, 1); renderTable();
 };
 
-/* ─── CLEAR INPUTS ─── */
 function clearInputs(){
-    ['fullName','alias','age','pansa','race','nation',
-     'passport','origin','education','remark']
+    ['fullName','alias','age','pansa','race','nation','passport','origin','education','remark']
     .forEach(id => { document.getElementById(id).value = ''; });
 }
 
-/* ─── SAVE ─── */
+/* ── SAVE ── */
 async function saveAllData(){
     try {
         const templeName    = document.getElementById('templeName').value.trim();
         const templeAddress = document.getElementById('templeAddress').value.trim();
-
-        if(!templeName){
-            alert('⚠️ กรุณากรอกชื่อวัดก่อนบันทึก');
-            return;
-        }
+        if(!templeName){ alert('⚠️ กรุณากรอกชื่อวัดก่อนบันทึก'); return; }
 
         const snapshot = await getDocs(collection(db, 'temples'));
         let existingId = null;
+        let oldMonks   = [];
         snapshot.forEach(docItem => {
             const data = docItem.data();
             if(data.name && data.name.trim() === templeName){
                 existingId = docItem.id;
+                oldMonks   = data.monks || [];
             }
         });
 
         if(existingId){
-
-            let oldMonks = [];
-
-            snapshot.forEach(docItem => {
-
-                if(docItem.id === existingId){
-
-                    const oldData = docItem.data();
-
-                    oldMonks = oldData.monks || [];
-                }
-            });
-
-            /* รวมข้อมูลเก่า + ใหม่ */
-
-            const mergedMonks = [
-                ...oldMonks,
-                ...monkData
-            ];
-
             await updateDoc(doc(db, 'temples', existingId), {
-                name: templeName,
-                address: templeAddress,
-                monks: mergedMonks      // ← แต่ละ monk มี createdAt ของตัวเอง
+                name: templeName, address: templeAddress,
+                monks: [...oldMonks, ...monkData]
             });
-            alert('✅ อัปเดตข้อมูลสำเร็จ');
+            showToast('✅ อัปเดตข้อมูลสำเร็จ');
         } else {
             await addDoc(collection(db, 'temples'), {
                 name: templeName, address: templeAddress,
                 state: 'ปีนัง', monks: monkData, createdAt: new Date()
             });
-            alert('✅ บันทึกข้อมูลสำเร็จ');
+            showToast('✅ บันทึกข้อมูลสำเร็จ');
         }
     } catch(error){
         console.error(error);
@@ -612,167 +492,229 @@ async function saveAllData(){
     }
 }
 
-/* ─────────────────────────────
-   APPEND NEW MONK TO OLD TEMPLE
-───────────────────────────── */
-
-function openAppendModal(){
-
-    document.getElementById('appendSearchInput').value = '';
-    document.getElementById('appendSearchResults').innerHTML = '';
-
-    document.getElementById('modalAppend')
-        .classList.add('active');
-}
-
-/* ค้นหาวัด */
-
-async function doAppendSearch(){
-
-    const keyword =
-        document.getElementById('appendSearchInput')
-        .value.trim().toLowerCase();
-
-    const resultsDiv =
-        document.getElementById('appendSearchResults');
-
-    resultsDiv.innerHTML =
-        '<p class="text-slate-500">⏳ กำลังค้นหา...</p>';
-
-    try {
-
-        const snapshot =
-            await getDocs(collection(db, 'temples'));
-
-        let found = [];
-
-        snapshot.forEach(docItem => {
-
-            const data = docItem.data();
-
-            if(
-                !keyword ||
-                (data.name &&
-                 data.name.toLowerCase().includes(keyword))
-            ){
-                found.push({
-                    id: docItem.id,
-                    ...data
-                });
-            }
-        });
-
-        if(found.length === 0){
-
-            resultsDiv.innerHTML =
-                '<p class="text-red-500 font-bold">❌ ไม่พบวัด</p>';
-
-            return;
-        }
-
-        resultsDiv.innerHTML = '';
-
-        found.forEach(temple => {
-
-            const div = document.createElement('div');
-
-            div.className = 'result-row';
-
-            div.innerHTML = `
-                <p class="text-xl font-bold text-green-700">
-                    🏛️ ${temple.name}
-                </p>
-
-                <p class="text-slate-500 mt-1">
-                    👤 ${(temple.monks||[]).length} รูป
-                </p>
-
-                <p class="text-green-600 font-bold mt-2">
-                    คลิกเพื่อเลือกวัดนี้
-                </p>
-            `;
-
-            div.addEventListener('click', () => {
-
-                appendTempleId   = temple.id;
-                appendTempleData = temple;
-
-                document.getElementById('templeName').value =
-                    temple.name || '';
-
-                document.getElementById('templeAddress').value =
-                    temple.address || '';
-
-                monkData = [];
-
-                renderTable();
-
-                document.getElementById('modalAppend')
-                    .classList.remove('active');
-
-                alert(
-                    '✅ เลือกวัดเรียบร้อย\n\n' +
-                    'กรอกข้อมูลพระใหม่ แล้วกด "ยืนยันบันทึกทั้งหมด"'
-                );
-            });
-
-            resultsDiv.appendChild(div);
-        });
-
-    } catch(err){
-
-        console.error(err);
-
-        resultsDiv.innerHTML =
-            '<p class="text-red-500">❌ เกิดข้อผิดพลาด</p>';
-    }
-}
-
-/* ─── CHECK ─── */
+/* ── CHECK ── */
 function checkData(){
     const templeName = document.getElementById('templeName').value.trim();
     const templeAddr = document.getElementById('templeAddress').value.trim();
-    const count      = monkData.length;
+    if(!templeName){ alert('⚠️ ยังไม่ได้กรอกชื่อวัด'); return; }
+    alert(`✅ ตรวจสอบข้อมูลเรียบร้อย\n\n🏛️ ชื่อวัด : ${templeName}\n📍 ที่อยู่  : ${templeAddr||'-'}\n👤 พระภิกษุ : ${monkData.length} รูป`);
+}
 
-    if(!templeName){
-        alert('⚠️ ยังไม่ได้กรอกชื่อวัด');
-        return;
+/* ─────────────────────────────────────────────────────
+   📂  EXCEL IMPORT  (SheetJS)
+───────────────────────────────────────────────────── */
+
+// Mapping: header ที่เป็นไปได้ → field ของระบบ
+const COL_MAP = {
+    'ชื่อ/นามสกุล': 'fullname', 'ชื่อนามสกุล': 'fullname', 'ชื่อ': 'fullname', 'fullname': 'fullname',
+    'ฉายา': 'alias', 'alias': 'alias',
+    'อายุ': 'age', 'age': 'age',
+    'พรรษา': 'pansa', 'pansa': 'pansa',
+    'เชื้อชาติ': 'race', 'race': 'race',
+    'สัญชาติ': 'nationality', 'สัญชาติ': 'nationality', 'nationality': 'nationality',
+    'ic/passport': 'passport', 'ic': 'passport', 'passport': 'passport', 'ic passport': 'passport',
+    'ภูมิลำเนา/สังกัดเดิม': 'origin', 'สังกัดเดิม': 'origin', 'ภูมิลำเนา': 'origin', 'origin': 'origin',
+    'วิทยฐานะ': 'education', 'education': 'education',
+    'หมายเหตุ': 'note', 'note': 'note',
+};
+
+function normalizeHeader(h){
+    return String(h||'').trim().toLowerCase().replace(/\s+/g,' ');
+}
+
+function parseExcelRows(wb){
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const raw   = XLSX.utils.sheet_to_json(sheet, { header:1, defval:'' });
+    if(raw.length < 2) return [];
+
+    // หาแถว header (แถวแรกที่ไม่ว่างเปล่า)
+    let headerRow = 0;
+    for(let i=0; i<Math.min(5, raw.length); i++){
+        if(raw[i].some(c => String(c).trim())) { headerRow = i; break; }
     }
-    alert(
-        `✅ ตรวจสอบข้อมูลเรียบร้อย\n\n` +
-        `🏛️ ชื่อวัด : ${templeName}\n` +
-        `📍 ที่อยู่  : ${templeAddr || '-'}\n` +
-        `👤 พระภิกษุ : ${count} รูป`
-    );
+
+    const headers = raw[headerRow].map(normalizeHeader);
+    const fieldMap = headers.map(h => COL_MAP[h] || null);
+
+    const monks = [];
+    for(let r = headerRow+1; r < raw.length; r++){
+        const row  = raw[r];
+        if(row.every(c => !String(c).trim())) continue; // ข้ามแถวว่าง
+        const monk = { fullname:'', alias:'', age:'', pansa:'', race:'',
+                       nationality:'', passport:'', origin:'', education:'', note:'',
+                       createdAt: new Date().toISOString() };
+        fieldMap.forEach((field, ci) => {
+            if(field) monk[field] = String(row[ci]||'').trim();
+        });
+        monks.push(monk);
+    }
+    return { headers, fieldMap, monks };
 }
 
-/* ─── SEARCH (ตรวจสอบข้อมูลจาก Firestore) ─── */
-function openSearchModal(){
-    document.getElementById('searchInput').value = '';
-    document.getElementById('searchResults').innerHTML = '';
-    document.getElementById('modalSearch').classList.add('active');
+function openExcelPreview(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+        try {
+            const data = new Uint8Array(e.target.result);
+            const wb   = XLSX.read(data, { type:'array' });
+            const { headers, fieldMap, monks } = parseExcelRows(wb);
+
+            if(!monks || monks.length === 0){
+                showToast('❌ ไม่พบข้อมูลในไฟล์ Excel', '#dc2626');
+                return;
+            }
+
+            excelImportRows = monks;
+
+            // สถิติ
+            const valid = monks.filter(m => m.fullname).length;
+            const warn  = monks.length - valid;
+            document.getElementById('statTotal').textContent = monks.length;
+            document.getElementById('statValid').textContent = valid;
+            document.getElementById('statWarn').textContent  = warn;
+            document.getElementById('confirmCount').textContent = monks.length;
+            document.getElementById('excelFileName').textContent = `📄 ไฟล์: ${file.name}`;
+
+            // สร้าง header ตาราง preview
+            const thead = document.getElementById('excelPreviewHead');
+            const tbody = document.getElementById('excelPreviewBody');
+            thead.innerHTML = '<tr>' + headers.map(h =>
+                `<th style="white-space:nowrap;">${h||'-'}</th>`
+            ).join('') + '</tr>';
+
+            // แสดงข้อมูลสูงสุด 50 แถวใน preview
+            const preview = monks.slice(0, 50);
+            tbody.innerHTML = preview.map((m, idx) => {
+                const isMissingName = !m.fullname;
+                const rowStyle = isMissingName ? 'background:#fef9c3;' : '';
+                // ดึงค่าตามลำดับ header
+                const cells = fieldMap.map(field =>
+                    field ? `<td style="${rowStyle}">${m[field]||''}</td>`
+                           : `<td style="${rowStyle}; color:#aaa;">-</td>`
+                ).join('');
+                return `<tr>${cells}</tr>`;
+            }).join('');
+            if(monks.length > 50){
+                tbody.innerHTML += `<tr><td colspan="${headers.length}" style="text-align:center; color:#94a3b8; padding:14px;">
+                    ... และอีก ${monks.length - 50} แถว (แสดง 50 แรก) ...</td></tr>`;
+            }
+
+            document.getElementById('modalExcel').classList.add('active');
+        } catch(err){
+            console.error(err);
+            showToast('❌ อ่านไฟล์ไม่ได้ กรุณาตรวจสอบรูปแบบ Excel', '#dc2626');
+        }
+    };
+    reader.readAsArrayBuffer(file);
 }
 
-async function doSearch(){
-    const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
-    const resultsDiv = document.getElementById('searchResults');
+// Confirm import → เพิ่มเข้า monkData แล้วแสดงตาราง
+document.getElementById('btnImportConfirm').addEventListener('click', () => {
+    if(excelImportRows.length === 0) return;
+    monkData.push(...excelImportRows);
+    renderTable();
+    document.getElementById('modalExcel').classList.remove('active');
+    document.getElementById('excelFileInput').value = '';
+    excelImportRows = [];
+    showToast(`✅ นำเข้าข้อมูล ${monkData.length} รูปเรียบร้อยแล้ว`);
+});
+
+document.getElementById('btnCancelImport').addEventListener('click', () => {
+    document.getElementById('modalExcel').classList.remove('active');
+    document.getElementById('excelFileInput').value = '';
+    excelImportRows = [];
+});
+document.getElementById('closeExcel').addEventListener('click', () => {
+    document.getElementById('modalExcel').classList.remove('active');
+    document.getElementById('excelFileInput').value = '';
+    excelImportRows = [];
+});
+
+// เปิดไฟล์ Excel
+document.getElementById('excelFileInput').addEventListener('change', function(){
+    if(this.files && this.files[0]) openExcelPreview(this.files[0]);
+});
+
+// Download template Excel
+document.getElementById('btnDownloadTemplate').addEventListener('click', () => {
+    const ws = XLSX.utils.aoa_to_sheet([[
+        'ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา','เชื้อชาติ','สัญชาติ',
+        'IC/Passport','ภูมิลำเนา/สังกัดเดิม','วิทยฐานะ','หมายเหตุ'
+    ],[
+        'พระสมชาย อินทร์ดี','ธมฺมสาโร','45','15','ไทย','ไทย',
+        'A1234567','วัดสวนแก้ว จ.นนทบุรี','น.ธ.เอก','เจ้าอาวาส'
+    ]]);
+    // กำหนดความกว้างคอลัมน์
+    ws['!cols'] = [20,14,6,8,10,10,14,30,18,24].map(w=>({wch:w}));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'รายชื่อพระ');
+    XLSX.writeFile(wb, 'template_monks_kedah.xlsx');
+    showToast('⬇️ ดาวน์โหลด Template สำเร็จ');
+});
+
+/* ─── APPEND MODAL ─── */
+function openAppendModal(){
+    document.getElementById('appendSearchInput').value = '';
+    document.getElementById('appendSearchResults').innerHTML = '';
+    document.getElementById('modalAppend').classList.add('active');
+}
+async function doAppendSearch(){
+    const keyword = document.getElementById('appendSearchInput').value.trim().toLowerCase();
+    const resultsDiv = document.getElementById('appendSearchResults');
     resultsDiv.innerHTML = '<p class="text-slate-500">⏳ กำลังค้นหา...</p>';
-
     try {
         const snapshot = await getDocs(collection(db, 'temples'));
         let found = [];
         snapshot.forEach(docItem => {
             const data = docItem.data();
-            if(!keyword || (data.name && data.name.toLowerCase().includes(keyword))){
+            if(!keyword || (data.name && data.name.toLowerCase().includes(keyword)))
                 found.push({ id: docItem.id, ...data });
-            }
         });
-
         if(found.length === 0){
-            resultsDiv.innerHTML = '<p class="text-red-500 font-bold">❌ ไม่พบข้อมูลวัดที่ค้นหา</p>';
-            return;
+            resultsDiv.innerHTML = '<p class="text-red-500 font-bold">❌ ไม่พบวัด</p>'; return;
         }
+        resultsDiv.innerHTML = '';
+        found.forEach(temple => {
+            const div = document.createElement('div');
+            div.className = 'result-row';
+            div.innerHTML = `
+                <p class="text-xl font-bold text-green-700">🏛️ ${temple.name}</p>
+                <p class="text-slate-500 mt-1">👤 ${(temple.monks||[]).length} รูป</p>
+                <p class="text-green-600 font-bold mt-2">คลิกเพื่อเลือกวัดนี้</p>`;
+            div.addEventListener('click', () => {
+                appendTempleId = temple.id; appendTempleData = temple;
+                document.getElementById('templeName').value    = temple.name || '';
+                document.getElementById('templeAddress').value = temple.address || '';
+                monkData = []; renderTable();
+                document.getElementById('modalAppend').classList.remove('active');
+                showToast('✅ เลือกวัดเรียบร้อย กรอกข้อมูลพระใหม่แล้วกดยืนยัน');
+            });
+            resultsDiv.appendChild(div);
+        });
+    } catch(err){ console.error(err); resultsDiv.innerHTML = '<p class="text-red-500">❌ เกิดข้อผิดพลาด</p>'; }
+}
 
+/* ─── SEARCH MODAL ─── */
+function openSearchModal(){
+    document.getElementById('searchInput').value = '';
+    document.getElementById('searchResults').innerHTML = '';
+    document.getElementById('modalSearch').classList.add('active');
+}
+async function doSearch(){
+    const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+    const resultsDiv = document.getElementById('searchResults');
+    resultsDiv.innerHTML = '<p class="text-slate-500">⏳ กำลังค้นหา...</p>';
+    try {
+        const snapshot = await getDocs(collection(db, 'temples'));
+        let found = [];
+        snapshot.forEach(docItem => {
+            const data = docItem.data();
+            if(!keyword || (data.name && data.name.toLowerCase().includes(keyword)))
+                found.push({ id: docItem.id, ...data });
+        });
+        if(found.length === 0){
+            resultsDiv.innerHTML = '<p class="text-red-500 font-bold">❌ ไม่พบข้อมูลวัดที่ค้นหา</p>'; return;
+        }
         resultsDiv.innerHTML = '';
         found.forEach(temple => {
             const monks = temple.monks || [];
@@ -782,48 +724,33 @@ async function doSearch(){
                 <div class="flex justify-between items-center">
                     <div>
                         <p class="text-xl font-bold text-green-700">🏛️ ${temple.name}</p>
-                        <p class="text-slate-500 mt-1">📍 ${temple.address || '-'} &nbsp;|&nbsp; 👤 พระภิกษุ ${monks.length} รูป</p>
+                        <p class="text-slate-500 mt-1">📍 ${temple.address||'-'} &nbsp;|&nbsp; 👤 พระภิกษุ ${monks.length} รูป</p>
                     </div>
-                    <span class="text-slate-400 text-sm">${temple.state || ''}</span>
+                    <span class="text-slate-400 text-sm">${temple.state||''}</span>
                 </div>
                 <div class="mt-3 overflow-x-auto">
                     <table style="font-size:14px;">
-                        <thead>
-                            <tr>
-                                <th>ชื่อ</th><th>ฉายา</th><th>อายุ</th><th>พรรษา</th>
-                                <th>เชื้อชาติ</th><th>สัญชาติ</th><th>IC/Passport</th>
-                                <th>สังกัดเดิม</th><th>วิทยฐานะ</th><th>หมายเหตุ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${monks.map(m => `
-                                <tr>
-                                    <td>${m.fullname||''}</td>
-                                    <td>${m.alias||''}</td>
-                                    <td>${m.age||''}</td>
-                                    <td>${m.pansa||''}</td>
-                                    <td>${m.race||''}</td>
-                                    <td>${m.nationality||''}</td>
-                                    <td>${m.passport||''}</td>
-                                    <td>${m.origin||''}</td>
-                                    <td>${m.education||''}</td>
-                                    <td>${m.note||''}</td>
-                                </tr>`).join('')}
-                        </tbody>
+                        <thead><tr>
+                            <th>ชื่อ</th><th>ฉายา</th><th>อายุ</th><th>พรรษา</th>
+                            <th>เชื้อชาติ</th><th>สัญชาติ</th><th>IC/Passport</th>
+                            <th>สังกัดเดิม</th><th>วิทยฐานะ</th><th>หมายเหตุ</th>
+                        </tr></thead>
+                        <tbody>${monks.map(m=>`<tr>
+                            <td>${m.fullname||''}</td><td>${m.alias||''}</td><td>${m.age||''}</td>
+                            <td>${m.pansa||''}</td><td>${m.race||''}</td><td>${m.nationality||''}</td>
+                            <td>${m.passport||''}</td><td>${m.origin||''}</td>
+                            <td>${m.education||''}</td><td>${m.note||''}</td>
+                        </tr>`).join('')}</tbody>
                     </table>
                 </div>`;
             resultsDiv.appendChild(div);
         });
-
-    } catch(err){
-        console.error(err);
-        resultsDiv.innerHTML = '<p class="text-red-500">❌ เกิดข้อผิดพลาดในการค้นหา</p>';
-    }
+    } catch(err){ console.error(err); resultsDiv.innerHTML = '<p class="text-red-500">❌ เกิดข้อผิดพลาด</p>'; }
 }
 
-/* ─── EDIT — แก้ไขพระรายบุคคล ─── */
-let editingDocId  = null;
-let editingMonks  = [];
+/* ─── EDIT MODAL ─── */
+let editingDocId     = null;
+let editingMonks     = [];
 let editingMonkIndex = null;
 
 function openEditModal(){
@@ -834,72 +761,50 @@ function openEditModal(){
     document.getElementById('editStep3').style.display = 'none';
     document.getElementById('modalEdit').classList.add('active');
 }
-
 async function doEditSearch(){
     const keyword    = document.getElementById('editSearchInput').value.trim().toLowerCase();
     const resultsDiv = document.getElementById('editSearchResults');
     resultsDiv.innerHTML = '<p class="text-slate-500">⏳ กำลังค้นหา...</p>';
-
     try {
         const snapshot = await getDocs(collection(db, 'temples'));
         let found = [];
         snapshot.forEach(docItem => {
             const data = docItem.data();
-            if(!keyword || (data.name && data.name.toLowerCase().includes(keyword))){
+            if(!keyword || (data.name && data.name.toLowerCase().includes(keyword)))
                 found.push({ id: docItem.id, ...data });
-            }
         });
-
-        if(found.length === 0){
-            resultsDiv.innerHTML = '<p class="text-red-500 font-bold">❌ ไม่พบวัดที่ค้นหา</p>';
-            return;
-        }
-
+        if(found.length === 0){ resultsDiv.innerHTML = '<p class="text-red-500 font-bold">❌ ไม่พบวัดที่ค้นหา</p>'; return; }
         resultsDiv.innerHTML = '';
         found.forEach(temple => {
             const div = document.createElement('div');
             div.className = 'result-row';
             div.innerHTML = `
                 <p class="text-xl font-bold text-orange-700">🏛️ ${temple.name}</p>
-                <p class="text-slate-500 mt-1">📍 ${temple.address || '-'} &nbsp;|&nbsp; 👤 พระภิกษุ ${(temple.monks||[]).length} รูป</p>
+                <p class="text-slate-500 mt-1">📍 ${temple.address||'-'} &nbsp;|&nbsp; 👤 ${(temple.monks||[]).length} รูป</p>
                 <p class="text-orange-500 text-sm mt-2 font-bold">👆 คลิกเพื่อเลือกวัดนี้</p>`;
             div.addEventListener('click', () => loadMonkSelectList(temple));
             resultsDiv.appendChild(div);
         });
-
-    } catch(err){
-        console.error(err);
-        resultsDiv.innerHTML = '<p class="text-red-500">❌ เกิดข้อผิดพลาด</p>';
-    }
+    } catch(err){ console.error(err); resultsDiv.innerHTML = '<p class="text-red-500">❌ เกิดข้อผิดพลาด</p>'; }
 }
 
-/* Step 2: แสดงรายชื่อพระให้เลือก */
 function loadMonkSelectList(temple){
     editingDocId  = temple.id;
     editingMonks  = JSON.parse(JSON.stringify(temple.monks || []));
-
     document.getElementById('editTempleNameLabel').textContent = `🏛️ วัด: ${temple.name}`;
-
     const list = document.getElementById('editMonkSelectList');
     list.innerHTML = '';
-
     if(editingMonks.length === 0){
         list.innerHTML = '<p class="text-slate-400">ไม่มีรายชื่อพระภิกษุในวัดนี้</p>';
     } else {
         editingMonks.forEach((m, i) => {
             const row = document.createElement('div');
-            row.className = 'result-row';
-            row.style.cursor = 'pointer';
+            row.className = 'result-row'; row.style.cursor = 'pointer';
             row.innerHTML = `
                 <div class="flex justify-between items-center">
                     <div>
-                        <p class="text-lg font-bold text-slate-800">รูปที่ ${i+1}: ${m.fullname || '(ไม่ระบุชื่อ)'}</p>
-                        <p class="text-slate-500 text-sm mt-1">
-                            ฉายา: ${m.alias||'-'} &nbsp;|&nbsp;
-                            อายุ: ${m.age||'-'} &nbsp;|&nbsp;
-                            พรรษา: ${m.pansa||'-'} &nbsp;|&nbsp;
-                            IC: ${m.passport||'-'}
-                        </p>
+                        <p class="text-lg font-bold text-slate-800">รูปที่ ${i+1}: ${m.fullname||'(ไม่ระบุชื่อ)'}</p>
+                        <p class="text-slate-500 text-sm mt-1">ฉายา: ${m.alias||'-'} | อายุ: ${m.age||'-'} | พรรษา: ${m.pansa||'-'} | IC: ${m.passport||'-'}</p>
                     </div>
                     <span class="text-orange-500 font-bold text-sm">✏️ แก้ไข</span>
                 </div>`;
@@ -907,20 +812,15 @@ function loadMonkSelectList(temple){
             list.appendChild(row);
         });
     }
-
     document.getElementById('editStep1').style.display = 'none';
     document.getElementById('editStep2').style.display = 'block';
     document.getElementById('editStep3').style.display = 'none';
 }
 
-/* Step 3: โหลดข้อมูลพระรูปที่เลือกลงฟอร์ม */
 function loadMonkEditForm(index){
     editingMonkIndex = index;
     const m = editingMonks[index];
-
-    document.getElementById('editMonkLabel').textContent =
-        `✏️ แก้ไข: รูปที่ ${index+1} — ${m.fullname || '(ไม่ระบุชื่อ)'}`;
-
+    document.getElementById('editMonkLabel').textContent = `✏️ แก้ไข: รูปที่ ${index+1} — ${m.fullname||'(ไม่ระบุชื่อ)'}`;
     document.getElementById('eFullName') .value = m.fullname    || '';
     document.getElementById('eAlias')    .value = m.alias       || '';
     document.getElementById('eAge')      .value = m.age         || '';
@@ -931,16 +831,13 @@ function loadMonkEditForm(index){
     document.getElementById('eOrigin')   .value = m.origin      || '';
     document.getElementById('eEducation').value = m.education   || '';
     document.getElementById('eRemark')   .value = m.note        || '';
-
     document.getElementById('editStep2').style.display = 'none';
     document.getElementById('editStep3').style.display = 'block';
 }
 
-/* บันทึกข้อมูลพระรายบุคคล → อัปเดต Firestore */
 async function saveEditData(){
     try {
-        const oldCreatedAt = editingMonks[editingMonkIndex].createdAt; // ← เก็บเวลาเดิม
-
+        const oldCreatedAt = editingMonks[editingMonkIndex].createdAt;
         editingMonks[editingMonkIndex] = {
             fullname    : document.getElementById('eFullName') .value.trim(),
             alias       : document.getElementById('eAlias')    .value.trim(),
@@ -952,40 +849,36 @@ async function saveEditData(){
             origin      : document.getElementById('eOrigin')   .value.trim(),
             education   : document.getElementById('eEducation').value.trim(),
             note        : document.getElementById('eRemark')   .value.trim(),
-            createdAt   : oldCreatedAt || new Date().toISOString() // ← คืนเวลาเดิม
+            createdAt   : oldCreatedAt || new Date().toISOString()
         };
-
-        await updateDoc(doc(db, 'temples', editingDocId), {
-            monks: editingMonks
-            // ไม่ใส่ updatedAt ที่ document level
-        });
-
-        alert('✅ บันทึกข้อมูลพระเรียบร้อยแล้ว');
+        await updateDoc(doc(db, 'temples', editingDocId), { monks: editingMonks });
+        showToast('✅ บันทึกข้อมูลพระเรียบร้อยแล้ว');
         document.getElementById('modalEdit').classList.remove('active');
-
     } catch(err){
         console.error(err);
         alert('❌ บันทึกไม่สำเร็จ: ' + err.message);
     }
 }
 
-/* ─── WIRE UP ALL BUTTONS ─── */
-document.getElementById('btnAdd')       .addEventListener('click', addMonk);
-document.getElementById('btnSearch')    .addEventListener('click', openSearchModal);
-document.getElementById('btnEdit')      .addEventListener('click', openEditModal);
-document.getElementById('btnSave')      .addEventListener('click', saveAllData);
-document.getElementById('btnCheck')     .addEventListener('click', checkData);
+/* ─── WIRE UP ─── */
+document.getElementById('btnAdd')        .addEventListener('click', addMonk);
+document.getElementById('btnSearch')     .addEventListener('click', openSearchModal);
+document.getElementById('btnEdit')       .addEventListener('click', openEditModal);
+document.getElementById('btnSave')       .addEventListener('click', saveAllData);
+document.getElementById('btnCheck')      .addEventListener('click', checkData);
+document.getElementById('btnAppend')     .addEventListener('click', openAppendModal);
+document.getElementById('btnAppendSearch').addEventListener('click', doAppendSearch);
 
-document.getElementById('closeSearch')  .addEventListener('click', () =>
+document.getElementById('closeSearch')   .addEventListener('click', () =>
     document.getElementById('modalSearch').classList.remove('active'));
-document.getElementById('btnDoSearch')  .addEventListener('click', doSearch);
-document.getElementById('searchInput')  .addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
+document.getElementById('btnDoSearch')   .addEventListener('click', doSearch);
+document.getElementById('searchInput')   .addEventListener('keydown', e => { if(e.key==='Enter') doSearch(); });
 
-document.getElementById('closeEdit')    .addEventListener('click', () =>
+document.getElementById('closeEdit')     .addEventListener('click', () =>
     document.getElementById('modalEdit').classList.remove('active'));
-document.getElementById('btnEditSearch').addEventListener('click', doEditSearch);
+document.getElementById('btnEditSearch') .addEventListener('click', doEditSearch);
 document.getElementById('editSearchInput').addEventListener('keydown', e => { if(e.key==='Enter') doEditSearch(); });
-document.getElementById('btnSaveEdit')  .addEventListener('click', saveEditData);
+document.getElementById('btnSaveEdit')   .addEventListener('click', saveEditData);
 document.getElementById('btnBackToStep1').addEventListener('click', () => {
     document.getElementById('editStep1').style.display = 'block';
     document.getElementById('editStep2').style.display = 'none';
@@ -995,29 +888,15 @@ document.getElementById('btnBackToStep2').addEventListener('click', () => {
     document.getElementById('editStep2').style.display = 'block';
     document.getElementById('editStep3').style.display = 'none';
 });
-
-document.getElementById('btnAppend')
-    .addEventListener('click', openAppendModal);
-
-document.getElementById('btnAppendSearch')
-    .addEventListener('click', doAppendSearch);
-
-document.getElementById('closeAppend')
-    .addEventListener('click', () => {
-
-        document.getElementById('modalAppend')
-            .classList.remove('active');
-});
+document.getElementById('closeAppend')   .addEventListener('click', () =>
+    document.getElementById('modalAppend').classList.remove('active'));
 
 /* ปิด modal เมื่อคลิก overlay */
-document.getElementById('modalSearch').addEventListener('click', function(e){
-    if(e.target === this) this.classList.remove('active');
+['modalSearch','modalEdit','modalAppend','modalExcel'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e){
+        if(e.target === this) this.classList.remove('active');
+    });
 });
-document.getElementById('modalEdit').addEventListener('click', function(e){
-    if(e.target === this) this.classList.remove('active');
-});
-
 </script>
-
 </body>
 </html>
