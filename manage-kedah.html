@@ -474,15 +474,31 @@ async function saveAllData(){
         });
 
         if(existingId){
-            await updateDoc(doc(db, 'temples', existingId), {
-                name: templeName, address: templeAddress,
-                monks: [...oldMonks, ...monkData]
-            });
+           await updateDoc(doc(db, 'temples', existingId), {
+            name: templeName,
+            address: templeAddress,
+            state: 'เคดาห์',
+            surveyYear: '2569',
+            updatedAt: new Date(),
+            monks: [...oldMonks, ...monkData]
+        });
             showToast('✅ อัปเดตข้อมูลสำเร็จ');
         } else {
             await addDoc(collection(db, 'temples'), {
-                name: templeName, address: templeAddress,
-                state: 'เคดาห์', monks: monkData, createdAt: new Date()
+
+                /* ข้อมูลวัด */
+                name: templeName,
+                address: templeAddress,
+                state: 'เคดาห์',
+                surveyYear: '2569',
+                templeCode:
+                    'KDH-' +
+                    templeName.substring(0,3) +
+                    '-2569',
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                /* รายชื่อพระ */
+                monks: monkData
             });
             showToast('✅ บันทึกข้อมูลสำเร็จ');
         }
