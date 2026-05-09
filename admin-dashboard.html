@@ -178,13 +178,67 @@ td{
 </div>
 
 <div class="card p-8">
+
     <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-        <h2 class="text-3xl font-bold text-slate-800">รายชื่อพระทั้งหมด</h2>
-        <div class="flex gap-3 flex-wrap">
-            <button onclick="selectStatePopup()" class="btn blue">🗺️ คณะสงฆ์รัฐ</button>
-            <button onclick="selectTemplePopup()" class="btn orange">🛕 ดูข้อมูลแบบวัด</button>
-            <input type="text" id="searchInput" class="input w-[280px]" placeholder="ค้นหาชื่อพระ..." onkeyup="searchMonk()">
+
+        <h2 class="text-3xl font-bold text-slate-800">
+            รายชื่อพระทั้งหมด
+        </h2>
+
+        <div class="flex gap-3 flex-wrap items-center">
+
+            <!-- เลือกปี -->
+            <select
+                id="yearFilter"
+                onchange="filterByYear()"
+                class="input w-[140px] font-bold">
+
+                <option value="ทั้งหมด">
+                    📅 ทุกปี
+                </option>
+
+                <option value="2569">
+                    ปี 2569
+                </option>
+
+                <option value="2570">
+                    ปี 2570
+                </option>
+
+                <option value="2571">
+                    ปี 2571
+                </option>
+
+            </select>
+
+            <!-- แยกรัฐ -->
+            <button
+                onclick="selectStatePopup()"
+                class="btn blue">
+
+                🗺️ คณะสงฆ์รัฐ
+
+            </button>
+
+            <!-- แยกวัด -->
+            <button
+                onclick="selectTemplePopup()"
+                class="btn orange">
+
+                🛕 ดูข้อมูลแบบวัด
+
+            </button>
+
+            <!-- ค้นหา -->
+            <input
+                type="text"
+                id="searchInput"
+                class="input w-[280px]"
+                placeholder="ค้นหาชื่อพระ..."
+                onkeyup="searchMonk()">
+
         </div>
+
     </div>
     <div class="overflow-x-auto">
         <table>
@@ -807,7 +861,7 @@ function buildMonkRow(monk, data, docId, idx){
     const templeLabel = templeFullName(data);
     const savedAt     = formatDateTime(monk.createdAt || null);
     return `
-    <tr>
+    <tr data-year="${data.surveyYear || '2569'}">
         <td>${monk.fullname  ||''}</td>
         <td>${monk.alias     ||''}</td>
         <td>${monk.age       ||''}</td>
@@ -834,6 +888,38 @@ function buildModalEnd(id){
     return `<button onclick="document.getElementById('${id}').remove()"
     style="width:100%;padding:18px;margin-top:8px;border:none;border-radius:18px;background:#e2e8f0;font-size:20px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
     </div></div>`;
+}
+
+/* ─── FILTER YEAR ─── */
+window.filterByYear = function(){
+
+    const selectedYear =
+        document.getElementById('yearFilter').value;
+
+    const rows =
+        document.querySelectorAll('#monkTable tr');
+
+    rows.forEach(row=>{
+
+        const rowYear =
+            row.getAttribute('data-year');
+
+        if(
+            selectedYear === 'ทั้งหมด'
+            ||
+            rowYear === selectedYear
+        ){
+
+            row.style.display = '';
+
+        }else{
+
+            row.style.display = 'none';
+
+        }
+
+    });
+
 }
 
 </script>
