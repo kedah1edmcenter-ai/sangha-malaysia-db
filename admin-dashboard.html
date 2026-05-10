@@ -142,45 +142,42 @@ tr:nth-child(even) td { background:#f8fafc; }
     </div>
 </header>
 
-<main class="max-w-7xl mx-auto p-8 space-y-8">
+<main class="w-full px-8 py-8 space-y-8" style="max-width:100%;">
 
 <!-- ── DASHBOARD CARDS ── -->
-<!-- Layout: [วัดทั้งหมด] [พระทั้งหมด] [การ์ดปี 2569] — 3 คอลัมน์เท่ากัน -->
-<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; align-items:stretch;">
+<!-- Layout: [วันที่ real-time] [การ์ดปี 2569 ขยาย] -->
+<div style="display:grid; grid-template-columns:300px 1fr; gap:20px; align-items:stretch;">
 
-    <!-- วัดทั้งหมด -->
-    <div class="stat-card">
-        <div class="bg-icon">🏛️</div>
-        <div class="s-label">🏛️ วัดทั้งหมด</div>
-        <div class="s-val" id="totalTemples" style="color:#ea580c;">0</div>
-        <div class="s-sub">ทุกรัฐในมาเลเซีย</div>
+    <!-- วันที่ พ.ศ. real-time -->
+    <div style="background:white; border-radius:24px; padding:26px 28px;
+        box-shadow:0 8px 24px rgba(0,0,0,.07); position:relative; overflow:hidden;
+        display:flex; flex-direction:column; justify-content:center;">
+        <div style="position:absolute;right:-10px;bottom:-14px;font-size:88px;opacity:.05;line-height:1;pointer-events:none;">📅</div>
+        <div style="font-size:13px;font-weight:700;color:#94a3b8;margin-bottom:10px;">📅 วันที่ปัจจุบัน (พ.ศ.)</div>
+        <div id="realDateTH" style="font-size:20px;font-weight:800;color:#1e293b;line-height:1.4;margin-bottom:10px;">—</div>
+        <div id="realTimeTH" style="font-family:'Courier New',monospace;font-size:30px;font-weight:700;
+            color:#ea580c;background:#fff7ed;border-radius:12px;padding:10px 16px;
+            letter-spacing:3px;border:2px solid #fed7aa;">00:00:00</div>
+        <div style="font-size:11px;color:#cbd5e1;margin-top:8px;">ระบบดิจิตอล — อัปเดตทุกวินาที</div>
     </div>
 
-    <!-- พระทั้งหมด -->
-    <div class="stat-card">
-        <div class="bg-icon">🧘</div>
-        <div class="s-label">🧘 พระภิกษุทั้งหมด</div>
-        <div class="s-val" id="totalMonks" style="color:#16a34a;">0</div>
-        <div class="s-sub">รวมทุกสัญชาติ</div>
-    </div>
-
-    <!-- การ์ดปี 2569 (ย้ายมาอยู่แถวเดียวกัน) -->
+    <!-- การ์ดปี 2569 ขยายเต็ม -->
     <div class="year-card" style="background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 60%,#7c3aed 100%);
         box-shadow:0 10px 30px rgba(37,99,235,.30);">
-        <div class="bg-icon">📅</div>
-        <div class="yc-title">📌 ปีสำรวจ</div>
+        <div class="bg-icon">📌</div>
+        <div class="yc-title">📌 สถิติรวม — ปีสำรวจ</div>
         <div class="yc-year">พรรษา 2569</div>
-        <div class="yc-grid">
+        <div class="yc-grid" style="grid-template-columns:repeat(3,1fr);">
             <div class="yc-item">
-                <div class="yi-label">🏛️ จำนวนวัด</div>
-                <div class="yi-val" id="y69Temples">0</div>
+                <div class="yi-label">🏛️ วัดทั้งหมด</div>
+                <div class="yi-val" id="totalTemples">0</div>
             </div>
             <div class="yc-item">
                 <div class="yi-label">🧘 พระทั้งหมด</div>
-                <div class="yi-val" id="y69Monks">0</div>
+                <div class="yi-val" id="totalMonks">0</div>
             </div>
             <div class="yc-item">
-                <div class="yi-label">🇹🇭 พระไทย</div>
+                <div class="yi-label">🇹🇭 พระไทย (ปี 2569)</div>
                 <div class="yi-val" id="y69ThaiMonks">0</div>
             </div>
         </div>
@@ -198,7 +195,7 @@ tr:nth-child(even) td { background:#f8fafc; }
             <button onclick="exportThaiMonksPopup()" class="btn gold">🇹🇭 นำออกข้อมูลพระไทย</button>
         </div>
     </div>
-    <div class="overflow-x-auto">
+    <div style="overflow-x:auto;width:100%;">
         <table>
             <thead><tr><th>รัฐ</th><th>จำนวนวัด</th><th>จำนวนพระ</th></tr></thead>
             <tbody id="stateTable"></tbody>
@@ -242,11 +239,20 @@ tr:nth-child(even) td { background:#f8fafc; }
         <table>
             <thead>
                 <tr>
-                    <th>ชื่อ</th><th>ฉายา</th><th>อายุ</th><th>พรรษา</th>
-                    <th>วัด / ที่อยู่</th><th>รัฐ</th>
-                    <th>IC / Passport</th><th>ภูมิลำเนา/สังกัดเดิม</th>
-                    <th>วิทยฐานะ</th><th>หมายเหตุ</th>
-                    <th>วัน/เวลาบันทึก</th><th>จัดการ</th>
+                    <th style="min-width:160px;">ชื่อ</th>
+                    <th style="min-width:100px;">ฉายา</th>
+                    <th style="min-width:55px;">อายุ</th>
+                    <th style="min-width:65px;">พรรษา</th>
+                    <th style="min-width:80px;">เชื้อชาติ</th>
+                    <th style="min-width:80px;">สัญชาติ</th>
+                    <th style="min-width:110px;">IC / Passport</th>
+                    <th style="min-width:160px;">ภูมิลำเนา / สังกัดเดิม</th>
+                    <th style="min-width:120px;">วิทยฐานะ น.ธ. ป.ธ. จบการศึกษา</th>
+                    <th style="min-width:160px;">วัด / ที่อยู่</th>
+                    <th style="min-width:70px;">รัฐ</th>
+                    <th style="min-width:130px;">หมายเหตุ</th>
+                    <th style="min-width:130px;">วัน/เวลาบันทึก</th>
+                    <th style="min-width:60px;">จัดการ</th>
                 </tr>
             </thead>
             <tbody id="monkTable"></tbody>
@@ -396,8 +402,6 @@ function loadStatistics(){
 
     document.getElementById('totalTemples').textContent = totalTemple;
     document.getElementById('totalMonks').textContent   = totalMonk;
-    document.getElementById('y69Temples').textContent   = y69Temple;
-    document.getElementById('y69Monks').textContent     = y69Monk;
     document.getElementById('y69ThaiMonks').textContent = y69Thai;
 
     const table = document.getElementById('stateTable');
@@ -561,22 +565,21 @@ window.deleteMonk = async function(templeDocId, monkIndex){
 function buildMonkRow(monk, data, docId, idx){
     const temple  = templeFullName(data);
     const savedAt = formatDateTime(monk.createdAt || null);
-    const isThaiNat  = (monk.nationality||'').trim() === 'ไทย';
-    const isThaiRace = (monk.race||'').trim() === 'ไทย';
-    const thaiFlag   = (isThaiNat && isThaiRace) ? '🇹🇭 ' : '';
     return `<tr>
-        <td>${thaiFlag}${monk.fullname||''}</td>
-        <td>${monk.alias    ||''}</td>
-        <td style="text-align:center;">${monk.age  ||''}</td>
-        <td style="text-align:center;">${monk.pansa||''}</td>
-        <td style="font-size:13px;">${temple}</td>
-        <td>${data.state   ||''}</td>
-        <td>${monk.passport||''}</td>
-        <td>${monk.origin  ||''}</td>
-        <td>${monk.education||''}</td>
-        <td>${monk.note    ||''}</td>
-        <td style="font-size:12px;color:#64748b;white-space:nowrap;">${savedAt}</td>
-        <td><button onclick="deleteMonk('${docId}',${idx})" class="delete-btn">🗑️ ลบ</button></td>
+        <td style="min-width:160px;font-weight:600;">${monk.fullname  ||''}</td>
+        <td style="min-width:100px;">${monk.alias     ||''}</td>
+        <td style="text-align:center;min-width:55px;">${monk.age  ||''}</td>
+        <td style="text-align:center;min-width:65px;">${monk.pansa||''}</td>
+        <td style="min-width:80px;">${monk.race      ||''}</td>
+        <td style="min-width:80px;">${monk.nationality||''}</td>
+        <td style="min-width:110px;">${monk.passport  ||''}</td>
+        <td style="min-width:160px;">${monk.origin    ||''}</td>
+        <td style="min-width:120px;font-size:13px;">${monk.education ||''}</td>
+        <td style="min-width:160px;font-size:13px;">${temple}</td>
+        <td style="min-width:70px;">${data.state     ||''}</td>
+        <td style="min-width:130px;">${monk.note      ||''}</td>
+        <td style="min-width:130px;font-size:12px;color:#64748b;white-space:nowrap;">${savedAt}</td>
+        <td style="min-width:60px;"><button onclick="deleteMonk('${docId}',${idx})" class="delete-btn">🗑️ ลบ</button></td>
     </tr>`;
 }
 
@@ -802,6 +805,29 @@ function buildModalEnd(id){
 }
 
 window.logout = function(){ location.reload(); };
+
+/* ── วันที่-เวลา real-time พ.ศ. ── */
+(function startClock(){
+    const MONTHS_TH = ['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                       'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    const DAYS_TH   = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+    function tick(){
+        const now = new Date();
+        const be  = now.getFullYear() + 543;
+        const d   = now.getDate();
+        const m   = now.getMonth() + 1;
+        const dow = DAYS_TH[now.getDay()];
+        const h   = String(now.getHours()).padStart(2,'0');
+        const mi  = String(now.getMinutes()).padStart(2,'0');
+        const s   = String(now.getSeconds()).padStart(2,'0');
+        const dateEl = document.getElementById('realDateTH');
+        const timeEl = document.getElementById('realTimeTH');
+        if(dateEl) dateEl.textContent = `วัน${dow}ที่ ${d} ${MONTHS_TH[m]} พ.ศ. ${be}`;
+        if(timeEl) timeEl.textContent = `${h}:${mi}:${s}`;
+    }
+    tick();
+    setInterval(tick, 1000);
+})();
 </script>
 </body>
 </html>
