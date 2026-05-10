@@ -41,23 +41,64 @@ body::before{
 
 /* นาฬิกา */
 .clk{
-  display:inline-flex;align-items:center;gap:7px;
-  font-family:'Courier New',monospace;font-size:13px;font-weight:800;
-  letter-spacing:1.2px;color:#fde68a;
-  background:rgba(0,0,0,.28);border:1px solid rgba(255,220,100,.25);
-  border-radius:8px;padding:5px 13px;white-space:nowrap;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+
+  font-family:'Courier New',monospace;
+  font-size:17px;
+  font-weight:800;
+
+  letter-spacing:1.2px;
+  color:#fde68a;
+
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,220,100,.25);
+
+  border-radius:12px;
+  padding:8px 18px;
+
+  white-space:nowrap;
 }
 .clk .dot{color:#fb923c;animation:blink 1s step-end infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
 /* stat pill */
 .spill{
-  display:flex;flex-direction:column;
-  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);
-  border-radius:9px;padding:4px 13px;white-space:nowrap;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.15);
+
+  border-radius:9px;
+  padding:8px 18px;
+
+  min-width:170px;
+  white-space:nowrap;
 }
-.spill .lbl{font-size:10px;color:rgba(255,200,130,.8);font-weight:700;line-height:1;margin-bottom:2px;}
-.spill .val{font-size:18px;font-weight:800;color:#fde68a;line-height:1;}
+
+/* หัวข้อ */
+.spill .lbl{
+  font-size:16px;
+  font-weight:700;
+  color:rgba(255,220,160,.92);
+
+  line-height:1.2;
+  margin-bottom:6px;
+}
+
+/* ตัวเลข */
+.spill .val{
+  font-size:48px;
+  font-weight:900;
+  color:#fde68a;
+
+  line-height:1;
+}
+.spill .lbl{font: size 16px;px;color:rgba(255,200,130,.8);font: weight 7px;00;line-height:1;margin-bottom:2px;}
+.spill .val{font: size 36px;px;font-weight:900;color:#fde68a;line-height:1;}
 
 /* state pill */
 .rpill{
@@ -65,9 +106,9 @@ body::before{
   background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
   border-radius:9px;padding:4px 10px;min-width:60px;
 }
-.rpill .rn{font-size:9px;color:rgba(255,200,130,.85);font-weight:700;text-align:center;line-height:1.2;margin-bottom:2px;}
-.rpill .rv{font-size:16px;font-weight:800;color:#fde68a;line-height:1;}
-.rpill .rs{font-size:8px;color:rgba(255,200,100,.6);font-weight:600;}
+.rpill .rn{font-size:14px;color:rgba(255,200,130,.85);font-weight:700;text-align:center;line-height:1.2;margin-bottom:2px;}
+.rpill .rv{font-size:32px;font-weight:800;color:#fde68a;line-height:1;}
+.rpill .rs{font-size:12px;color:rgba(255,200,100,.6);font-weight:600;}
 .rpill.rtotal{background:rgba(253,230,138,.15);border-color:rgba(253,230,138,.35);}
 
 .sv{width:1px;background:rgba(255,255,255,.15);align-self:stretch;margin:0 3px;flex-shrink:0;}
