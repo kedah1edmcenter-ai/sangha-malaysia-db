@@ -135,25 +135,64 @@ td { border: 1px solid #dbe2ea; padding: 12px; font-size: 16px; }
 
 <main class="max-w-[1800px] mx-auto p-8">
 
-    <!-- ปีพรรษา -->
-    <div class="card p-6 mb-8 text-center">
-        <div class="inline-block bg-green-100 text-green-800 px-10 py-4 rounded-2xl text-3xl font-bold">
-            📌 จัดเก็บในพรรษา ปี 2569
-        </div>
-    </div>
-
     <!-- ข้อมูลวัด -->
     <div class="card p-8 mb-8">
-        <div class="grid md:grid-cols-2 gap-6">
+
+        <div class="grid md:grid-cols-3 gap-6">
+
+            <!-- ปีพรรษา -->
             <div>
-                <label class="block mb-3 text-xl font-bold">ชื่อวัด</label>
-                <input type="text" id="templeName" class="input" placeholder="กรอกชื่อวัด">
+
+                <label class="label">
+                    📅 ปีพรรษา
+                </label>
+
+                <select
+                    id="surveyYear"
+                    class="input">
+
+                    <option value="2569">2569</option>
+
+                    <option value="2570">2570</option>
+
+                    <option value="2571">2571</option>
+
+                </select>
+
             </div>
+
+            <!-- ชื่อวัด -->
             <div>
-                <label class="block mb-3 text-xl font-bold">ที่อยู่วัด</label>
-                <input type="text" id="templeAddress" class="input" placeholder="กรอกที่อยู่วัด">
+
+                <label class="label">
+                    ชื่อวัด
+                </label>
+
+                <input
+                    type="text"
+                    id="templeName"
+                    class="input"
+                    placeholder="กรอกชื่อวัด">
+
             </div>
+
+            <!-- ที่อยู่วัด -->
+            <div>
+
+                <label class="label">
+                    ที่อยู่วัด
+                </label>
+
+                <input
+                    type="text"
+                    id="templeAddress"
+                    class="input"
+                    placeholder="กรอกที่อยู่วัด">
+
+            </div>
+
         </div>
+
     </div>
 
     <!-- ฟอร์มพระ -->
@@ -483,6 +522,9 @@ async function saveAllData(){
             monks: [...oldMonks, ...monkData]
         });
             showToast('✅ อัปเดตข้อมูลสำเร็จ');
+            monkData = [];
+            renderTable();
+            clearInputs();
         } else {
             await addDoc(collection(db, 'temples'), {
 
@@ -492,7 +534,7 @@ async function saveAllData(){
                 state: 'กลันตันและตรังกานู',
                 surveyYear: '2569',
                 templeCode:
-                    '๋KTN-' +
+                    'KTN-' +
                     templeName.substring(0,3) +
                     '-2569',
                 createdAt: new Date(),
@@ -501,6 +543,9 @@ async function saveAllData(){
                 monks: monkData
             });
             showToast('✅ บันทึกข้อมูลสำเร็จ');
+            monkData = [];
+            renderTable();
+            clearInputs();
         }
     } catch(error){
         console.error(error);
