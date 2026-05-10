@@ -46,17 +46,22 @@ body::before{
   gap:7px;
 
   font-family:'Courier New',monospace;
-  font-size:17px;
+
+  /* เพิ่มขนาด 20% */
+  font-size:21px;
+
   font-weight:800;
 
-  letter-spacing:1.2px;
+  letter-spacing:1.4px;
+
   color:#fde68a;
 
   background:rgba(0,0,0,.28);
   border:1px solid rgba(255,220,100,.25);
 
-  border-radius:12px;
-  padding:8px 18px;
+  border-radius:14px;
+
+  padding:12px 24px;
 
   white-space:nowrap;
 }
@@ -271,12 +276,46 @@ footer{position:relative;z-index:1;}
 
       <!-- นาฬิกา -->
       <div class="clk">
-        <span>📅</span>
-        <span id="dateTxt">—</span>
-        &nbsp;
-        <span id="timeTxt" style="color:#fb923c;">00:00:00</span>
-        <span class="dot">●</span>
-      </div>
+        <div style="
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            line-height:1.2;
+            width:100%;
+        ">
+
+            <div style="
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                gap:8px;
+            ">
+                <span>📅</span>
+                <span id="dateTxt">—</span>
+            </div>
+
+            <div style="
+                margin-top:4px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                gap:6px;
+            ">
+                <span id="timeTxt"
+                style="
+                    color:#ffffff;
+                    font-weight:900;
+                    font-size:24px;
+                ">
+                00:00:00
+                </span>
+                <span class="dot">●</span>
+            </div>
+
+        </div>
+
+    </div>
 
       <div class="sv"></div>
 
