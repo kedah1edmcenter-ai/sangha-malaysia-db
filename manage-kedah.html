@@ -522,6 +522,9 @@ async function saveAllData(){
             monks: [...oldMonks, ...monkData]
         });
             showToast('✅ อัปเดตข้อมูลสำเร็จ');
+            monkData = [];
+            renderTable();
+            clearInputs();
         } else {
             await addDoc(collection(db, 'temples'), {
 
@@ -540,6 +543,9 @@ async function saveAllData(){
                 monks: monkData
             });
             showToast('✅ บันทึกข้อมูลสำเร็จ');
+            monkData = [];
+            renderTable();
+            clearInputs();
         }
     } catch(error){
         console.error(error);
