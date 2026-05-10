@@ -3,523 +3,494 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Monks Information Survey & Registry System 2026 (Malaysia)</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-
 <style>
-
-* { box-sizing: border-box; }
-
-body {
-    font-family: 'Sarabun', sans-serif;
-    background: #fdf6ee;
-    min-height: 100vh;
+*{box-sizing:border-box;}
+body{font-family:'Sarabun',sans-serif;background:#fdf6ee;min-height:100vh;}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(circle at 20% 20%,rgba(234,88,12,.07) 0%,transparent 50%),
+    radial-gradient(circle at 80% 80%,rgba(217,154,31,.07) 0%,transparent 50%),
+    radial-gradient(circle at 50% 50%,rgba(180,83,9,.04) 0%,transparent 70%);
 }
 
-/* =========================
-   BACKGROUND PATTERN
-========================= */
+/* ══════════ HEADER ══════════ */
+.temple-gradient{
+  background:linear-gradient(135deg,#7c2d12 0%,#c2410c 40%,#ea580c 100%);
+  position:relative;overflow:hidden;
+}
+.temple-gradient::before{content:'☸';position:absolute;font-size:500px;color:rgba(255,255,255,.03);right:-80px;top:-120px;line-height:1;pointer-events:none;}
+.temple-gradient::after {content:'☸';position:absolute;font-size:300px;color:rgba(255,255,255,.03);left:-60px;bottom:-80px;line-height:1;pointer-events:none;}
 
-body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-        radial-gradient(circle at 20% 20%, rgba(234,88,12,.07) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(217,154,31,.07) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(180,83,9,.04) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
+/* ══════════ STATS BAR ══════════ */
+.stats-bar{
+  background:rgba(0,0,0,.22);
+  backdrop-filter:blur(12px);
+  border-top:1px solid rgba(255,255,255,.12);
+  padding:8px 16px 10px;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.stats-inner{
+  display:flex;align-items:center;gap:6px;
+  min-width:max-content;
 }
 
-/* =========================
-   HEADER
-========================= */
-
-.temple-gradient {
-    background: linear-gradient(135deg, #7c2d12 0%, #c2410c 40%, #ea580c 100%);
-    position: relative;
-    overflow: hidden;
+/* นาฬิกา */
+.clk{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:'Courier New',monospace;font-size:13px;font-weight:800;
+  letter-spacing:1.2px;color:#fde68a;
+  background:rgba(0,0,0,.28);border:1px solid rgba(255,220,100,.25);
+  border-radius:8px;padding:5px 13px;white-space:nowrap;
 }
+.clk .dot{color:#fb923c;animation:blink 1s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-.temple-gradient::before {
-    content: '☸';
-    position: absolute;
-    font-size: 500px;
-    color: rgba(255,255,255,.03);
-    right: -80px;
-    top: -120px;
-    line-height: 1;
-    pointer-events: none;
+/* stat pill */
+.spill{
+  display:flex;flex-direction:column;
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);
+  border-radius:9px;padding:4px 13px;white-space:nowrap;
 }
+.spill .lbl{font-size:10px;color:rgba(255,200,130,.8);font-weight:700;line-height:1;margin-bottom:2px;}
+.spill .val{font-size:18px;font-weight:800;color:#fde68a;line-height:1;}
 
-.temple-gradient::after {
-    content: '☸';
-    position: absolute;
-    font-size: 300px;
-    color: rgba(255,255,255,.03);
-    left: -60px;
-    bottom: -80px;
-    line-height: 1;
-    pointer-events: none;
+/* state pill */
+.rpill{
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:9px;padding:4px 10px;min-width:60px;
 }
+.rpill .rn{font-size:9px;color:rgba(255,200,130,.85);font-weight:700;text-align:center;line-height:1.2;margin-bottom:2px;}
+.rpill .rv{font-size:16px;font-weight:800;color:#fde68a;line-height:1;}
+.rpill .rs{font-size:8px;color:rgba(255,200,100,.6);font-weight:600;}
+.rpill.rtotal{background:rgba(253,230,138,.15);border-color:rgba(253,230,138,.35);}
 
-/* =========================
-   YEAR BADGE
-========================= */
+.sv{width:1px;background:rgba(255,255,255,.15);align-self:stretch;margin:0 3px;flex-shrink:0;}
+.pulse{animation:pulse 1.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-.year-badge {
-    display: inline-block;
-    background: rgba(255,255,255,.15);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,.25);
-    border-radius: 50px;
-    padding: 6px 20px;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #fde68a;
-    margin-bottom: 16px;
+/* ══════════ CORNER BUTTONS (fixed top-right) ══════════ */
+/* ช่อง 2 = สืบค้น | ช่อง 1 = Admin (ขวาสุด) */
+.corner-wrap{
+  position:fixed;top:14px;right:14px;z-index:9500;
+  display:flex;flex-direction:row;gap:8px;
 }
-
-/* =========================
-   CARD
-========================= */
-
-.state-card {
-    transition: all .4s cubic-bezier(.175,.885,.32,1.275);
+.cbtn{
+  display:flex;align-items:center;gap:7px;
+  padding:10px 18px;border-radius:14px;border:none;cursor:pointer;
+  font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;
+  color:white;transition:.22s;white-space:nowrap;
+  box-shadow:0 4px 16px rgba(0,0,0,.28);
 }
+.cbtn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35);}
+.cbtn-search{background:linear-gradient(135deg,#1e40af,#3b82f6);}
+.cbtn-admin {background:linear-gradient(135deg,#7f1d1d,#dc2626);}
 
-.state-card:hover {
-    transform: translateY(-14px);
+/* ══════════ SEARCH MODAL ══════════ */
+.modal-ov{
+  position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:99999;
+  display:none;justify-content:center;align-items:center;padding:16px;
 }
-
-.card-inner {
-    background: white;
-    border-radius: 28px;
-    padding: 32px 24px 28px;
-    text-align: center;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    border: 1px solid rgba(0,0,0,.06);
-    box-shadow:
-        0 4px 6px rgba(0,0,0,.04),
-        0 10px 20px rgba(0,0,0,.06);
-    transition: all .4s ease;
+.modal-ov.open{display:flex;}
+.modal-box{
+  background:white;border-radius:26px;padding:34px;
+  width:100%;max-width:580px;max-height:92vh;overflow-y:auto;
+  box-shadow:0 24px 64px rgba(0,0,0,.28);
+  position:relative;animation:popIn .26s cubic-bezier(.175,.885,.32,1.275);
 }
-
-.card-inner:hover {
-    box-shadow:
-        0 20px 40px rgba(0,0,0,.12),
-        0 8px 16px rgba(0,0,0,.08);
+@keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.mclose{
+  position:absolute;top:14px;right:16px;
+  background:#e5e7eb;border:none;border-radius:50%;
+  width:34px;height:34px;font-size:17px;cursor:pointer;
+  line-height:34px;text-align:center;transition:.18s;
 }
-
-/* TOP ACCENT BAR */
-.card-accent {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 5px;
-    border-radius: 28px 28px 0 0;
+.mclose:hover{background:#dc2626;color:white;}
+.sinput{
+  width:100%;padding:13px 15px;border-radius:12px;
+  border:2px solid #e2e8f0;outline:none;
+  font-size:15px;font-family:'Sarabun',sans-serif;transition:.2s;
 }
-
-/* GLOW TOP */
-.card-glow {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 50%;
-    background: radial-gradient(ellipse at top, rgba(255,200,100,.08), transparent 70%);
-    pointer-events: none;
+.sinput:focus{border-color:#3b82f6;box-shadow:0 0 0 4px rgba(59,130,246,.11);}
+.sbtn{
+  width:100%;padding:13px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#1e40af,#3b82f6);
+  color:white;font-size:16px;font-weight:700;
+  cursor:pointer;font-family:'Sarabun',sans-serif;transition:.2s;
 }
-
-/* NUMBER BADGE */
-.card-number {
-    position: absolute;
-    top: 14px;
-    right: 16px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 800;
-    color: white;
-    opacity: .6;
+.sbtn:hover{filter:brightness(1.09);}
+.rcard{
+  border:1.5px solid #e2e8f0;border-radius:14px;
+  padding:14px 18px;margin-bottom:10px;background:#f8fafc;
+  border-left:4px solid #3b82f6;
 }
+.rcard .rname{font-size:17px;font-weight:800;color:#1e293b;margin-bottom:8px;}
+.rcard .rrow {display:grid;grid-template-columns:120px 1fr;gap:3px;margin-bottom:3px;}
+.rcard .rlbl {font-size:12px;font-weight:700;color:#64748b;}
+.rcard .rval {font-size:13px;color:#1e293b;word-break:break-word;}
 
-/* =========================
-   ICON — ธรรมจักร
-========================= */
-
-.dharma-wheel {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(
-        circle at center,
-        #fff6d5 0%, #f5d67b 40%,
-        #d99a1f 70%, #9a5c00 100%
-    );
-    box-shadow:
-        0 8px 24px rgba(217,154,31,.4),
-        inset 0 3px 8px rgba(255,255,255,.5),
-        inset 0 -4px 8px rgba(0,0,0,.15);
-    position: relative;
-    transition: all .5s ease;
+/* ══════════ STATE CARDS ══════════ */
+.state-card{transition:all .4s cubic-bezier(.175,.885,.32,1.275);}
+.state-card:hover{transform:translateY(-12px);}
+.card-inner{
+  background:white;border-radius:28px;padding:24px 18px 20px;
+  text-align:center;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;cursor:pointer;
+  border:1px solid rgba(0,0,0,.06);
+  box-shadow:0 4px 6px rgba(0,0,0,.04),0 10px 20px rgba(0,0,0,.06);
+  transition:all .4s ease;
 }
+.card-inner:hover{box-shadow:0 20px 40px rgba(0,0,0,.12),0 8px 16px rgba(0,0,0,.08);}
+.card-accent{position:absolute;top:0;left:0;width:100%;height:5px;border-radius:28px 28px 0 0;}
+.card-glow  {position:absolute;top:0;left:0;width:100%;height:50%;background:radial-gradient(ellipse at top,rgba(255,200,100,.08),transparent 70%);pointer-events:none;}
+.card-num   {position:absolute;top:12px;right:14px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:white;opacity:.6;}
 
-.dharma-wheel::before {
-    content: "☸";
-    position: absolute;
-    font-size: 76px;
-    color: #fff3c2;
-    text-shadow: 0 0 10px rgba(255,255,255,.5), 0 2px 5px rgba(0,0,0,.2);
+/* ไอคอน 88px (ลด 20% จาก 110px) */
+.dharma-wheel{
+  width:88px;height:88px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at center,#fff6d5 0%,#f5d67b 40%,#d99a1f 70%,#9a5c00 100%);
+  box-shadow:0 6px 18px rgba(217,154,31,.4),inset 0 2px 6px rgba(255,255,255,.5),inset 0 -3px 6px rgba(0,0,0,.15);
+  position:relative;transition:all .5s ease;
 }
+.dharma-wheel::before{content:"☸";position:absolute;font-size:60px;color:#fff3c2;text-shadow:0 0 10px rgba(255,255,255,.5);}
+.state-card:hover .dharma-wheel{transform:rotate(20deg) scale(1.1);box-shadow:0 10px 28px rgba(217,154,31,.55);}
 
-.state-card:hover .dharma-wheel {
-    transform: rotate(20deg) scale(1.1);
-    box-shadow: 0 12px 32px rgba(217,154,31,.55);
+.study-icon{
+  width:88px;height:88px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;position:relative;
+  background:radial-gradient(circle at center,#fff7d6 0%,#f7d774 45%,#d99a1f 75%,#9a5c00 100%);
+  box-shadow:0 6px 18px rgba(217,154,31,.4),inset 0 2px 6px rgba(255,255,255,.5),inset 0 -3px 6px rgba(0,0,0,.15);
+  transition:all .5s ease;
 }
+.study-icon::before{content:"📖";position:absolute;font-size:40px;left:22px;top:22px;}
+.study-icon::after {content:"✒️";position:absolute;font-size:24px;right:18px;bottom:18px;transform:rotate(-18deg);}
+.state-card:hover .study-icon{transform:rotate(8deg) scale(1.1);}
 
-/* =========================
-   ICON — นักธรรม
-========================= */
-
-.study-icon {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    background: radial-gradient(
-        circle at center,
-        #fff7d6 0%, #f7d774 45%,
-        #d99a1f 75%, #9a5c00 100%
-    );
-    box-shadow:
-        0 8px 24px rgba(217,154,31,.4),
-        inset 0 3px 8px rgba(255,255,255,.5),
-        inset 0 -4px 8px rgba(0,0,0,.15);
-    transition: all .5s ease;
+.section-label{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:14px;margin-bottom:28px;
 }
-
-.study-icon::before {
-    content: "📖";
-    position: absolute;
-    font-size: 50px;
-    left: 28px; top: 28px;
+.section-label::before,.section-label::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,#e2d5c3,transparent);
 }
-
-.study-icon::after {
-    content: "✒️";
-    position: absolute;
-    font-size: 30px;
-    right: 22px; bottom: 22px;
-    transform: rotate(-18deg);
-}
-
-.state-card:hover .study-icon {
-    transform: rotate(8deg) scale(1.1);
-    box-shadow: 0 12px 32px rgba(217,154,31,.55);
-}
-
-/* =========================
-   ICON — Admin
-========================= */
-
-.admin-icon {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(
-        circle at center,
-        #ffe5e5 0%, #ff9f9f 40%,
-        #dc2626 70%, #7f1d1d 100%
-    );
-    box-shadow:
-        0 8px 24px rgba(220,38,38,.4),
-        inset 0 3px 8px rgba(255,255,255,.4),
-        inset 0 -4px 8px rgba(0,0,0,.15);
-    position: relative;
-    transition: all .5s ease;
-}
-
-.admin-icon::before {
-    content: "🛡️";
-    position: absolute;
-    font-size: 56px;
-}
-
-.state-card:hover .admin-icon {
-    transform: rotate(8deg) scale(1.1);
-    box-shadow: 0 12px 32px rgba(220,38,38,.55);
-}
-
-/* =========================
-   STATS BAR
-========================= */
-
-.stats-bar {
-    background: rgba(255,255,255,.12);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid rgba(255,255,255,.15);
-}
-
-/* =========================
-   FOOTER
-========================= */
-
-footer {
-    position: relative;
-    z-index: 1;
-}
-
-/* =========================
-   SECTION DIVIDER
-========================= */
-
-.section-label {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 28px;
-}
-
-.section-label::before,
-.section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #e2d5c3, transparent);
-}
-
+footer{position:relative;z-index:1;}
 </style>
-
 </head>
-
 <body>
 
-<!-- HEADER -->
+<!-- ══ CORNER BUTTONS (fixed top-right) ══ -->
+<!-- ช่อง 2 (ซ้าย): สืบค้นพระ | ช่อง 1 (ขวา): Admin -->
+<div class="corner-wrap">
+  <button class="cbtn cbtn-search" onclick="openSearch()">🔍 สืบค้นข้อมูลพระ</button>
+  <button class="cbtn cbtn-admin"  onclick="window.location.href='admin-dashboard.html'">🛡️ ระบบแอดมิน</button>
+</div>
+
+<!-- ══ SEARCH MODAL ══ -->
+<div id="searchModal" class="modal-ov" onclick="bgClose(event)">
+  <div class="modal-box">
+    <button class="mclose" onclick="closeSearch()">✕</button>
+    <h2 style="font-size:22px;font-weight:800;color:#1e293b;margin-bottom:4px;">🔍 สืบค้นข้อมูลพระภิกษุ</h2>
+    <p style="color:#64748b;font-size:13px;margin-bottom:18px;">กรอกข้อมูลอย่างน้อย 1 ช่อง แล้วกดค้นหา</p>
+
+    <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:14px;">
+      <input id="sName"     class="sinput" type="text" placeholder="👤 ชื่อ-นามสกุล">
+      <input id="sPassport" class="sinput" type="text" placeholder="🪪 IC / Passport No.">
+      <input id="sTemple"   class="sinput" type="text" placeholder="🏛️ ชื่อวัด">
+    </div>
+    <button class="sbtn" onclick="doSearch()">🔍 ค้นหา</button>
+
+    <div id="sLoading" style="display:none;text-align:center;padding:18px;color:#64748b;font-size:15px;">⏳ กำลังค้นหา...</div>
+    <div id="sResults"  style="margin-top:14px;"></div>
+  </div>
+</div>
+
+<!-- ══ HEADER ══ -->
 <nav class="temple-gradient shadow-2xl text-white">
 
-    <div class="max-w-6xl mx-auto px-8 py-10 text-center relative z-10">
+  <div class="max-w-6xl mx-auto px-8 py-10 text-center relative z-10">
+    <h1 class="text-4xl font-bold tracking-tight mb-2 leading-snug drop-shadow-sm">
+      ระบบสำรวจและจัดเก็บข้อมูลพระสงฆ์<br>
+      <span class="text-yellow-200">ในประเทศมาเลเซีย ประจำปี ๒๕๖๙</span>
+    </h1>
+    <p class="text-lg font-semibold mt-2 text-orange-100 tracking-wider">
+      Monks Information Survey &amp; Registry System 2026 (Malaysia)
+    </p>
+    <div class="flex items-center justify-center gap-3 mt-5">
+      <div class="h-px w-16 bg-orange-300 opacity-50 rounded-full"></div>
+      <div class="text-orange-200 text-sm opacity-75">กรุณาเลือกพื้นที่การปกครองหรือระบบที่ต้องการจัดการข้อมูล</div>
+      <div class="h-px w-16 bg-orange-300 opacity-50 rounded-full"></div>
+    </div>
+  </div>
 
-        <!-- TITLE -->
-        <h1 class="text-4xl font-bold tracking-tight mb-2 leading-snug drop-shadow-sm">
-            ระบบสำรวจและจัดเก็บข้อมูลพระสงฆ์<br>
-            <span class="text-yellow-200">ในประเทศมาเลเซีย ประจำปี ๒๕๖๙</span>
-        </h1>
+  <!-- ══ STATS BAR ══ -->
+  <div class="stats-bar">
+    <div class="stats-inner">
 
-        <p class="text-lg font-semibold mt-2 text-orange-100 tracking-wider">
-            Monks Information Survey & Registry System 2026 (Malaysia)
-        </p>
+      <!-- นาฬิกา -->
+      <div class="clk">
+        <span>📅</span>
+        <span id="dateTxt">—</span>
+        &nbsp;
+        <span id="timeTxt" style="color:#fb923c;">00:00:00</span>
+        <span class="dot">●</span>
+      </div>
 
-        <div class="flex items-center justify-center gap-3 mt-5">
-            <div class="h-px w-16 bg-orange-300 opacity-50 rounded-full"></div>
-            <div class="text-orange-200 text-sm opacity-75">
-                กรุณาเลือกพื้นที่การปกครองหรือระบบที่ต้องการจัดการข้อมูล
-            </div>
-            <div class="h-px w-16 bg-orange-300 opacity-50 rounded-full"></div>
-        </div>
+      <div class="sv"></div>
+
+      <!-- จำนวนวัด -->
+      <div class="spill">
+        <div class="lbl">🏛️ วัดทั้งหมด</div>
+        <div class="val" id="sbTemples"><span class="pulse">…</span></div>
+      </div>
+
+      <div class="sv"></div>
+
+      <!-- 7 รัฐ -->
+      <div id="statePills" style="display:flex;align-items:center;gap:4px;">
+        <div class="rpill"><div class="rn pulse" style="font-size:10px;">กำลังโหลด</div><div class="rv">…</div></div>
+      </div>
+
+      <div class="sv" id="svTotal"></div>
+
+      <!-- รวม -->
+      <div class="spill rtotal" style="background:rgba(253,230,138,.15);border-color:rgba(253,230,138,.35);">
+        <div class="lbl">✨ รวมพระทั้งหมด</div>
+        <div class="val" id="sbTotal"><span class="pulse">…</span></div>
+      </div>
 
     </div>
-
-    <!-- STATS BAR -->
-    <div class="stats-bar py-4 px-8">
-        <div class="max-w-6xl mx-auto flex justify-center gap-10 flex-wrap">
-            <div class="text-center">
-                <div class="text-2xl font-bold text-yellow-200">7</div>
-                <div class="text-xs text-orange-200 font-semibold tracking-widest uppercase">รัฐ</div>
-            </div>
-            <div class="w-px bg-white opacity-20 hidden md:block"></div>
-            <div class="text-center">
-                <div class="text-2xl font-bold text-yellow-200">🇲🇾</div>
-                <div class="text-xs text-orange-200 font-semibold tracking-widest uppercase">มาเลเซีย</div>
-            </div>
-            <div class="w-px bg-white opacity-20 hidden md:block"></div>
-            <div class="text-center">
-                <div class="text-2xl font-bold text-yellow-200">2026</div>
-                <div class="text-xs text-orange-200 font-semibold tracking-widest uppercase">ปีที่จัดเก็บ</div>
-            </div>
-        </div>
-    </div>
-
+  </div>
 </nav>
 
-<!-- MAIN -->
-<main class="max-w-7xl mx-auto px-8 py-10 relative z-1">
-
-    <!-- SECTION LABEL -->
-    <div class="section-label">
-        <span class="text-sm font-bold text-amber-700 tracking-widest uppercase whitespace-nowrap">
-            ☸ เลือกพื้นที่หรือระบบ
-        </span>
-    </div>
-
-    <!-- GRID -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-         id="state-menu">
-    </div>
-
+<!-- ══ MAIN ══ -->
+<main class="max-w-7xl mx-auto px-8 py-10 relative" style="z-index:1;">
+  <div class="section-label">
+    <span class="text-sm font-bold text-amber-700 tracking-widest uppercase whitespace-nowrap">
+      ☸ เลือกพื้นที่หรือระบบ
+    </span>
+  </div>
+  <!-- Grid 7 รัฐ + นักธรรม (Admin ย้ายไปปุ่มมุมขวาบนแล้ว) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="state-menu"></div>
 </main>
 
-<script>
-
-/* =========================
-   MENU STATES
-========================= */
-
-const states = [
-    { id:'kedah',        name:'รัฐเคดาห์',                   color:'#16a34a' },
-    { id:'perlis',       name:'รัฐเปอร์ลิส',                 color:'#059669' },
-    { id:'penang',       name:'รัฐปีนัง',                    color:'#2563eb' },
-    { id:'perak',        name:'รัฐเปรัก',                    color:'#7c3aed' },
-    { id:'selangor',     name:'รัฐสลังงอร์',                 color:'#dc2626' },
-    { id:'johor',        name:'รัฐยะโฮร์',                   color:'#ea580c' },
-    { id:'kelantan',     name:'รัฐกลันตันและตรังกานู',       color:'#0891b2' },
-    { id:'dhamma-study', name:'ระบบนักธรรมและธรรมศึกษา',    color:'#b45309' },
-    { id:'admin-system', name:'ระบบแอดมินดูแลระบบ',          color:'#991b1b' }
-];
-
-/* =========================
-   SUBTITLE MAP
-========================= */
-
-const subtitles = {
-    'kedah'        : 'Kedah State',
-    'perlis'       : 'Perlis State',
-    'penang'       : 'Penang State',
-    'perak'        : 'Perak State',
-    'selangor'     : 'Selangor State',
-    'johor'        : 'Johor State',
-    'kelantan'     : 'Kelantan & Terengganu',
-    'dhamma-study' : 'Dhamma Study System',
-    'admin-system' : 'Admin Dashboard'
-};
-
-/* =========================
-   CREATE MENU
-========================= */
-
-const menuContainer = document.getElementById('state-menu');
-
-states.forEach((state, index) => {
-
-    const card = document.createElement('div');
-    card.className = "state-card cursor-pointer";
-
-    /* CLICK */
-    card.onclick = () => {
-        if(state.id === 'dhamma-study'){
-            window.open('https://www.gongtham.net/web/news.php', '_blank');
-            return;
-        }
-        if(state.id === 'admin-system'){
-            window.location.href = 'admin-dashboard.html';
-            return;
-        }
-        window.location.href = `manage-${state.id}.html`;
-    };
-
-    /* ICON */
-    const iconHTML =
-        state.id === 'dhamma-study' ? '<div class="study-icon"></div>' :
-        state.id === 'admin-system' ? '<div class="admin-icon"></div>' :
-        '<div class="dharma-wheel"></div>';
-
-    /* SUBTITLE */
-    const sub = subtitles[state.id] || '';
-
-    card.innerHTML = `
-        <div class="card-inner group">
-
-            <!-- ACCENT BAR -->
-            <div class="card-accent" style="background:${state.color};"></div>
-
-            <!-- GLOW -->
-            <div class="card-glow"></div>
-
-            <!-- NUMBER -->
-            <div class="card-number" style="background:${state.color};">${index + 1}</div>
-
-            <!-- ICON -->
-            <div class="mb-6 mt-4 relative z-10">
-                ${iconHTML}
-            </div>
-
-            <!-- TEXT -->
-            <div class="relative z-10 w-full">
-
-                <h3 class="text-xl font-bold text-slate-800 leading-snug mb-1">
-                    ${state.name}
-                </h3>
-
-                <p class="text-xs font-semibold text-slate-400 tracking-wider mb-4">
-                    ${sub}
-                </p>
-
-                <div class="w-8 h-0.5 mx-auto rounded-full mb-4"
-                     style="background:${state.color};"></div>
-
-                <div class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase text-white transition-all duration-300"
-                     style="background:${state.color};">
-                    <span>เข้าสู่ระบบ</span>
-                    <span>→</span>
-                </div>
-
-            </div>
-
-        </div>
-    `;
-
-    menuContainer.appendChild(card);
-});
-
-</script>
-
-<!-- FOOTER -->
 <footer class="mt-6 pb-10 text-center text-slate-400 text-sm border-t border-amber-100 pt-8">
-
-    <div class="text-2xl mb-3 opacity-30">☸</div>
-
-    <p class="font-semibold text-slate-500">
-        © Monks Information Survey & Registry System 2026 (Malaysia)
-    </p>
-
-    <p class="mt-1 font-light italic text-slate-400">
-        Administration Office, Wat Jitraram, Kg. Sg. Baru, 06000 Jitra, Kedah, Malaysia
-    </p>
-
-    <div class="flex justify-center gap-2 mt-4">
-        <div class="w-2 h-2 rounded-full bg-amber-300 opacity-50"></div>
-        <div class="w-2 h-2 rounded-full bg-orange-400 opacity-50"></div>
-        <div class="w-2 h-2 rounded-full bg-amber-300 opacity-50"></div>
-    </div>
-
+  <div class="text-2xl mb-3 opacity-30">☸</div>
+  <p class="font-semibold text-slate-500">© Monks Information Survey &amp; Registry System 2026 (Malaysia)</p>
+  <p class="mt-1 font-light italic text-slate-400">Administration Office, Wat Jitraram, Kg. Sg. Baru, 06000 Jitra, Kedah, Malaysia</p>
+  <div class="flex justify-center gap-2 mt-4">
+    <div class="w-2 h-2 rounded-full bg-amber-300 opacity-50"></div>
+    <div class="w-2 h-2 rounded-full bg-orange-400 opacity-50"></div>
+    <div class="w-2 h-2 rounded-full bg-amber-300 opacity-50"></div>
+  </div>
 </footer>
 
+<!-- ══ Firebase (module) ══ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const db = getFirestore(initializeApp({
+  apiKey:"AIzaSyCOX6wT65phG79nSYFcqq40sQ4xTU15rI0",
+  authDomain:"sangha-malaysia-db.firebaseapp.com",
+  projectId:"sangha-malaysia-db",
+  storageBucket:"sangha-malaysia-db.appspot.com",
+  messagingSenderId:"113712257853",
+  appId:"1:113712257853:web:8b8dc634917aeeb49ac354"
+}));
+
+/* ลำดับและชื่อสั้นรัฐ */
+const STATE_ORDER = ['เคดาห์','เปอร์ลิส','ปีนัง','เปรัก','สลังงอร์','ยะโฮร์','กลันตัน'];
+const STATE_SHORT  = {
+  'เคดาห์':'เคดาห์','เปอร์ลิส':'เปอร์ลิส','ปีนัง':'ปีนัง',
+  'เปรัก':'เปรัก','สลังงอร์':'สลังงอร์','ยะโฮร์':'ยะโฮร์',
+  'กลันตัน':'กลันตัน\n&ตรังกานู'
+};
+const normState = r => (r||'').replace(/^รัฐ/,'').trim();
+
+let _snap = null; /* cache */
+
+/* โหลดสถิติ */
+async function loadStats(){
+  try {
+    const snap = await getDocs(collection(db,'temples'));
+    _snap = snap;
+    let temples=0, monks=0;
+    const sm={};
+    snap.forEach(d=>{
+      temples++;
+      const data=d.data(), sk=normState(data.state);
+      if(!sm[sk]) sm[sk]=0;
+      const mc=(data.monks||[]).length;
+      sm[sk]+=mc; monks+=mc;
+    });
+    document.getElementById('sbTemples').textContent = temples;
+    document.getElementById('sbTotal').textContent   = monks;
+
+    /* สร้าง pills รัฐ */
+    const pills = document.getElementById('statePills');
+    pills.innerHTML = '';
+    const keys=[...STATE_ORDER.filter(k=>sm[k]!==undefined),...Object.keys(sm).filter(k=>!STATE_ORDER.includes(k))];
+    keys.forEach((k,i)=>{
+      if(i>0){const s=document.createElement('div');s.className='sv';pills.appendChild(s);}
+      const p=document.createElement('div'); p.className='rpill';
+      const short=(STATE_SHORT[k]||k).replace('\n','<br>');
+      p.innerHTML=`<div class="rn">${short}</div><div class="rv">${sm[k]||0}</div><div class="rs">รูป</div>`;
+      pills.appendChild(p);
+    });
+  } catch(e){ console.error('Firebase:', e); }
+}
+loadStats();
+
+/* formatDateTime */
+function fmtDT(v){
+  if(!v) return '—';
+  const d = typeof v.toDate==='function' ? v.toDate() : new Date(v);
+  if(isNaN(d)) return '—';
+  const p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+/* ══ ค้นหาพระ ══ */
+window.doSearch = async function(){
+  const name  = document.getElementById('sName').value.trim().toLowerCase();
+  const pass  = document.getElementById('sPassport').value.trim().toLowerCase();
+  const templ = document.getElementById('sTemple').value.trim().toLowerCase();
+  if(!name && !pass && !templ){ alert('⚠️ กรุณากรอกข้อมูลอย่างน้อย 1 ช่อง'); return; }
+
+  document.getElementById('sLoading').style.display='block';
+  document.getElementById('sResults').innerHTML='';
+
+  try {
+    const snap = _snap || await getDocs(collection(db,'temples'));
+    const found = [];
+
+    snap.forEach(d=>{
+      const td=d.data();
+      const tn=(td.name||'').toLowerCase(), ta=(td.address||'').toLowerCase();
+      /* กรองวัด */
+      if(templ && !tn.includes(templ) && !ta.includes(templ)) return;
+      /* กรองพระ */
+      (td.monks||[]).forEach(m=>{
+        if(name && !(m.fullname||'').toLowerCase().includes(name))     return;
+        if(pass && !(m.passport||'').toLowerCase().includes(pass))     return;
+        found.push({m, td});
+      });
+    });
+
+    document.getElementById('sLoading').style.display='none';
+    const el=document.getElementById('sResults');
+
+    if(!found.length){
+      el.innerHTML='<p style="text-align:center;color:#94a3b8;padding:18px;font-size:15px;">❌ ไม่พบข้อมูลที่ตรงกัน</p>';
+      return;
+    }
+
+    el.innerHTML=`<p style="font-size:12px;color:#64748b;margin-bottom:10px;">พบ ${found.length} รายการ</p>`;
+    found.forEach(({m,td})=>{
+      const tLabel=[td.name,td.address].filter(Boolean).join(' ');
+      el.innerHTML+=`
+      <div class="rcard">
+        <div class="rname">🧘 ${m.fullname||'—'}</div>
+        <div class="rrow"><span class="rlbl">ฉายา</span><span class="rval">${m.alias||'—'}</span></div>
+        <div class="rrow"><span class="rlbl">อายุ / พรรษา</span><span class="rval">${m.age||'—'} ปี / ${m.pansa||'—'} พรรษา</span></div>
+        <div class="rrow"><span class="rlbl">สัญชาติ</span><span class="rval">${m.nationality||'—'}</span></div>
+        <div class="rrow"><span class="rlbl">IC / Passport</span><span class="rval">${m.passport||'—'}</span></div>
+        <div class="rrow"><span class="rlbl">ภูมิลำเนา</span><span class="rval">${m.origin||'—'}</span></div>
+        <div class="rrow"><span class="rlbl">วิทยฐานะ</span><span class="rval">${m.education||'—'}</span></div>
+        <div class="rrow"><span class="rlbl">🏛️ วัด / ที่อยู่</span><span class="rval">${tLabel||'—'}</span></div>
+        <div class="rrow"><span class="rlbl">บันทึกเมื่อ</span><span class="rval" style="color:#64748b;">${fmtDT(m.createdAt)}</span></div>
+      </div>`;
+    });
+  } catch(e){
+    document.getElementById('sLoading').style.display='none';
+    document.getElementById('sResults').innerHTML=`<p style="color:red;padding:10px;">❌ เกิดข้อผิดพลาด: ${e.message}</p>`;
+  }
+};
+</script>
+
+<!-- ══ นาฬิกา + Menu (non-module) ══ -->
+<script>
+/* นาฬิกา real-time */
+const MONTHS=['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const DAYS  =['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+function tick(){
+  const n=new Date(), be=n.getFullYear()+543;
+  const de=document.getElementById('dateTxt'), te=document.getElementById('timeTxt');
+  if(de) de.textContent=`${DAYS[n.getDay()]}ที่ ${n.getDate()} ${MONTHS[n.getMonth()+1]} ${be}`;
+  if(te) te.textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+}
+tick(); setInterval(tick,1000);
+
+/* Modal helpers */
+window.openSearch  = function(){
+  ['sName','sPassport','sTemple'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sResults').innerHTML='';
+  document.getElementById('sLoading').style.display='none';
+  document.getElementById('searchModal').classList.add('open');
+  setTimeout(()=>document.getElementById('sName').focus(), 80);
+};
+window.closeSearch = function(){ document.getElementById('searchModal').classList.remove('open'); };
+window.bgClose     = function(e){ if(e.target.id==='searchModal') closeSearch(); };
+
+/* Enter to search */
+['sName','sPassport','sTemple'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') window.doSearch(); });
+});
+
+/* ══ Menu cards — 7 รัฐ + นักธรรม เท่านั้น (Admin อยู่ปุ่มมุมขวาแล้ว) ══ */
+const states=[
+  {id:'kedah',        name:'รัฐเคดาห์',              color:'#16a34a'},
+  {id:'perlis',       name:'รัฐเปอร์ลิส',            color:'#059669'},
+  {id:'penang',       name:'รัฐปีนัง',               color:'#2563eb'},
+  {id:'perak',        name:'รัฐเปรัก',               color:'#7c3aed'},
+  {id:'selangor',     name:'รัฐสลังงอร์',            color:'#dc2626'},
+  {id:'johor',        name:'รัฐยะโฮร์',              color:'#ea580c'},
+  {id:'kelantan',     name:'รัฐกลันตันและตรังกานู',  color:'#0891b2'},
+  {id:'dhamma-study', name:'ระบบนักธรรมและธรรมศึกษา',color:'#b45309'},
+];
+const subs={
+  kedah:'Kedah State',perlis:'Perlis State',penang:'Penang State',
+  perak:'Perak State',selangor:'Selangor State',johor:'Johor State',
+  kelantan:'Kelantan & Terengganu','dhamma-study':'Dhamma Study System',
+};
+
+const mc=document.getElementById('state-menu');
+states.forEach((s,i)=>{
+  const c=document.createElement('div');
+  c.className='state-card cursor-pointer';
+  c.onclick=()=>{
+    if(s.id==='dhamma-study'){window.open('https://www.gongtham.net/web/news.php','_blank');return;}
+    window.location.href=`manage-${s.id}.html`;
+  };
+  const icon = s.id==='dhamma-study'
+    ? '<div class="study-icon"></div>'
+    : '<div class="dharma-wheel"></div>';
+  c.innerHTML=`
+  <div class="card-inner">
+    <div class="card-accent" style="background:${s.color};"></div>
+    <div class="card-glow"></div>
+    <div class="card-num" style="background:${s.color};">${i+1}</div>
+    <div class="mb-5 mt-3 relative z-10">${icon}</div>
+    <div class="relative z-10 w-full">
+      <h3 class="text-lg font-bold text-slate-800 leading-snug mb-1">${s.name}</h3>
+      <p class="text-xs font-semibold text-slate-400 tracking-wider mb-3">${subs[s.id]||''}</p>
+      <div class="w-7 h-0.5 mx-auto rounded-full mb-3" style="background:${s.color};"></div>
+      <div class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase text-white"
+           style="background:${s.color};">
+        <span>เข้าสู่ระบบ</span><span>→</span>
+      </div>
+    </div>
+  </div>`;
+  mc.appendChild(c);
+});
+</script>
 </body>
 </html>
