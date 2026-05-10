@@ -516,19 +516,22 @@ async function saveAllData(){
            await updateDoc(doc(db, 'temples', existingId), {
             name: templeName,
             address: templeAddress,
-            state: 'ยะโฮว์',
+            state: 'เยะโฮร์',
             surveyYear: '2569',
             updatedAt: new Date(),
             monks: [...oldMonks, ...monkData]
         });
             showToast('✅ อัปเดตข้อมูลสำเร็จ');
+            monkData = [];
+            renderTable();
+            clearInputs();
         } else {
             await addDoc(collection(db, 'temples'), {
 
                 /* ข้อมูลวัด */
                 name: templeName,
                 address: templeAddress,
-                state: 'ยะโฮว์',
+                state: 'ยะโฮร์',
                 surveyYear: '2569',
                 templeCode:
                     'JHR-' +
@@ -540,6 +543,9 @@ async function saveAllData(){
                 monks: monkData
             });
             showToast('✅ บันทึกข้อมูลสำเร็จ');
+            monkData = [];
+            renderTable();
+            clearInputs();
         }
     } catch(error){
         console.error(error);
