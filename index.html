@@ -432,67 +432,237 @@ function fmtDT(v){
   return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
-/* ══ ค้นหาพระ (รองรับกรองปี) ══ */
-window.doSearch = async function(){
-  const name  = document.getElementById('sName').value.trim().toLowerCase();
-  const pass  = document.getElementById('sPassport').value.trim().toLowerCase();
-  const templ = document.getElementById('sTemple').value.trim().toLowerCase();
-  const year  = document.getElementById('sYear').value;   /* ปีที่เลือก (AD) */
+/* =========================
+   YEAR AUTO GENERATOR
+========================= */
 
-  if(!name && !pass && !templ){ alert('⚠️ กรุณากรอกข้อมูลอย่างน้อย 1 ช่อง\nPlease fill in at least 1 field'); return; }
+const yearSel = document.getElementById('sYear');
+const currentYear = new Date().getFullYear();
+
+yearSel.innerHTML = `<option value="">ทั้งหมด / All</option>`;
+
+for (let y = currentYear; y >= currentYear - 5; y--) {
+
+  const opt = document.createElement('option');
+
+  opt.value = y;
+
+  opt.textContent = `${y} (พ.ศ. ${y + 543})`;
+
+  if (y === currentYear) {
+    opt.selected = true;
+  }
+
+  yearSel.appendChild(opt);
+}
+
+
+/* =========================
+   NORMALIZE TEXT
+========================= */
+
+function normalizeText(txt='') {
+
+  return txt
+    .toString()
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,'');
+
+}
+
+window.doSearch = async function(){
+
+  const name  = normalizeText(document.getElementById('sName').value);
+  const pass  = normalizeText(document.getElementById('sPassport').value);
+  const templ = normalizeText(document.getElementById('sTemple').value);
+
+  const year  = document.getElementById('sYear').value;
+
+  if(!name && !pass && !templ){
+
+    alert('⚠️ กรุณากรอกข้อมูลอย่างน้อย 1 ช่อง\nPlease fill in at least 1 field');
+
+    return;
+  }
 
   document.getElementById('sLoading').style.display='block';
+
   document.getElementById('sResults').innerHTML='';
 
   try {
+
     const snap = _snap || await getDocs(collection(db,'temples'));
+
     const found = [];
 
     snap.forEach(d=>{
-      const td=d.data();
-      const tn=(td.name||'').toLowerCase(), ta=(td.address||'').toLowerCase();
-      if(templ && !tn.includes(templ) && !ta.includes(templ)) return;
-      (td.monks||[]).forEach(m=>{
-        if(name && !(m.fullname||'').toLowerCase().includes(name))   return;
-        if(pass && !(m.passport||'').toLowerCase().includes(pass))   return;
-        /* กรองปี */
-        if(year){
-          const ca = m.createdAt;
-          if(!ca) return;
-          const dt = typeof ca.toDate==='function' ? ca.toDate() : new Date(ca);
-          if(isNaN(dt) || String(dt.getFullYear())!==year) return;
+
+      const td = d.data();
+
+      /* ===== TEMPLE ===== */
+
+      const templeName =
+        normalizeText(td.name || '');
+
+      const templeAddress =
+        normalizeText(td.address || '');
+
+      const templeEnglish =
+        normalizeText(td.nameEn || '');
+
+      if(
+        templ &&
+        !templeName.includes(templ) &&
+        !templeAddress.includes(templ) &&
+        !templeEnglish.includes(templ)
+      ){
+        return;
+      }
+
+      (td.monks || []).forEach(m=>{
+
+        const fullname =
+          normalizeText(m.fullname || '');
+
+        const fullnameEn =
+          normalizeText(m.fullnameEn || '');
+
+        const alias =
+          normalizeText(m.alias || '');
+
+        const nationality =
+          normalizeText(m.nationality || '');
+
+        const education =
+          normalizeText(m.education || '');
+
+        const passport =
+          normalizeText(m.passport || '');
+
+        if(
+          name &&
+          !fullname.includes(name) &&
+          !fullnameEn.includes(name) &&
+          !alias.includes(name) &&
+          !nationality.includes(name) &&
+          !education.includes(name)
+        ){
+          return;
         }
+
+        if(pass && !passport.includes(pass)){
+          return;
+        }
+
+        /* ===== YEAR ===== */
+
+        if(year){
+
+          const ca = m.createdAt;
+
+          if(!ca) return;
+
+          const dt =
+            typeof ca.toDate === 'function'
+            ? ca.toDate()
+            : new Date(ca);
+
+          if(
+            isNaN(dt) ||
+            String(dt.getFullYear()) !== year
+          ){
+            return;
+          }
+        }
+
         found.push({m, td});
+
       });
+
     });
 
     document.getElementById('sLoading').style.display='none';
-    const el=document.getElementById('sResults');
+
+    const el = document.getElementById('sResults');
 
     if(!found.length){
-      el.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px;font-size:15px;">❌ ไม่พบข้อมูลที่ตรงกัน / No results found</p>';
+
+      el.innerHTML = `
+      <p style="
+        text-align:center;
+        color:#94a3b8;
+        padding:20px;
+        font-size:15px;
+      ">
+        ❌ ไม่พบข้อมูลที่ตรงกัน / No results found
+      </p>`;
+
       return;
     }
 
-    el.innerHTML=`<p style="font-size:13px;color:#64748b;margin-bottom:12px;">พบ ${found.length} รายการ / Found ${found.length} record(s)</p>`;
+    el.innerHTML = `
+    <p style="
+      font-size:13px;
+      color:#64748b;
+      margin-bottom:12px;
+    ">
+      พบ ${found.length} รายการ / Found ${found.length} record(s)
+    </p>`;
+
     found.forEach(({m,td})=>{
-      const tLabel=[td.name,td.address].filter(Boolean).join(' ');
-      el.innerHTML+=`
+
+      const tLabel = [
+        td.name,
+        td.nameEn,
+        td.address
+      ].filter(Boolean).join(' • ');
+
+      el.innerHTML += `
       <div class="rcard">
-        <div class="rname">🧘 ${m.fullname||'—'}</div>
-        <div class="rrow"><span class="rlbl">ฉายา / Alias</span><span class="rval">${m.alias||'—'}</span></div>
-        <div class="rrow"><span class="rlbl">อายุ / พรรษา / Age / Vassa</span><span class="rval">${m.age||'—'} ปี / ${m.pansa||'—'} พรรษา</span></div>
-        <div class="rrow"><span class="rlbl">สัญชาติ / Nationality</span><span class="rval">${m.nationality||'—'}</span></div>
-        <div class="rrow"><span class="rlbl">IC / Passport</span><span class="rval">${m.passport||'—'}</span></div>
-        <div class="rrow"><span class="rlbl">ภูมิลำเนา / Origin</span><span class="rval">${m.origin||'—'}</span></div>
-        <div class="rrow"><span class="rlbl">วิทยฐานะ / Education</span><span class="rval">${m.education||'—'}</span></div>
-        <div class="rrow"><span class="rlbl">🏛️ วัด / Temple</span><span class="rval">${tLabel||'—'}</span></div>
-        <div class="rrow"><span class="rlbl">บันทึกเมื่อ / Recorded</span><span class="rval" style="color:#64748b;">${fmtDT(m.createdAt)}</span></div>
+
+        <div class="rname">
+          🧘 ${m.fullname || '—'}
+          ${m.fullnameEn ? `<br><span style="font-size:13px;color:#64748b;">${m.fullnameEn}</span>` : ''}
+        </div>
+
+        <div class="rrow">
+          <span class="rlbl">ฉายา / Alias</span>
+          <span class="rval">${m.alias || '—'}</span>
+        </div>
+
+        <div class="rrow">
+          <span class="rlbl">สัญชาติ / Nationality</span>
+          <span class="rval">${m.nationality || '—'}</span>
+        </div>
+
+        <div class="rrow">
+          <span class="rlbl">IC / Passport</span>
+          <span class="rval">${m.passport || '—'}</span>
+        </div>
+
+        <div class="rrow">
+          <span class="rlbl">🏛️ วัด / Temple</span>
+          <span class="rval">${tLabel || '—'}</span>
+        </div>
+
+        <div class="rrow">
+          <span class="rlbl">บันทึกเมื่อ / Recorded</span>
+          <span class="rval">${fmtDT(m.createdAt)}</span>
+        </div>
+
       </div>`;
     });
+
   } catch(e){
+
     document.getElementById('sLoading').style.display='none';
-    document.getElementById('sResults').innerHTML=`<p style="color:red;padding:10px;">❌ เกิดข้อผิดพลาด / Error: ${e.message}</p>`;
+
+    document.getElementById('sResults').innerHTML = `
+    <p style="color:red;padding:10px;">
+      ❌ Error : ${e.message}
+    </p>`;
   }
 };
 </script>
