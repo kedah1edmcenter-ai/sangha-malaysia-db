@@ -231,6 +231,43 @@ body::before{
   background:linear-gradient(90deg,transparent,#e2d5c3,transparent);
 }
 footer{position:relative;z-index:1;}
+
+/* ══════════ ANNOUNCEMENT BAR ══════════ */
+.announce-wrap{
+  max-width:900px;margin:0 auto 0;
+  padding:0 24px 18px;
+  position:relative;z-index:1;
+}
+.announce-box{
+  background:linear-gradient(135deg,#fff7ed,#fef3c7);
+  border:2px solid #fbbf24;
+  border-radius:20px;
+  padding:14px 20px;
+  display:flex;align-items:flex-start;gap:14px;
+  box-shadow:0 4px 18px rgba(245,158,11,.15);
+  animation:fadeSlideIn .5s ease;
+  min-height:52px;
+}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.announce-icon{
+  font-size:26px;flex-shrink:0;margin-top:2px;
+}
+.announce-content{flex:1;}
+.announce-title{
+  font-size:12px;font-weight:800;color:#b45309;
+  letter-spacing:.6px;text-transform:uppercase;margin-bottom:4px;
+}
+.announce-text{
+  font-size:16px;font-weight:600;color:#1e293b;line-height:1.6;
+  white-space:pre-line;
+}
+.announce-date{
+  font-size:11px;color:#94a3b8;margin-top:4px;
+}
+.announce-empty{
+  color:#cbd5e1;font-size:14px;font-style:italic;
+  text-align:center;width:100%;padding:6px 0;
+}
 </style>
 </head>
 <body>
@@ -313,6 +350,13 @@ footer{position:relative;z-index:1;}
   </div>
 </nav>
 
+<!-- ══ ANNOUNCEMENT BAR ══ -->
+<div class="announce-wrap" id="announceWrap" style="display:none;">
+  <div class="announce-box" id="announceBox">
+    <div class="announce-empty">⏳ กำลังโหลด...</div>
+  </div>
+</div>
+
 <!-- ══ MAIN ══ -->
 <main class="max-w-7xl mx-auto px-8 py-10 relative" style="z-index:1;">
   <div class="section-label">
@@ -337,7 +381,7 @@ footer{position:relative;z-index:1;}
 <!-- ══ Firebase (module) ══ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const db = getFirestore(initializeApp({
   apiKey:"AIzaSyCOX6wT65phG79nSYFcqq40sQ4xTU15rI0",
@@ -348,13 +392,20 @@ const db = getFirestore(initializeApp({
   appId:"1:113712257853:web:8b8dc634917aeeb49ac354"
 }));
 
-const STATE_ORDER = ['เคดาห์','เปอร์ลิส','ปีนัง','เปรัก','สลังงอร์','ยะโฮร์','กลันตัน'];
+const STATE_ORDER = ['เคดาห์','เปอร์ลิส','ปีนัง','เปรัก','สลังงอร์','ยะโฮร์','กลันตันและตรังกานู'];
 const STATE_SHORT  = {
   'เคดาห์':'เคดาห์','เปอร์ลิส':'เปอร์ลิส','ปีนัง':'ปีนัง',
   'เปรัก':'เปรัก','สลังงอร์':'สลังงอร์','ยะโฮร์':'ยะโฮร์',
-  'กลันตัน':'กลันตัน\n&ตรังกานู'
+  'กลันตันและตรังกานู':'กลันตัน<br>&ตรังกานู'
 };
 const normState = r => (r||'').replace(/^รัฐ/,'').trim();
+
+/* fuzzy match สำหรับชื่อรัฐที่อาจสั้น/ยาวต่างกัน */
+function matchState(dbState, orderState){
+  const a = normState(dbState).toLowerCase();
+  const b = orderState.toLowerCase();
+  return a === b || a.includes(b) || b.includes(a);
+}
 
 let _snap = null;
 
@@ -374,20 +425,57 @@ async function loadStats(){
     document.getElementById('sbTemples').textContent = temples;
     document.getElementById('sbTotal').textContent   = monks;
 
+    /* รวม key จาก DB → map เข้า STATE_ORDER ด้วย fuzzy match */
+    const mappedSm = {};
+    Object.keys(sm).forEach(dbKey => {
+      const matched = STATE_ORDER.find(s => matchState(dbKey, s));
+      const target  = matched || dbKey;
+      mappedSm[target] = (mappedSm[target] || 0) + sm[dbKey];
+    });
+
     const pills = document.getElementById('statePills');
     pills.innerHTML = '';
-    const keys=[...STATE_ORDER.filter(k=>sm[k]!==undefined),...Object.keys(sm).filter(k=>!STATE_ORDER.includes(k))];
-    keys.forEach((k,i)=>{
-      if(i>0){const s=document.createElement('div');s.className='sv';pills.appendChild(s);}
-      const p=document.createElement('div'); p.className='rpill';
-      const short=(STATE_SHORT[k]||k).replace('\n','<br>');
-      p.innerHTML=`<div class="rn">${short}</div><div class="rv">${sm[k]||0}</div><div class="rs">รูป</div>`;
+    /* แสดงทุกรัฐใน STATE_ORDER เสมอ แม้ไม่มีข้อมูล */
+    STATE_ORDER.forEach((k, i) => {
+      if(i > 0){ const s = document.createElement('div'); s.className='sv'; pills.appendChild(s); }
+      const p     = document.createElement('div'); p.className = 'rpill';
+      const short = STATE_SHORT[k] || k;
+      p.innerHTML = `<div class="rn">${short}</div><div class="rv">${mappedSm[k] || 0}</div><div class="rs">รูป</div>`;
       pills.appendChild(p);
     });
   } catch(e){ console.error('Firebase:', e); }
 }
 loadStats();
+loadAnnouncement();
 
+/* ── โหลดและ real-time listen ข้อความประชาสัมพันธ์ ── */
+function loadAnnouncement(){
+  var ref = doc(db, 'settings', 'announcement');
+  onSnapshot(ref, function(snap){
+    var box  = document.getElementById('announceBox');
+    var wrap = document.getElementById('announceWrap');
+    if(!box) return;
+    if(!snap.exists() || !(snap.data().text||'').trim()){
+      if(wrap) wrap.style.display = 'none';
+      return;
+    }
+    if(wrap) wrap.style.display = '';
+    var d = snap.data();
+    var dateStr = '';
+    if(d.updatedAt){
+      var dt = typeof d.updatedAt.toDate === 'function' ? d.updatedAt.toDate() : new Date(d.updatedAt);
+      function p(n){ return String(n).padStart(2,'0'); }
+      dateStr = 'อัปเดต: ' + dt.getFullYear() + '-' + p(dt.getMonth()+1) + '-' + p(dt.getDate()) + ' ' + p(dt.getHours()) + ':' + p(dt.getMinutes());
+    }
+    var html = '<div class="announce-icon">📢</div>';
+    html += '<div class="announce-content">';
+    html += '<div class="announce-title">ประชาสัมพันธ์ · Announcement</div>';
+    html += '<div class="announce-text">' + d.text + '</div>';
+    if(dateStr){ html += '<div class="announce-date">' + dateStr + '</div>'; }
+    html += '</div>';
+    box.innerHTML = html;
+  });
+}
 function fmtDT(v){
   if(!v) return '—';
   const d = typeof v.toDate==='function' ? v.toDate() : new Date(v);
