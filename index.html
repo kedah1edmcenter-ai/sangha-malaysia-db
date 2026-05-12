@@ -33,10 +33,15 @@ body::before{
   padding:8px 16px 10px;
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
+  /* ✅ จัดกึ่งกลาง */
+  display:flex;
+  justify-content:center;
 }
 .stats-inner{
   display:flex;align-items:center;gap:6px;
   min-width:max-content;
+  /* ✅ ให้ content หดได้แต่ไม่เกิน viewport */
+  max-width:100%;
 }
 
 /* นาฬิกา */
