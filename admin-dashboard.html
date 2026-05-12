@@ -145,7 +145,6 @@ tr:nth-child(even) td { background:#f8fafc; }
 <main class="w-full px-8 py-8 space-y-8" style="max-width:100%;">
 
 <!-- ── DASHBOARD CARDS ── -->
-<!-- Layout: [วันที่ real-time] [การ์ดปี 2569 ขยาย] -->
 <div style="display:grid; grid-template-columns:450px 1fr; gap:20px; align-items:stretch;">
 
     <!-- วันที่ พ.ศ. real-time -->
@@ -189,6 +188,8 @@ tr:nth-child(even) td { background:#f8fafc; }
     <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
         <h2 class="text-3xl font-bold text-slate-800">รายงานแยกรัฐ</h2>
         <div class="flex gap-3 flex-wrap">
+            <!-- ✅ ปุ่มใหม่: ลิงก์ไปหน้าสถิติรายงาน -->
+            <button onclick="window.open('monk-statistics-dashboard.html','_blank')" class="btn purple">📊 สถิติรายงาน</button>
             <button onclick="exportAllReport()" class="btn green">📦 Export รวมทั้งหมด</button>
             <button onclick="exportStatePopup()" class="btn blue">🗺️ ดาวน์โหลดแบบรัฐ</button>
             <button onclick="exportTemplePopup()" class="btn orange">🛕 ดาวน์โหลดแบบวัด</button>
@@ -304,8 +305,8 @@ const developerUser = "sirichai";
 const developerPass = "Sb270887";
 
 /* ── state ── */
-let selectedYear   = 'ทั้งหมด';   // ปีที่เลือก
-let allTempleSnap  = null;         // cache snapshot
+let selectedYear   = 'ทั้งหมด';
+let allTempleSnap  = null;
 
 /* ── HELPERS ── */
 function templeFullName(data){
@@ -325,9 +326,6 @@ function formatDateTime(val){
     return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
-/* ── แปลง ค.ศ. → พ.ศ. ──
-   monk.createdAt เก็บเป็น ISO string ค.ศ.
-   ปี 2026 ค.ศ. = ปี 2569 พ.ศ. */
 function getBuddhistYear(val){
     if(!val) return null;
     let d;
@@ -338,7 +336,6 @@ function getBuddhistYear(val){
     return String(d.getFullYear() + 543);
 }
 
-/* ── กรองปี ── */
 function monkMatchYear(monk){
     if(selectedYear === 'ทั้งหมด') return true;
     return getBuddhistYear(monk.createdAt) === selectedYear;
@@ -372,7 +369,7 @@ async function startSystem(user, isDev){
 /* ── STATISTICS ── */
 function loadStatistics(){
     let totalTemple = 0, totalMonk = 0;
-    let y69Temple = 0, y69Monk = 0, y69Thai = 0;
+    let y69Thai = 0;
     const stateData = {};
 
     allTempleSnap.forEach(docItem=>{
@@ -386,13 +383,9 @@ function loadStatistics(){
         totalMonk += monks.length;
         stateData[state].monks += monks.length;
 
-        // ปี 2569 = ค.ศ. 2026
-        let has69 = false;
         monks.forEach(m=>{
             const by = getBuddhistYear(m.createdAt);
             if(by === '2569'){
-                if(!has69){ y69Temple++; has69 = true; }
-                y69Monk++;
                 const nat  = (m.nationality||'').trim();
                 const race = (m.race||'').trim();
                 if(nat === 'ไทย' && race === 'ไทย') y69Thai++;
@@ -415,10 +408,7 @@ function loadStatistics(){
     });
 }
 
-/* ── RENDER TABLE (core) ──
-   stateFilter   = ชื่อรัฐ (string) หรือ null
-   templeIdFilter = docId (string) หรือ null
-*/
+/* ── RENDER TABLE ── */
 function renderMonkTable(snap, stateFilter, templeIdFilter){
     const table  = document.getElementById('monkTable');
     const empty  = document.getElementById('monkTableEmpty');
@@ -429,18 +419,12 @@ function renderMonkTable(snap, stateFilter, templeIdFilter){
 
     snap.forEach(docItem=>{
         const data = docItem.data();
-
-        // filter วัด
         if(templeIdFilter && docItem.id !== templeIdFilter) return;
-
-        // filter รัฐ
         if(stateFilter){
             const dbState = (data.state||'').replace('รัฐ','').trim().toLowerCase();
             if(dbState !== cleanState) return;
         }
-
         (data.monks||[]).forEach((monk, idx)=>{
-            // ✅ filter ปีจาก monk.createdAt → พ.ศ.
             if(!monkMatchYear(monk)) return;
             table.innerHTML += buildMonkRow(monk, data, docItem.id, idx);
             count++;
@@ -451,7 +435,6 @@ function renderMonkTable(snap, stateFilter, templeIdFilter){
     updateFilterBadge(stateFilter, templeIdFilter, count);
 }
 
-/* ── badge แสดงสถานะ filter ── */
 function updateFilterBadge(stateFilter, templeIdFilter, count){
     const el = document.getElementById('filterStatusBadge');
     let txt = '';
@@ -463,22 +446,18 @@ function updateFilterBadge(stateFilter, templeIdFilter, count){
         : '';
 }
 
-/* ── ตัวแปรเก็บ filter ปัจจุบัน ── */
 let currentStateFilter  = null;
 let currentTempleFilter = null;
 
-/* ── SET YEAR ── */
 window.setYear = function(year, btn){
     selectedYear = year;
     document.querySelectorAll('.year-pill').forEach(b=> b.classList.remove('active'));
     btn.classList.add('active');
-    // รีเซ็ต state/temple filter เมื่อเปลี่ยนปี
     currentStateFilter  = null;
     currentTempleFilter = null;
     renderMonkTable(allTempleSnap, null, null);
 };
 
-/* ── RESET ── */
 window.resetFilter = function(){
     selectedYear        = 'ทั้งหมด';
     currentStateFilter  = null;
@@ -488,7 +467,6 @@ window.resetFilter = function(){
     renderMonkTable(allTempleSnap, null, null);
 };
 
-/* ── SELECT STATE POPUP (กรองตามปีที่เลือกไว้) ── */
 window.selectStatePopup = function(){
     const states = ['รัฐเคดาห์','รัฐเปอร์ลิส','รัฐปีนัง','รัฐเปรัก','รัฐสลังงอร์','รัฐยะโฮร์','รัฐกลันตันและตรังกานู'];
     let html = buildModalStart('stateModal','🗺️ เลือกรัฐ','550px');
@@ -511,7 +489,6 @@ window.filterByState = function(stateName){
     renderMonkTable(allTempleSnap, stateName, null);
 };
 
-/* ── SELECT TEMPLE POPUP (กรองตามปีที่เลือกไว้) ── */
 window.selectTemplePopup = async function(){
     let html = buildModalStart('templeModal','🛕 เลือกวัด','650px');
     const yearNote = selectedYear !== 'ทั้งหมด'
@@ -536,7 +513,6 @@ window.filterByTemple = function(templeDocId){
     renderMonkTable(allTempleSnap, null, templeDocId);
 };
 
-/* ── SEARCH ── */
 window.searchMonk = function(){
     const kw = document.getElementById('searchInput').value.toLowerCase();
     document.querySelectorAll('#monkTable tr').forEach(row=>{
@@ -544,7 +520,6 @@ window.searchMonk = function(){
     });
 };
 
-/* ── DELETE MONK ── */
 window.deleteMonk = async function(templeDocId, monkIndex){
     if(!confirm('ต้องการลบรายชื่อพระรูปนี้ใช่หรือไม่?')) return;
     try {
@@ -561,7 +536,6 @@ window.deleteMonk = async function(templeDocId, monkIndex){
     } catch(err){ alert('❌ เกิดข้อผิดพลาด: ' + err.message); }
 };
 
-/* ── BUILD MONK ROW ── */
 function buildMonkRow(monk, data, docId, idx){
     const temple  = templeFullName(data);
     const savedAt = formatDateTime(monk.createdAt || null);
@@ -583,12 +557,10 @@ function buildMonkRow(monk, data, docId, idx){
     </tr>`;
 }
 
-/* ── EXPORT ALL ── */
 window.exportAllReport = async function(){
     createExcelReport(allTempleSnap,'รายงานรวมทั้งหมด',null,null);
 };
 
-/* ── EXPORT STATE POPUP ── */
 window.exportStatePopup = async function(){
     const stateMap = {};
     allTempleSnap.forEach(d=>{
@@ -619,7 +591,6 @@ window.exportByExactState = async function(btn){
     createExcelReport(allTempleSnap, exactState, exactState, null);
 };
 
-/* ── EXPORT TEMPLE POPUP ── */
 window.exportTemplePopup = async function(){
     let html = buildModalStart('exportTempleModal','🛕 ดาวน์โหลดแบบวัด','650px');
     allTempleSnap.forEach(d=>{
@@ -639,7 +610,6 @@ window.exportByTemple = async function(id, name){
     createExcelReport(allTempleSnap, name||id, null, id);
 };
 
-/* ── CREATE EXCEL ── */
 function createExcelReport(snap, fileName, stateFilter, templeIdFilter){
     const rows = [['ที่','วัด / ที่อยู่วัด','ชื่อ/นามสกุล','ฉายา','อายุ','พรรษา',
                    'วิทยฐานะ','ภูมิลำเนาเดิม','สัญชาติ','เชื้อชาติ','IC/PASSPORT','หมายเหตุ','วัน/เวลาบันทึก']];
@@ -664,7 +634,6 @@ function createExcelReport(snap, fileName, stateFilter, templeIdFilter){
     XLSX.writeFile(wb, `${fileName}.xlsx`);
 }
 
-/* ── EXPORT THAI MONKS POPUP ── */
 window.exportThaiMonksPopup = function(){
     const html = `
     <div id="thaiExportModal" style="position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:99999;display:flex;justify-content:center;align-items:center;">
@@ -757,7 +726,6 @@ window.deleteAdmin = async function(id){
     alert('✅ ลบแอดมินสำเร็จ'); loadAdmins();
 };
 
-/* ── DELETE TEMPLE POPUP ── */
 window.deleteTemplePopup = async function(){
     let html = `<div id="deleteTempleModal" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99999;display:flex;justify-content:center;align-items:center;">
     <div style="width:650px;background:white;border-radius:30px;padding:35px;max-height:85vh;overflow:auto;">
@@ -790,7 +758,6 @@ window.confirmDeleteTemple = async function(id, name){
     } catch(e){ alert('❌ เกิดข้อผิดพลาด: '+e.message); }
 };
 
-/* ── MODAL HELPERS ── */
 function buildModalStart(id, title, width){
     return `<div id="${id}" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;
         display:flex;justify-content:center;align-items:center;">
