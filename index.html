@@ -88,7 +88,7 @@ body::before{
 .pulse{animation:pulse 1.2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ══════════ CORNER BUTTONS (fixed top-right) ══════════ */
+/* ══════════ CORNER BUTTONS ══════════ */
 .corner-wrap{
   position:fixed;top:14px;right:14px;z-index:9500;
   display:flex;flex-direction:row;gap:8px;
@@ -104,7 +104,7 @@ body::before{
 .cbtn-search{background:linear-gradient(135deg,#1e40af,#3b82f6);}
 .cbtn-admin {background:linear-gradient(135deg,#7f1d1d,#dc2626);}
 
-/* ══════════ SEARCH MODAL — 40% larger ══════════ */
+/* ══════════ SEARCH MODAL ══════════ */
 .modal-ov{
   position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:99999;
   display:none;justify-content:center;align-items:center;padding:16px;
@@ -112,7 +112,7 @@ body::before{
 .modal-ov.open{display:flex;}
 .modal-box{
   background:white;border-radius:30px;padding:48px;
-  width:100%;max-width:812px;          /* 580 × 1.4 ≈ 812 */
+  width:100%;max-width:812px;
   max-height:92vh;overflow-y:auto;
   box-shadow:0 24px 64px rgba(0,0,0,.28);
   position:relative;animation:popIn .26s cubic-bezier(.175,.885,.32,1.275);
@@ -126,7 +126,6 @@ body::before{
 }
 .mclose:hover{background:#dc2626;color:white;}
 
-/* Modal header row: title block (1) + year selector (2) */
 .modal-header-row{
   display:flex;
   align-items:flex-start;
@@ -134,40 +133,24 @@ body::before{
   gap:16px;
   margin-bottom:20px;
 }
-.modal-title-block{}
 .modal-title-block h2{
   font-size:26px;font-weight:800;color:#1e293b;margin:0 0 4px;line-height:1.2;
 }
-.modal-title-block .modal-sub-th{
-  font-size:14px;color:#475569;margin:0 0 2px;
-}
-.modal-title-block .modal-sub-en{
-  font-size:12px;color:#94a3b8;font-style:italic;margin:0;
-}
+.modal-title-block .modal-sub-th{font-size:14px;color:#475569;margin:0 0 2px;}
+.modal-title-block .modal-sub-en{font-size:12px;color:#94a3b8;font-style:italic;margin:0;}
 
-/* Year selector box (red box 2) */
+/* Year selector */
 .year-box{
-  flex-shrink:0;
-  border:2.5px solid #dc2626;
-  border-radius:16px;
-  padding:10px 14px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:4px;
-  min-width:130px;
-  background:#fff5f5;
+  flex-shrink:0;border:2.5px solid #dc2626;border-radius:16px;
+  padding:10px 14px;display:flex;flex-direction:column;
+  align-items:center;gap:4px;min-width:130px;background:#fff5f5;
 }
-.year-box .ylbl{
-  font-size:11px;font-weight:700;color:#dc2626;text-align:center;line-height:1.3;
-  white-space:nowrap;
-}
+.year-box .ylbl{font-size:11px;font-weight:700;color:#dc2626;text-align:center;line-height:1.3;white-space:nowrap;}
 .year-sel{
   border:1.5px solid #fca5a5;border-radius:10px;
   padding:6px 10px;font-size:15px;font-weight:800;
   color:#7f1d1d;font-family:'Sarabun',sans-serif;
-  background:white;outline:none;cursor:pointer;width:100%;
-  text-align:center;
+  background:white;outline:none;cursor:pointer;width:100%;text-align:center;
 }
 .year-sel:focus{border-color:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,.12);}
 
@@ -184,13 +167,15 @@ body::before{
   cursor:pointer;font-family:'Sarabun',sans-serif;transition:.2s;
 }
 .sbtn:hover{filter:brightness(1.09);}
+
+/* ── RESULT CARD ── */
 .rcard{
   border:1.5px solid #e2e8f0;border-radius:14px;
   padding:14px 18px;margin-bottom:10px;background:#f8fafc;
   border-left:4px solid #3b82f6;
 }
 .rcard .rname{font-size:17px;font-weight:800;color:#1e293b;margin-bottom:8px;}
-.rcard .rrow {display:grid;grid-template-columns:140px 1fr;gap:3px;margin-bottom:3px;}
+.rcard .rrow {display:grid;grid-template-columns:160px 1fr;gap:3px;margin-bottom:3px;}
 .rcard .rlbl {font-size:12px;font-weight:700;color:#64748b;}
 .rcard .rval {font-size:13px;color:#1e293b;word-break:break-word;}
 
@@ -245,7 +230,7 @@ footer{position:relative;z-index:1;}
 </head>
 <body>
 
-<!-- ══ CORNER BUTTONS (fixed top-right) ══ -->
+<!-- ══ CORNER BUTTONS ══ -->
 <div class="corner-wrap">
   <button class="cbtn cbtn-search" onclick="openSearch()">🔍 สืบค้นข้อมูลพระ</button>
   <button class="cbtn cbtn-admin"  onclick="window.location.href='admin-dashboard.html'">🛡️ ระบบแอดมิน</button>
@@ -256,31 +241,18 @@ footer{position:relative;z-index:1;}
   <div class="modal-box">
     <button class="mclose" onclick="closeSearch()">✕</button>
 
-    <!-- Header row: [1] title block | [2] year selector -->
     <div class="modal-header-row">
-
-      <!-- ช่อง 1: หัวข้อ (TH + EN) -->
       <div class="modal-title-block">
         <h2>🔍 สืบค้นข้อมูลพระภิกษุ<br><span style="font-size:20px;color:#3b82f6;">Monk Information Search</span></h2>
         <p class="modal-sub-th">กรอกข้อมูลอย่างน้อย 1 ช่อง แล้วกดค้นหา</p>
         <p class="modal-sub-en">Fill in at least 1 field, then press Search</p>
       </div>
-
-      <!-- ช่อง 2: เลือกปี (Year Selector) — กรอบแดง -->
       <div class="year-box">
         <div class="ylbl">📅 ปีที่ค้นหา<br>Search Year</div>
-        <select id="sYear" class="year-sel">
-          <option value="">ทั้งหมด / All</option>
-          <option value="2026" selected>2026 (พ.ศ. 2569)</option>
-          <option value="2025">2025 (พ.ศ. 2568)</option>
-          <option value="2024">2024 (พ.ศ. 2567)</option>
-          <option value="2023">2023 (พ.ศ. 2566)</option>
-        </select>
+        <select id="sYear" class="year-sel"></select>
       </div>
-
     </div>
 
-    <!-- Search fields (TH + EN placeholders) -->
     <div style="display:flex;flex-direction:column;gap:11px;margin-bottom:16px;">
       <input id="sName"     class="sinput" type="text" placeholder="👤 ชื่อ-นามสกุล / Full Name">
       <input id="sPassport" class="sinput" type="text" placeholder="🪪 IC / Passport No.">
@@ -289,7 +261,7 @@ footer{position:relative;z-index:1;}
     <button class="sbtn" onclick="doSearch()">🔍 ค้นหา / Search</button>
 
     <div id="sLoading" style="display:none;text-align:center;padding:20px;color:#64748b;font-size:16px;">⏳ กำลังค้นหา... / Searching...</div>
-    <div id="sResults"  style="margin-top:16px;"></div>
+    <div id="sResults" style="margin-top:16px;"></div>
   </div>
 </div>
 
@@ -304,16 +276,13 @@ footer{position:relative;z-index:1;}
     </p>
   </div>
 
-  <!-- ══ STATS BAR ══ -->
+  <!-- STATS BAR -->
   <div class="stats-bar">
     <div class="stats-inner">
-
-      <!-- นาฬิกา -->
       <div class="clk">
         <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;width:100%;">
           <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
-            <span>📅</span>
-            <span id="dateTxt">—</span>
+            <span>📅</span><span id="dateTxt">—</span>
           </div>
           <div style="margin-top:4px;display:flex;align-items:center;justify-content:center;gap:6px;">
             <span id="timeTxt" style="color:#ffffff;font-weight:900;font-size:24px;">00:00:00</span>
@@ -321,30 +290,20 @@ footer{position:relative;z-index:1;}
           </div>
         </div>
       </div>
-
       <div class="sv"></div>
-
-      <!-- จำนวนวัด -->
       <div class="spill">
         <div class="lbl">🏛️ วัดทั้งหมด</div>
         <div class="val" id="sbTemples"><span class="pulse">…</span></div>
       </div>
-
       <div class="sv"></div>
-
-      <!-- 7 รัฐ -->
       <div id="statePills" style="display:flex;align-items:center;gap:4px;">
         <div class="rpill"><div class="rn pulse" style="font-size:10px;">กำลังโหลด</div><div class="rv">…</div></div>
       </div>
-
-      <div class="sv" id="svTotal"></div>
-
-      <!-- รวม -->
-      <div class="spill rtotal" style="background:rgba(253,230,138,.15);border-color:rgba(253,230,138,.35);">
+      <div class="sv"></div>
+      <div class="spill" style="background:rgba(253,230,138,.15);border-color:rgba(253,230,138,.35);">
         <div class="lbl">✨ รวมพระทั้งหมด</div>
         <div class="val" id="sbTotal"><span class="pulse">…</span></div>
       </div>
-
     </div>
   </div>
 </nav>
@@ -432,242 +391,133 @@ function fmtDT(v){
   return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
-/* =========================
-   YEAR AUTO GENERATOR
-========================= */
-
+/* ── Year dropdown (auto generate) ── */
 const yearSel = document.getElementById('sYear');
 const currentYear = new Date().getFullYear();
-
 yearSel.innerHTML = `<option value="">ทั้งหมด / All</option>`;
-
 for (let y = currentYear; y >= currentYear - 5; y--) {
-
   const opt = document.createElement('option');
-
   opt.value = y;
-
   opt.textContent = `${y} (พ.ศ. ${y + 543})`;
-
-  if (y === currentYear) {
-    opt.selected = true;
-  }
-
+  if (y === currentYear) opt.selected = true;
   yearSel.appendChild(opt);
 }
 
-
-/* =========================
-   NORMALIZE TEXT
-========================= */
-
+/* ── Normalize text ── */
 function normalizeText(txt='') {
-
-  return txt
-    .toString()
-    .toLowerCase()
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,'');
-
+  return txt.toString().toLowerCase().trim()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,'');
 }
 
+/* ── SEARCH ── */
 window.doSearch = async function(){
-
   const name  = normalizeText(document.getElementById('sName').value);
   const pass  = normalizeText(document.getElementById('sPassport').value);
   const templ = normalizeText(document.getElementById('sTemple').value);
-
   const year  = document.getElementById('sYear').value;
 
   if(!name && !pass && !templ){
-
     alert('⚠️ กรุณากรอกข้อมูลอย่างน้อย 1 ช่อง\nPlease fill in at least 1 field');
-
     return;
   }
 
   document.getElementById('sLoading').style.display='block';
-
   document.getElementById('sResults').innerHTML='';
 
   try {
-
     const snap = _snap || await getDocs(collection(db,'temples'));
-
     const found = [];
 
     snap.forEach(d=>{
-
       const td = d.data();
+      const templeName    = normalizeText(td.name    || '');
+      const templeAddress = normalizeText(td.address || '');
+      const templeEnglish = normalizeText(td.nameEn  || '');
 
-      /* ===== TEMPLE ===== */
-
-      const templeName =
-        normalizeText(td.name || '');
-
-      const templeAddress =
-        normalizeText(td.address || '');
-
-      const templeEnglish =
-        normalizeText(td.nameEn || '');
-
-      if(
-        templ &&
-        !templeName.includes(templ) &&
-        !templeAddress.includes(templ) &&
-        !templeEnglish.includes(templ)
-      ){
-        return;
-      }
+      if(templ && !templeName.includes(templ) && !templeAddress.includes(templ) && !templeEnglish.includes(templ)) return;
 
       (td.monks || []).forEach(m=>{
+        const fullname  = normalizeText(m.fullname    || '');
+        const fullnameEn= normalizeText(m.fullnameEn  || '');
+        const alias     = normalizeText(m.alias       || '');
+        const nationality=normalizeText(m.nationality || '');
+        const education = normalizeText(m.education   || '');
+        const passport  = normalizeText(m.passport    || '');
 
-        const fullname =
-          normalizeText(m.fullname || '');
+        if(name && !fullname.includes(name) && !fullnameEn.includes(name) &&
+           !alias.includes(name) && !nationality.includes(name) && !education.includes(name)) return;
 
-        const fullnameEn =
-          normalizeText(m.fullnameEn || '');
-
-        const alias =
-          normalizeText(m.alias || '');
-
-        const nationality =
-          normalizeText(m.nationality || '');
-
-        const education =
-          normalizeText(m.education || '');
-
-        const passport =
-          normalizeText(m.passport || '');
-
-        if(
-          name &&
-          !fullname.includes(name) &&
-          !fullnameEn.includes(name) &&
-          !alias.includes(name) &&
-          !nationality.includes(name) &&
-          !education.includes(name)
-        ){
-          return;
-        }
-
-        if(pass && !passport.includes(pass)){
-          return;
-        }
-
-        /* ===== YEAR ===== */
+        /* ✅ ค้นหาด้วย IC/Passport ได้ปกติ — แต่ไม่แสดงในผลลัพธ์ */
+        if(pass && !passport.includes(pass)) return;
 
         if(year){
-
           const ca = m.createdAt;
-
           if(!ca) return;
-
-          const dt =
-            typeof ca.toDate === 'function'
-            ? ca.toDate()
-            : new Date(ca);
-
-          if(
-            isNaN(dt) ||
-            String(dt.getFullYear()) !== year
-          ){
-            return;
-          }
+          const dt = typeof ca.toDate==='function' ? ca.toDate() : new Date(ca);
+          if(isNaN(dt) || String(dt.getFullYear()) !== year) return;
         }
 
         found.push({m, td});
-
       });
-
     });
 
     document.getElementById('sLoading').style.display='none';
-
     const el = document.getElementById('sResults');
 
     if(!found.length){
-
-      el.innerHTML = `
-      <p style="
-        text-align:center;
-        color:#94a3b8;
-        padding:20px;
-        font-size:15px;
-      ">
-        ❌ ไม่พบข้อมูลที่ตรงกัน / No results found
-      </p>`;
-
+      el.innerHTML = `<p style="text-align:center;color:#94a3b8;padding:20px;font-size:15px;">❌ ไม่พบข้อมูลที่ตรงกัน / No results found</p>`;
       return;
     }
 
-    el.innerHTML = `
-    <p style="
-      font-size:13px;
-      color:#64748b;
-      margin-bottom:12px;
-    ">
-      พบ ${found.length} รายการ / Found ${found.length} record(s)
-    </p>`;
+    el.innerHTML = `<p style="font-size:13px;color:#64748b;margin-bottom:12px;">พบ ${found.length} รายการ / Found ${found.length} record(s)</p>`;
 
-    found.forEach(({m,td})=>{
+    found.forEach(({m, td})=>{
+      const tLabel = [td.name, td.nameEn, td.address].filter(Boolean).join(' • ');
 
-      const tLabel = [
-        td.name,
-        td.nameEn,
-        td.address
-      ].filter(Boolean).join(' • ');
+      /* ✅ แสดงภูมิลำเนา/สังกัดเดิม แทน IC/Passport เพื่อปกป้องข้อมูลส่วนบุคคล */
+      const originVal = m.origin || '—';
 
       el.innerHTML += `
       <div class="rcard">
-
         <div class="rname">
           🧘 ${m.fullname || '—'}
           ${m.fullnameEn ? `<br><span style="font-size:13px;color:#64748b;">${m.fullnameEn}</span>` : ''}
         </div>
-
         <div class="rrow">
           <span class="rlbl">ฉายา / Alias</span>
           <span class="rval">${m.alias || '—'}</span>
         </div>
-
+        <div class="rrow">
+          <span class="rlbl">อายุ / พรรษา</span>
+          <span class="rval">${m.age || '—'} ปี / ${m.pansa || '—'} พรรษา</span>
+        </div>
         <div class="rrow">
           <span class="rlbl">สัญชาติ / Nationality</span>
           <span class="rval">${m.nationality || '—'}</span>
         </div>
-
         <div class="rrow">
-          <span class="rlbl">IC / Passport</span>
-          <span class="rval">${m.passport || '—'}</span>
+          <span class="rlbl">🏡 ภูมิลำเนา / สังกัดเดิม</span>
+          <span class="rval">${originVal}</span>
         </div>
-
         <div class="rrow">
           <span class="rlbl">🏛️ วัด / Temple</span>
           <span class="rval">${tLabel || '—'}</span>
         </div>
-
         <div class="rrow">
           <span class="rlbl">บันทึกเมื่อ / Recorded</span>
           <span class="rval">${fmtDT(m.createdAt)}</span>
         </div>
-
       </div>`;
     });
 
   } catch(e){
-
     document.getElementById('sLoading').style.display='none';
-
-    document.getElementById('sResults').innerHTML = `
-    <p style="color:red;padding:10px;">
-      ❌ Error : ${e.message}
-    </p>`;
+    document.getElementById('sResults').innerHTML = `<p style="color:red;padding:10px;">❌ Error : ${e.message}</p>`;
   }
 };
 </script>
 
-<!-- ══ นาฬิกา + Menu (non-module) ══ -->
+<!-- ══ นาฬิกา + Menu ══ -->
 <script>
 const MONTHS=['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const DAYS  =['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
