@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ระบบแอดมินกลาง</title>
+<title>ระบบบริหารข้อมูลกลาง</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -94,6 +94,9 @@ tr:nth-child(even) td { background:#f8fafc; }
 }
 .input:focus { border-color:#ea580c; box-shadow:0 0 0 4px rgba(234,88,12,.1); }
 
+/* announcement textarea */
+#announceInput:focus { border-color:#ea580c !important; }
+
 .delete-btn {
     background:#dc2626; color:white; border:none;
     padding:7px 13px; border-radius:10px;
@@ -131,8 +134,8 @@ tr:nth-child(even) td { background:#f8fafc; }
     <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-4xl font-bold">ระบบแอดมินกลาง</h1>
-                <p class="text-orange-100 mt-2 text-xl">Central Admin System — คณะสงฆ์มาเลเซีย</p>
+                <h1 class="text-4xl font-bold">ระบบบริหารข้อมูลกลาง</h1>
+                <p class="text-orange-100 mt-2 text-xl">Central information management system — ADMIN</p>
             </div>
             <div class="text-right">
                 <div id="adminName" class="font-bold text-xl"></div>
@@ -264,6 +267,39 @@ tr:nth-child(even) td { background:#f8fafc; }
     </div>
 </div>
 
+<!-- ── ประชาสัมพันธ์ ── -->
+<div class="card p-8">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-3xl font-bold text-slate-800">📢 ข้อความประชาสัมพันธ์</h2>
+            <p style="font-size:14px;color:#64748b;margin-top:4px;">ข้อความนี้จะแสดงที่หน้าหลักทันทีหลังบันทึก</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="clearAnnouncement()" class="btn red">🗑️ ลบข้อความ</button>
+            <button onclick="saveAnnouncement()" class="btn green">💾 บันทึกและเผยแพร่</button>
+        </div>
+    </div>
+    <div style="margin-bottom:12px;">
+        <textarea id="announceInput"
+            style="width:100%;padding:16px;border-radius:16px;border:2px solid #e2e8f0;
+            font-size:16px;font-family:'Sarabun',sans-serif;resize:vertical;min-height:120px;
+            outline:none;line-height:1.7;transition:.2s;"
+            onfocus="this.style.borderColor='#ea580c';this.style.boxShadow='0 0 0 4px rgba(234,88,12,.1)'"
+            onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'"
+            placeholder="พิมพ์ข้อความประชาสัมพันธ์ที่นี่... สามารถขึ้นบรรทัดใหม่ได้"></textarea>
+    </div>
+    <!-- Preview -->
+    <div style="background:#fff7ed;border:2px solid #fbbf24;border-radius:16px;padding:14px 18px;">
+        <div style="font-size:11px;font-weight:800;color:#b45309;letter-spacing:.6px;margin-bottom:6px;">PREVIEW — ตัวอย่างที่จะแสดงหน้าหลัก</div>
+        <div id="announcePreview" style="font-size:15px;color:#1e293b;line-height:1.6;white-space:pre-line;min-height:24px;"></div>
+    </div>
+    <!-- Current -->
+    <div style="margin-top:14px;padding:12px 16px;background:#f1f5f9;border-radius:12px;">
+        <div style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:4px;">ข้อความที่กำลังแสดงอยู่:</div>
+        <div id="announceCurrentDisplay" style="font-size:14px;color:#334155;white-space:pre-line;">กำลังโหลด...</div>
+    </div>
+</div>
+
 <!-- ── จัดการแอดมิน ── -->
 <div class="card p-8">
     <div class="flex justify-between items-center mb-6">
@@ -286,7 +322,7 @@ tr:nth-child(even) td { background:#f8fafc; }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
     getFirestore, collection, getDocs,
-    addDoc, deleteDoc, doc, updateDoc, getDoc
+    addDoc, deleteDoc, doc, updateDoc, getDoc, setDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -770,6 +806,55 @@ function buildModalEnd(id){
         background:#e2e8f0;font-size:18px;font-weight:700;cursor:pointer;">ปิดหน้าต่าง</button>
         </div></div>`;
 }
+
+/* ══ ANNOUNCEMENT ══ */
+async function loadCurrentAnnouncement(){
+    try {
+        const ref  = doc(db,'settings','announcement');
+        const snap = await getDoc(ref);
+        const el   = document.getElementById('announceCurrentDisplay');
+        if(snap.exists() && (snap.data().text||'').trim()){
+            el.textContent = snap.data().text;
+            document.getElementById('announceInput').value = snap.data().text;
+            document.getElementById('announcePreview').textContent = snap.data().text;
+        } else {
+            el.textContent = '— ยังไม่มีข้อความ —';
+        }
+    } catch(e){ console.error(e); }
+}
+loadCurrentAnnouncement();
+
+/* live preview */
+document.addEventListener('DOMContentLoaded', () => {
+    const inp = document.getElementById('announceInput');
+    if(inp) inp.addEventListener('input', () => {
+        document.getElementById('announcePreview').textContent = inp.value;
+    });
+});
+
+window.saveAnnouncement = async function(){
+    const text = (document.getElementById('announceInput').value || '').trim();
+    if(!text){ alert('⚠️ กรุณาพิมพ์ข้อความก่อนบันทึก'); return; }
+    try {
+        await setDoc(doc(db,'settings','announcement'), {
+            text,
+            updatedAt: serverTimestamp()
+        });
+        alert('✅ บันทึกและเผยแพร่สำเร็จ\nข้อความจะแสดงที่หน้าหลักทันที');
+        document.getElementById('announceCurrentDisplay').textContent = text;
+    } catch(e){ alert('❌ เกิดข้อผิดพลาด: ' + e.message); }
+};
+
+window.clearAnnouncement = async function(){
+    if(!confirm('ต้องการลบข้อความประชาสัมพันธ์ใช่หรือไม่?')) return;
+    try {
+        await setDoc(doc(db,'settings','announcement'), { text: '', updatedAt: serverTimestamp() });
+        document.getElementById('announceInput').value = '';
+        document.getElementById('announcePreview').textContent = '';
+        document.getElementById('announceCurrentDisplay').textContent = '— ยังไม่มีข้อความ —';
+        alert('✅ ลบข้อความสำเร็จ');
+    } catch(e){ alert('❌ เกิดข้อผิดพลาด: ' + e.message); }
+};
 
 window.logout = function(){ location.reload(); };
 
